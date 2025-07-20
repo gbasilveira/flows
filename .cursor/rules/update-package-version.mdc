@@ -1,5 +1,5 @@
 ---
-description: 
+description: update the package version, useful when code changes were applied
 globs: 
 alwaysApply: false
 ---

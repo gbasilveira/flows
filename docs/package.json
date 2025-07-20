@@ -1,0 +1,22 @@
+{
+  "name": "flows-docs",
+  "version": "1.0.0",
+  "description": "Official documentation for Flows - DAG workflow executor",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "keywords": [
+    "flows",
+    "dag",
+    "workflow",
+    "documentation"
+  ],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.9.0",
+  "devDependencies": {
+    "vitepress": "1.6.3"
+  }
+}

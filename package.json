@@ -22,7 +22,11 @@
     "test:ui": "vitest --ui",
     "lint": "eslint src --ext .ts,.tsx",
     "format": "prettier --write src/**/*.{ts,tsx}",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "docs:dev": "cd docs && pnpm dev",
+    "docs:build": "cd docs && pnpm build",
+    "docs:preview": "cd docs && pnpm preview",
+    "docs:install": "cd docs && pnpm install"
   },
   "keywords": [
     "dag",

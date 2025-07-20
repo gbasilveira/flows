@@ -1,0 +1,6 @@
+---
+description: update package docs, useful when relevat code changes were applied 
+globs: 
+alwaysApply: false
+---
+If necessary update the package docs to reflect the change
