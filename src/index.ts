@@ -72,6 +72,13 @@ export {
   NodeExecutor as DefaultNodeExecutor,
 } from './core/index.js';
 
+// Built-in handlers
+export {
+  DataHandler,
+  DelayHandler,
+  SubflowHandler,
+} from './core/handlers/index.js';
+
 /**
  * Factory function to create a workflow executor with common configurations
  */

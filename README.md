@@ -134,6 +134,7 @@ rm -rf dist-temp
 - **`subflow-example.ts`**: Demonstrates modular workflows using subflows
 - **`simple-workflow.ts`**: Basic workflow execution patterns
 - **`failure-examples.ts`**: Comprehensive failure handling strategies
+- **`custom-handlers-example.ts`**: Creating custom node handlers for new node types
 
 Each example includes detailed comments explaining the concepts and can be run independently.
 
@@ -188,10 +189,34 @@ const executor = new DefaultNodeExecutor({
 const flows = createFlows(config, executor);
 ```
 
-**Built-in Node Types**:
-- `'data'` - Pass-through nodes that merge inputs
-- `'delay'` - Nodes that wait for a specified duration
-- `'subflow'` - Nodes that execute other workflows (requires `enableSubflows: true`)
+**Built-in Node Types & Handlers**:
+- `'data'` - Pass-through nodes that merge inputs (handled by `DataHandler`)
+- `'delay'` - Nodes that wait for a specified duration (handled by `DelayHandler`)
+- `'subflow'` - Nodes that execute other workflows (handled by `SubflowHandler`, requires `enableSubflows: true`)
+
+**Handler Architecture**:
+```typescript
+// Each node type has a dedicated handler
+import { DataHandler, DelayHandler, SubflowHandler } from 'flows/core/handlers';
+
+// Handlers are automatically used by NodeExecutor
+const executor = new DefaultNodeExecutor({
+  enableSubflows: true,
+  maxSubflowDepth: 5,
+});
+
+// Custom handlers can be created for new node types
+class HttpHandler {
+  async execute(node, context, inputs) {
+    const response = await fetch(node.inputs.url, {
+      method: node.inputs.method || 'GET',
+      headers: node.inputs.headers,
+      body: node.inputs.body ? JSON.stringify(node.inputs.body) : undefined,
+    });
+    return response.json();
+  }
+}
+```
 
 **Custom Node Executors**:
 ```typescript

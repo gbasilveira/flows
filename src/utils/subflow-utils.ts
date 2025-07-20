@@ -6,7 +6,7 @@ import type {
   WorkflowId,
 } from '../types/index.js';
 import { createFlows } from '../index.js';
-import { NodeExecutor as DefaultNodeExecutor } from '../core/enhanced-node-executor.js';
+import { NodeExecutor as DefaultNodeExecutor } from '../core/node-executor.js';
 import type { WorkflowExecutor } from '../core/workflow-executor.js';
 
 /**
