@@ -1,4 +1,3 @@
-import React from 'react'
 import { Editor, EditorConfig, DEFAULT_CATEGORIES, DEFAULT_NODE_TYPES } from '../index'
 
 const demoConfig: EditorConfig = {
@@ -15,7 +14,7 @@ const demoConfig: EditorConfig = {
       nodeTypes: DEFAULT_NODE_TYPES,
     },
   ],
-  enabledCategories: ['core', 'logic', 'math', 'string', 'flow'],
+  enabledCategories: ['core', 'logic', 'math', 'string', 'flow', 'console'],
   ui: {
     sidebarWidth: 280,
     toolbarHeight: 60,

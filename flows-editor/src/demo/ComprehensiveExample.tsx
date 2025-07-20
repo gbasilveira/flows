@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { 
   Editor, 
   EditorConfig, 
   DEFAULT_CATEGORIES, 
   DEFAULT_NODE_TYPES,
   executeWorkflow,
-  validateWorkflow,
-  getDefaultFlowsConfig
+  validateWorkflow
 } from '../index'
 
 /**
@@ -32,7 +31,7 @@ const comprehensiveConfig: EditorConfig = {
   ],
   
   // Enable all categories
-  enabledCategories: ['core', 'logic', 'math', 'string', 'flow'],
+  enabledCategories: ['core', 'logic', 'math', 'string', 'flow', 'console'],
   
   // UI configuration
   ui: {
@@ -67,6 +66,20 @@ const comprehensiveConfig: EditorConfig = {
       'merge-any': '#5c2d91',
       'merge-majority': '#5c2d91',
       'merge-count': '#5c2d91',
+      'console-log': '#6b69d6',
+      'console-error': '#d13438',
+      'console-warn': '#ff8c00',
+      'console-info': '#0078d4',
+      'console-debug': '#6b69d6',
+      'console-table': '#6b69d6',
+      'console-time': '#6b69d6',
+      'console-timeend': '#6b69d6',
+      'console-group': '#6b69d6',
+      'console-groupend': '#6b69d6',
+      'console-clear': '#6b69d6',
+      'console-trace': '#6b69d6',
+      'console-count': '#6b69d6',
+      'console-countreset': '#6b69d6',
     },
   },
   

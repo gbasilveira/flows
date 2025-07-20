@@ -112,12 +112,13 @@ export class FlowsIntegration {
     const plugins: any[] = []
 
     // Add built-in plugins based on enabled categories
-    const enabledCategories = this.config.enabledCategories || ['core', 'logic', 'math', 'string', 'flow']
+    const enabledCategories = this.config.enabledCategories || ['core', 'logic', 'math', 'string', 'flow', 'console']
     
     // For now, we'll use a simplified approach without importing specific plugins
     // The flows library will handle its own plugin system
     if (enabledCategories.includes('logic') || enabledCategories.includes('math') || 
-        enabledCategories.includes('string') || enabledCategories.includes('flow')) {
+        enabledCategories.includes('string') || enabledCategories.includes('flow') ||
+        enabledCategories.includes('console')) {
       // Enable all built-in plugins by default
       // The flows library will handle plugin loading internally
     }

@@ -74,6 +74,14 @@ export class EditorPluginRegistry {
           color: '#5c2d91',
           order: 5,
         },
+        {
+          id: 'console',
+          name: 'Console',
+          description: 'Console operations for debugging and logging',
+          icon: 'Terminal',
+          color: '#6b69d6',
+          order: 6,
+        },
       ],
       nodeTypes: [
         // Core nodes
@@ -512,6 +520,233 @@ export class EditorPluginRegistry {
           ],
           outputs: [
             { id: 'result', name: 'Result', type: 'object', description: 'Combined results from successful dependencies' }
+          ],
+          configurable: true,
+        },
+        
+        // Console nodes
+        {
+          id: 'console-log',
+          name: 'Console Log',
+          description: 'Output messages to console.log with optional data and formatting',
+          category: 'console',
+          icon: 'Terminal',
+          color: '#6b69d6',
+          inputs: [
+            { id: 'message', name: 'Message', type: 'string', required: true, description: 'Message to log' },
+            { id: 'data', name: 'Data', type: 'object', required: false, description: 'Optional data to log alongside message' },
+            { id: 'options', name: 'Options', type: 'object', required: false, description: 'Formatting options (timestamp, prefix)' }
+          ],
+          outputs: [
+            { id: 'result', name: 'Result', type: 'object', description: 'Log operation result' }
+          ],
+          configurable: true,
+        },
+        {
+          id: 'console-error',
+          name: 'Console Error',
+          description: 'Output error messages to console.error with optional data and formatting',
+          category: 'console',
+          icon: 'Error',
+          color: '#d13438',
+          inputs: [
+            { id: 'message', name: 'Message', type: 'string', required: true, description: 'Error message to log' },
+            { id: 'data', name: 'Data', type: 'object', required: false, description: 'Optional error data to log' },
+            { id: 'options', name: 'Options', type: 'object', required: false, description: 'Formatting options (timestamp, prefix)' }
+          ],
+          outputs: [
+            { id: 'result', name: 'Result', type: 'object', description: 'Error log operation result' }
+          ],
+          configurable: true,
+        },
+        {
+          id: 'console-warn',
+          name: 'Console Warn',
+          description: 'Output warning messages to console.warn with optional data and formatting',
+          category: 'console',
+          icon: 'Warning',
+          color: '#ff8c00',
+          inputs: [
+            { id: 'message', name: 'Message', type: 'string', required: true, description: 'Warning message to log' },
+            { id: 'data', name: 'Data', type: 'object', required: false, description: 'Optional warning data to log' },
+            { id: 'options', name: 'Options', type: 'object', required: false, description: 'Formatting options (timestamp, prefix)' }
+          ],
+          outputs: [
+            { id: 'result', name: 'Result', type: 'object', description: 'Warning log operation result' }
+          ],
+          configurable: true,
+        },
+        {
+          id: 'console-info',
+          name: 'Console Info',
+          description: 'Output informational messages to console.info with optional data and formatting',
+          category: 'console',
+          icon: 'Info',
+          color: '#0078d4',
+          inputs: [
+            { id: 'message', name: 'Message', type: 'string', required: true, description: 'Info message to log' },
+            { id: 'data', name: 'Data', type: 'object', required: false, description: 'Optional info data to log' },
+            { id: 'options', name: 'Options', type: 'object', required: false, description: 'Formatting options (timestamp, prefix)' }
+          ],
+          outputs: [
+            { id: 'result', name: 'Result', type: 'object', description: 'Info log operation result' }
+          ],
+          configurable: true,
+        },
+        {
+          id: 'console-debug',
+          name: 'Console Debug',
+          description: 'Output debug messages to console.debug with optional data and formatting',
+          category: 'console',
+          icon: 'Bug',
+          color: '#6b69d6',
+          inputs: [
+            { id: 'message', name: 'Message', type: 'string', required: true, description: 'Debug message to log' },
+            { id: 'data', name: 'Data', type: 'object', required: false, description: 'Optional debug data to log' },
+            { id: 'options', name: 'Options', type: 'object', required: false, description: 'Formatting options (timestamp, prefix)' }
+          ],
+          outputs: [
+            { id: 'result', name: 'Result', type: 'object', description: 'Debug log operation result' }
+          ],
+          configurable: true,
+        },
+        {
+          id: 'console-table',
+          name: 'Console Table',
+          description: 'Display tabular data in the console using console.table',
+          category: 'console',
+          icon: 'Table',
+          color: '#6b69d6',
+          inputs: [
+            { id: 'data', name: 'Data', type: 'array', required: true, description: 'Data to display as table' },
+            { id: 'options', name: 'Options', type: 'object', required: false, description: 'Table formatting options (columns)' }
+          ],
+          outputs: [
+            { id: 'result', name: 'Result', type: 'object', description: 'Table display operation result' }
+          ],
+          configurable: true,
+        },
+        {
+          id: 'console-time',
+          name: 'Console Time',
+          description: 'Start a timer for performance measurement using console.time',
+          category: 'console',
+          icon: 'Timer',
+          color: '#6b69d6',
+          inputs: [
+            { id: 'message', name: 'Message', type: 'string', required: true, description: 'Timer label' },
+            { id: 'options', name: 'Options', type: 'object', required: false, description: 'Timer configuration options' }
+          ],
+          outputs: [
+            { id: 'result', name: 'Result', type: 'object', description: 'Timer start operation result' }
+          ],
+          configurable: true,
+        },
+        {
+          id: 'console-timeend',
+          name: 'Console Time End',
+          description: 'End a timer and display elapsed time using console.timeEnd',
+          category: 'console',
+          icon: 'Timer',
+          color: '#6b69d6',
+          inputs: [
+            { id: 'message', name: 'Message', type: 'string', required: true, description: 'Timer label to end' },
+            { id: 'options', name: 'Options', type: 'object', required: false, description: 'Timer configuration options' }
+          ],
+          outputs: [
+            { id: 'result', name: 'Result', type: 'object', description: 'Timer end operation result' }
+          ],
+          configurable: true,
+        },
+        {
+          id: 'console-group',
+          name: 'Console Group',
+          description: 'Create a collapsible group in the console using console.group',
+          category: 'console',
+          icon: 'Folder',
+          color: '#6b69d6',
+          inputs: [
+            { id: 'message', name: 'Message', type: 'string', required: true, description: 'Group label' },
+            { id: 'options', name: 'Options', type: 'object', required: false, description: 'Group configuration (collapsed)' }
+          ],
+          outputs: [
+            { id: 'result', name: 'Result', type: 'object', description: 'Group start operation result' }
+          ],
+          configurable: true,
+        },
+        {
+          id: 'console-groupend',
+          name: 'Console Group End',
+          description: 'End a console group using console.groupEnd',
+          category: 'console',
+          icon: 'Folder',
+          color: '#6b69d6',
+          inputs: [],
+          outputs: [
+            { id: 'result', name: 'Result', type: 'object', description: 'Group end operation result' }
+          ],
+          configurable: false,
+        },
+        {
+          id: 'console-clear',
+          name: 'Console Clear',
+          description: 'Clear the console using console.clear',
+          category: 'console',
+          icon: 'Clear',
+          color: '#6b69d6',
+          inputs: [
+            { id: 'options', name: 'Options', type: 'object', required: false, description: 'Clear configuration (preserve)' }
+          ],
+          outputs: [
+            { id: 'result', name: 'Result', type: 'object', description: 'Clear operation result' }
+          ],
+          configurable: true,
+        },
+        {
+          id: 'console-trace',
+          name: 'Console Trace',
+          description: 'Output a stack trace using console.trace',
+          category: 'console',
+          icon: 'Bug',
+          color: '#6b69d6',
+          inputs: [
+            { id: 'message', name: 'Message', type: 'string', required: true, description: 'Trace label' },
+            { id: 'options', name: 'Options', type: 'object', required: false, description: 'Trace configuration options' }
+          ],
+          outputs: [
+            { id: 'result', name: 'Result', type: 'object', description: 'Trace operation result' }
+          ],
+          configurable: true,
+        },
+        {
+          id: 'console-count',
+          name: 'Console Count',
+          description: 'Count the number of times this node is executed using console.count',
+          category: 'console',
+          icon: 'Number',
+          color: '#6b69d6',
+          inputs: [
+            { id: 'message', name: 'Message', type: 'string', required: true, description: 'Counter label' },
+            { id: 'options', name: 'Options', type: 'object', required: false, description: 'Counter configuration options' }
+          ],
+          outputs: [
+            { id: 'result', name: 'Result', type: 'object', description: 'Count operation result' }
+          ],
+          configurable: true,
+        },
+        {
+          id: 'console-countreset',
+          name: 'Console Count Reset',
+          description: 'Reset a counter using console.countReset',
+          category: 'console',
+          icon: 'Number',
+          color: '#6b69d6',
+          inputs: [
+            { id: 'message', name: 'Message', type: 'string', required: true, description: 'Counter label to reset' },
+            { id: 'options', name: 'Options', type: 'object', required: false, description: 'Counter configuration options' }
+          ],
+          outputs: [
+            { id: 'result', name: 'Result', type: 'object', description: 'Count reset operation result' }
           ],
           configurable: true,
         },
