@@ -1,17 +1,10 @@
 import React, { useState } from 'react'
 import {
-  Card,
-  CardHeader,
-  CardPreview,
   Title3,
   Caption1,
-  Button,
   Input,
-  Label,
-  Select,
   makeStyles,
   tokens,
-  useTheme,
   TabList,
   Tab,
   TabValue,
@@ -20,14 +13,12 @@ import {
   CircleRegular,
   BranchRegular,
   CalculatorRegular,
-  TextRegular,
+  TextTRegular,
   FlowRegular,
   CodeRegular,
   SearchRegular,
-  AddRegular,
-  SettingsRegular,
 } from '@fluentui/react-icons'
-import type { NodeCategory, NodeTypeDefinition } from '../../types'
+import type { NodeTypeDefinition } from '../../types'
 import { useCategories, useNodeTypes } from '../../store'
 
 const useStyles = makeStyles({
@@ -98,76 +89,49 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground3,
     marginLeft: '24px',
   },
-  nodeList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  nodeItem: {
+  nodeType: {
     padding: '8px 12px',
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
-    borderRadius: tokens.borderRadiusSmall,
+    margin: '4px 0',
     backgroundColor: tokens.colorNeutralBackground1,
+    border: `1px solid ${tokens.colorNeutralStroke2}`,
+    borderRadius: tokens.borderRadiusSmall,
     cursor: 'grab',
     transition: 'all 0.2s ease',
     '&:hover': {
       backgroundColor: tokens.colorNeutralBackground2,
-      borderColor: tokens.colorNeutralStroke2,
-      transform: 'translateY(-1px)',
-      boxShadow: tokens.shadow4,
-    },
-    '&:active': {
-      cursor: 'grabbing',
+      border: `1px solid ${tokens.colorBrandStroke1}`,
     },
   },
-  nodeHeader: {
+  nodeTypeDragging: {
+    opacity: 0.5,
+    cursor: 'grabbing',
+  },
+  nodeTypeHeader: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  nodeTitle: {
+  nodeTypeTitle: {
     fontSize: tokens.fontSizeBase200,
     fontWeight: tokens.fontWeightMedium,
     color: tokens.colorNeutralForeground1,
   },
-  nodeType: {
-    fontSize: tokens.fontSizeBase100,
-    color: tokens.colorNeutralForeground3,
-  },
-  nodeDescription: {
+  nodeTypeDescription: {
     fontSize: tokens.fontSizeBase100,
     color: tokens.colorNeutralForeground3,
     marginTop: '4px',
+  },
+  nodeTypeIcon: {
+    width: '14px',
+    height: '14px',
+    marginRight: '6px',
   },
   emptyState: {
     textAlign: 'center',
     padding: '32px 16px',
     color: tokens.colorNeutralForeground3,
   },
-  settings: {
-    padding: '16px',
-    borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
-    backgroundColor: tokens.colorNeutralBackground2,
-  },
 })
-
-const categoryIcons = {
-  core: CircleRegular,
-  logic: BranchRegular,
-  math: CalculatorRegular,
-  string: TextRegular,
-  flow: FlowRegular,
-  custom: CodeRegular,
-}
-
-const categoryColors = {
-  core: '#0078d4',
-  logic: '#107c10',
-  math: '#d13438',
-  string: '#ff8c00',
-  flow: '#5c2d91',
-  custom: '#6b69d6',
-}
 
 export interface SidebarProps {
   onNodeDragStart?: (nodeType: NodeTypeDefinition, event: React.DragEvent) => void
@@ -179,36 +143,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onNodeDragEnd,
 }) => {
   const styles = useStyles()
-  const theme = useTheme()
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedTab, setSelectedTab] = useState<TabValue>('all')
+  
   const categories = useCategories()
   const nodeTypes = useNodeTypes()
-  
-  const [selectedTab, setSelectedTab] = useState<TabValue>('nodes')
-  const [searchTerm, setSearchTerm] = useState('')
 
-  const filteredNodeTypes = nodeTypes.filter(nodeType =>
-    nodeType.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    nodeType.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    nodeType.category.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-
-  const groupedNodeTypes = filteredNodeTypes.reduce((acc, nodeType) => {
-    const category = categories.find(c => c.id === nodeType.category)
-    if (category) {
-      if (!acc[category.id]) {
-        acc[category.id] = { category, nodeTypes: [] }
-      }
-      acc[category.id].nodeTypes.push(nodeType)
+  const getCategoryIcon = (categoryId: string) => {
+    switch (categoryId) {
+      case 'core':
+        return <CircleRegular className={styles.categoryIcon} />
+      case 'logic':
+        return <BranchRegular className={styles.categoryIcon} />
+      case 'math':
+        return <CalculatorRegular className={styles.categoryIcon} />
+      case 'string':
+        return <TextTRegular className={styles.categoryIcon} />
+      case 'flow':
+        return <FlowRegular className={styles.categoryIcon} />
+      case 'custom':
+        return <CodeRegular className={styles.categoryIcon} />
+      default:
+        return <CircleRegular className={styles.categoryIcon} />
     }
-    return acc
-  }, {} as Record<string, { category: NodeCategory; nodeTypes: NodeTypeDefinition[] }>)
+  }
 
   const handleNodeDragStart = (nodeType: NodeTypeDefinition, event: React.DragEvent) => {
-    event.dataTransfer.setData('application/reactflow', JSON.stringify({
-      type: 'node',
-      nodeType: nodeType.id,
-      category: nodeType.category,
-    }))
+    event.dataTransfer.setData('application/reactflow', JSON.stringify(nodeType))
     event.dataTransfer.effectAllowed = 'move'
     onNodeDragStart?.(nodeType, event)
   }
@@ -217,87 +178,94 @@ export const Sidebar: React.FC<SidebarProps> = ({
     onNodeDragEnd?.(event)
   }
 
+  const filteredNodeTypes = nodeTypes.filter(nodeType => {
+    const matchesSearch = nodeType.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         nodeType.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesTab = selectedTab === 'all' || nodeType.category === selectedTab
+    return matchesSearch && matchesTab
+  })
+
+  const filteredCategories = categories.filter(category => {
+    return category.id === selectedTab || selectedTab === 'all'
+  })
+
   return (
     <div className={styles.root}>
+      {/* Header */}
       <div className={styles.header}>
-        <Title3 className={styles.title}>Flows Editor</Title3>
-        <Caption1 className={styles.subtitle}>Drag nodes to create workflows</Caption1>
+        <Title3 className={styles.title}>Node Palette</Title3>
+        <Caption1 className={styles.subtitle}>Drag nodes to create your workflow</Caption1>
         
-        <div className={styles.search}>
-          <Input
-            size="small"
-            placeholder="Search nodes..."
-            value={searchTerm}
-            onChange={(e, data) => setSearchTerm(data.value)}
-            contentBefore={<SearchRegular />}
-          />
-        </div>
+        {/* Search */}
+        <Input
+          className={styles.search}
+          placeholder="Search nodes..."
+          contentBefore={<SearchRegular />}
+          value={searchTerm}
+          onChange={(_, data) => setSearchTerm(data.value)}
+        />
       </div>
 
+      {/* Content */}
       <div className={styles.content}>
+        {/* Tabs */}
         <TabList
-          selectedValue={selectedTab}
-          onTabSelect={(e, data) => setSelectedTab(data.value)}
           className={styles.tabList}
+          selectedValue={selectedTab}
+          onTabSelect={(_, data) => setSelectedTab(data.value)}
         >
-          <Tab value="nodes">Nodes</Tab>
-          <Tab value="settings">Settings</Tab>
+          <Tab value="all">All</Tab>
+          {categories.map(category => (
+            <Tab key={category.id} value={category.id}>
+              {category.name}
+            </Tab>
+          ))}
         </TabList>
 
-        {selectedTab === 'nodes' && (
-          <div className={styles.tabPanel}>
-            {Object.values(groupedNodeTypes).length === 0 ? (
-              <div className={styles.emptyState}>
-                <p>No nodes found</p>
-                <p>Try adjusting your search terms</p>
+        {/* Tab Panels */}
+        <div className={styles.tabPanel}>
+          {filteredCategories.map(category => (
+            <div key={category.id} className={styles.category}>
+              <div className={styles.categoryHeader}>
+                {getCategoryIcon(category.id)}
+                <div>
+                  <div className={styles.categoryTitle}>{category.name}</div>
+                  <div className={styles.categoryDescription}>{category.description}</div>
+                </div>
               </div>
-            ) : (
-              Object.values(groupedNodeTypes)
-                .sort((a, b) => a.category.order - b.category.order)
-                .map(({ category, nodeTypes }) => (
-                  <div key={category.id} className={styles.category}>
-                    <div className={styles.categoryHeader}>
-                      {React.createElement(categoryIcons[category.id as keyof typeof categoryIcons] || CircleRegular, {
-                        className: styles.categoryIcon,
-                        style: { color: categoryColors[category.id as keyof typeof categoryColors] || '#0078d4' }
-                      })}
-                      <div>
-                        <div className={styles.categoryTitle}>{category.name}</div>
-                        <div className={styles.categoryDescription}>{category.description}</div>
+              
+              {filteredNodeTypes
+                .filter(nodeType => nodeType.category === category.id)
+                .map(nodeType => (
+                  <div
+                    key={nodeType.id}
+                    className={styles.nodeType}
+                    draggable
+                    onDragStart={(event) => handleNodeDragStart(nodeType, event)}
+                    onDragEnd={handleNodeDragEnd}
+                  >
+                    <div className={styles.nodeTypeHeader}>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        {getCategoryIcon(nodeType.category)}
+                        <span className={styles.nodeTypeTitle}>{nodeType.name}</span>
                       </div>
                     </div>
-                    
-                    <div className={styles.nodeList}>
-                      {nodeTypes.map(nodeType => (
-                        <div
-                          key={nodeType.id}
-                          className={styles.nodeItem}
-                          draggable
-                          onDragStart={(e) => handleNodeDragStart(nodeType, e)}
-                          onDragEnd={handleNodeDragEnd}
-                        >
-                          <div className={styles.nodeHeader}>
-                            <div className={styles.nodeTitle}>{nodeType.name}</div>
-                            <div className={styles.nodeType}>{nodeType.type}</div>
-                          </div>
-                          <div className={styles.nodeDescription}>{nodeType.description}</div>
-                        </div>
-                      ))}
-                    </div>
+                    {nodeType.description && (
+                      <div className={styles.nodeTypeDescription}>
+                        {nodeType.description}
+                      </div>
+                    )}
                   </div>
-                ))
-            )}
-          </div>
-        )}
-
-        {selectedTab === 'settings' && (
-          <div className={styles.tabPanel}>
-            <div className={styles.settings}>
-              <Title3>Editor Settings</Title3>
-              <p>Settings panel coming soon...</p>
+                ))}
             </div>
-          </div>
-        )}
+          ))}
+          
+          {filteredNodeTypes.length === 0 && (
+            <div className={styles.emptyState}>
+              <p>No nodes found matching your search.</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

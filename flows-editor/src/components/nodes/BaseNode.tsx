@@ -1,32 +1,22 @@
 import React from 'react'
 import { Handle, Position, NodeProps } from 'reactflow'
 import {
-  Card,
-  CardHeader,
-  CardPreview,
   Title3,
   Caption1,
-  Badge,
   Button,
   Input,
   Label,
-  Textarea,
-  Select,
   Checkbox,
-  Slider,
   makeStyles,
   tokens,
-  useTheme,
 } from '@fluentui/react-components'
 import {
   CircleRegular,
-  DatabaseRegular,
   BranchRegular,
   CalculatorRegular,
-  TextRegular,
+  TextTRegular,
   FlowRegular,
   CodeRegular,
-  SettingsRegular,
   ChevronDownRegular,
   ChevronUpRegular,
 } from '@fluentui/react-icons'
@@ -98,28 +88,19 @@ const useStyles = makeStyles({
   handle: {
     width: '8px',
     height: '8px',
-    backgroundColor: tokens.colorBrandBackground1,
-    border: `2px solid ${tokens.colorBrandStroke1}`,
+    backgroundColor: tokens.colorBrandBackground,
+    border: `2px solid ${tokens.colorNeutralBackground1}`,
+  },
+  inputHandle: {
+    left: '-4px',
+  },
+  outputHandle: {
+    right: '-4px',
+  },
+  configToggle: {
+    backgroundColor: tokens.colorBrandBackground,
   },
 })
-
-const categoryIcons = {
-  core: CircleRegular,
-  logic: BranchRegular,
-  math: CalculatorRegular,
-  string: TextRegular,
-  flow: FlowRegular,
-  custom: CodeRegular,
-}
-
-const categoryColors = {
-  core: '#0078d4',
-  logic: '#107c10',
-  math: '#d13438',
-  string: '#ff8c00',
-  flow: '#5c2d91',
-  custom: '#6b69d6',
-}
 
 export interface BaseNodeProps extends NodeProps<NodeData> {
   configurable?: boolean
@@ -134,129 +115,125 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
   onConfigChange,
 }) => {
   const styles = useStyles()
-  const theme = useTheme()
   const [isConfigExpanded, setIsConfigExpanded] = React.useState(false)
 
-  const IconComponent = categoryIcons[data.category as keyof typeof categoryIcons] || CircleRegular
-  const categoryColor = categoryColors[data.category as keyof typeof categoryColors] || '#0078d4'
-
   const handleConfigChange = (key: string, value: any) => {
-    const newConfig = { ...data.config, [key]: value }
-    onConfigChange?.(id, newConfig)
+    if (onConfigChange) {
+      onConfigChange(id, { [key]: value })
+    }
   }
 
-  const renderConfigInput = (input: any) => {
-    switch (input.type) {
+  const getNodeIcon = (type: string) => {
+    switch (type) {
+      case 'data':
+        return <CircleRegular className={styles.icon} />
+      case 'logic':
+        return <BranchRegular className={styles.icon} />
+      case 'math':
+        return <CalculatorRegular className={styles.icon} />
       case 'string':
-        return (
-          <Input
-            size="small"
-            value={data.config?.[input.id] || input.defaultValue || ''}
-            onChange={(e, data) => handleConfigChange(input.id, data.value)}
-            placeholder={input.description}
-          />
-        )
-      case 'number':
-        return (
-          <Input
-            type="number"
-            size="small"
-            value={data.config?.[input.id] || input.defaultValue || 0}
-            onChange={(e, data) => handleConfigChange(input.id, Number(data.value))}
-            placeholder={input.description}
-          />
-        )
-      case 'boolean':
-        return (
-          <Checkbox
-            checked={data.config?.[input.id] ?? input.defaultValue ?? false}
-            onChange={(e, data) => handleConfigChange(input.id, data.checked)}
-            label={input.description}
-          />
-        )
-      case 'select':
-        return (
-          <Select
-            size="small"
-            value={data.config?.[input.id] || input.defaultValue}
-            onChange={(e, data) => handleConfigChange(input.id, data.value)}
-          >
-            {input.options?.map((option: any) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-        )
+        return <TextTRegular className={styles.icon} />
+      case 'flow':
+        return <FlowRegular className={styles.icon} />
+      case 'custom':
+        return <CodeRegular className={styles.icon} />
       default:
-        return null
+        return <CircleRegular className={styles.icon} />
     }
   }
 
   return (
-    <Card
-      className={`${styles.root} ${selected ? styles.selected : ''}`}
-      style={{ borderColor: selected ? categoryColor : undefined }}
-    >
-      <Handle
-        type="target"
-        position={Position.Top}
-        className={styles.handle}
-      />
-      
-      <CardHeader className={styles.header}>
-        <CardPreview>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <IconComponent className={styles.icon} style={{ color: categoryColor }} />
-              <div>
-                <Title3 className={styles.title}>{data.label}</Title3>
-                <Caption1 className={styles.category}>{data.category}</Caption1>
-              </div>
-            </div>
-            <Badge appearance="filled" color="brand">
-              {data.type}
-            </Badge>
-          </div>
-        </CardPreview>
-      </CardHeader>
+    <div className={`${styles.root} ${selected ? styles.selected : ''}`}>
+      {/* Input Handles */}
+      {data.inputs && Object.entries(data.inputs).map(([inputId, _inputData], index: number) => (
+        <Handle
+          key={`input-${index}`}
+          type="target"
+          position={Position.Left}
+          id={inputId}
+          className={`${styles.handle} ${styles.inputHandle}`}
+          style={{ top: `${20 + index * 20}px` }}
+        />
+      ))}
 
+      {/* Node Header */}
+      <div className={styles.header}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {getNodeIcon(data.type)}
+          <div>
+            <Title3 className={styles.title}>{data.label}</Title3>
+            <Caption1 className={styles.category}>{data.category}</Caption1>
+          </div>
+        </div>
+      </div>
+
+      {/* Node Content */}
       <div className={styles.content}>
-        {configurable && (
+        <p>Node type: {data.type}</p>
+        
+        {/* Configuration Section */}
+        {configurable && data.config && (
           <div className={styles.configSection}>
             <Button
               appearance="subtle"
               size="small"
-              icon={isConfigExpanded ? <ChevronUpRegular /> : <ChevronDownRegular />}
               onClick={() => setIsConfigExpanded(!isConfigExpanded)}
               className={styles.expandButton}
             >
-              Configuration
+              {isConfigExpanded ? (
+                <>
+                  <ChevronUpRegular />
+                  Hide Config
+                </>
+              ) : (
+                <>
+                  <ChevronDownRegular />
+                  Show Config
+                </>
+              )}
             </Button>
             
             {isConfigExpanded && (
-              <div style={{ marginTop: '8px' }}>
-                {/* Configuration inputs would go here based on node type */}
-                <div className={styles.configItem}>
-                  <Label className={styles.configLabel}>Node ID</Label>
-                  <Input
-                    size="small"
-                    value={id}
-                    readOnly
-                    className={styles.configInput}
-                  />
-                </div>
+              <div>
+                {Object.entries(data.config).map(([key, value]) => (
+                  <div key={key} className={styles.configItem}>
+                    <Label className={styles.configLabel}>{key}</Label>
+                    {typeof value === 'boolean' ? (
+                      <Checkbox
+                        checked={value}
+                        onChange={(_, data) => handleConfigChange(key, data.checked)}
+                      />
+                    ) : typeof value === 'number' ? (
+                      <Input
+                        type="number"
+                        value={value.toString()}
+                        onChange={(_, data) => handleConfigChange(key, Number(data.value))}
+                      />
+                    ) : (
+                      <Input
+                        value={value.toString()}
+                        onChange={(_, data) => handleConfigChange(key, data.value)}
+                      />
+                    )}
+                  </div>
+                ))}
               </div>
             )}
           </div>
         )}
       </div>
 
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className={styles.handle}
-      />
-    </Card>
+      {/* Output Handles */}
+      {data.outputs && Object.entries(data.outputs).map(([outputId, _outputData], index: number) => (
+        <Handle
+          key={`output-${index}`}
+          type="source"
+          position={Position.Right}
+          id={outputId}
+          className={`${styles.handle} ${styles.outputHandle}`}
+          style={{ top: `${20 + index * 20}px` }}
+        />
+      ))}
+    </div>
   )
 } 

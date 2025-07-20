@@ -12,7 +12,6 @@ import ReactFlow, {
   OnNodesChange,
   OnEdgesChange,
   NodeChange,
-  EdgeChange,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import {
@@ -39,7 +38,7 @@ import { Sidebar } from './sidebar/Sidebar'
 import { BaseNode } from './nodes/BaseNode'
 import { useEditorStore } from '../store'
 import { convertToWorkflow, convertFromWorkflow, createNewNode } from '../utils/workflow-converter'
-import type { EdgeData, EditorConfig, NodeTypeDefinition } from '../types'
+import type { EdgeData, EditorConfig } from '../types'
 
 const useStyles = makeStyles({
   root: {
