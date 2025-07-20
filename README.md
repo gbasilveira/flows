@@ -11,6 +11,9 @@ A stateful, secure, JavaScript-embedded DAG (Directed Acyclic Graph) workflow ex
 - 🛡️ **Secure**: Built-in validation and security features
 - 📝 **TypeScript Support**: Full TypeScript definitions included
 - ⚙️ **Configurable**: Extensive configuration options for different use cases
+- 🚨 **Comprehensive Failure Handling**: Circuit breaker, dead letter queue, poison message detection, and graceful degradation
+- 📊 **Real-time Monitoring**: Failure metrics, alerting, and performance tracking
+- 🔧 **Enterprise-Ready**: Production-grade reliability patterns
 
 ## Installation
 
@@ -142,6 +145,312 @@ flows.emitEvent({
 const result = await executionPromise;
 ```
 
+## Comprehensive Failure Handling
+
+Flows provides enterprise-grade failure handling with multiple strategies to ensure reliable workflow execution in production environments.
+
+### Failure Strategies
+
+Choose from six different failure handling strategies:
+
+#### 1. Fail Fast
+Stop immediately on the first failure:
+
+```typescript
+const config = {
+  storage: { type: StorageType.MEMORY },
+  failureHandling: {
+    strategy: FailureStrategy.FAIL_FAST,
+  },
+};
+```
+
+#### 2. Retry and Fail
+Retry failed operations, then fail the workflow:
+
+```typescript
+const nodeWithRetry = {
+  id: 'api-call',
+  type: 'http-request',
+  inputs: { url: 'https://api.example.com/data' },
+  dependencies: [],
+  retryConfig: {
+    maxAttempts: 3,
+    delay: 1000,
+    backoffMultiplier: 2, // Exponential backoff
+    maxDelay: 10000,
+    jitter: true, // Add randomization to delays
+    retryableErrors: ['timeout', '503', '502'],
+    nonRetryableErrors: ['401', '403', '404'],
+  },
+  failureHandling: {
+    strategy: FailureStrategy.RETRY_AND_FAIL,
+  },
+};
+```
+
+#### 3. Retry and Dead Letter Queue
+Retry failed operations, then route to dead letter queue for later processing:
+
+```typescript
+const config = {
+  storage: { type: StorageType.MEMORY },
+  failureHandling: {
+    strategy: FailureStrategy.RETRY_AND_DLQ,
+    deadLetter: {
+      enabled: true,
+      maxRetries: 3,
+      retentionPeriod: 3600000, // 1 hour
+      handler: (node, error, attempts) => {
+        console.log(`Node ${node.id} sent to DLQ after ${attempts} attempts`);
+      },
+    },
+  },
+};
+```
+
+#### 4. Retry and Skip
+Retry failed operations, then skip and continue with the workflow:
+
+```typescript
+const config = {
+  storage: { type: StorageType.MEMORY },
+  failureHandling: {
+    strategy: FailureStrategy.RETRY_AND_SKIP,
+  },
+};
+```
+
+#### 5. Circuit Breaker Pattern
+Protect against cascading failures with circuit breaker:
+
+```typescript
+const config = {
+  storage: { type: StorageType.MEMORY },
+  failureHandling: {
+    strategy: FailureStrategy.CIRCUIT_BREAKER,
+    circuitBreaker: {
+      failureThreshold: 5,      // Open after 5 failures
+      timeWindow: 60000,        // Within 1 minute
+      recoveryTimeout: 30000,   // Wait 30s before half-open
+      successThreshold: 3,      // Close after 3 successes
+    },
+  },
+};
+```
+
+#### 6. Graceful Degradation
+Continue with reduced functionality and fallback results:
+
+```typescript
+const config = {
+  storage: { type: StorageType.MEMORY },
+  failureHandling: {
+    strategy: FailureStrategy.GRACEFUL_DEGRADATION,
+    gracefulDegradationConfig: {
+      continueOnNodeFailure: true,
+      skipDependentNodes: false,
+      fallbackResults: {
+        'user-preferences': { theme: 'default', language: 'en' },
+        'recommendations': { items: [] },
+      },
+    },
+  },
+};
+```
+
+### Dead Letter Queue Management
+
+Access and manage failed items:
+
+```typescript
+// Get dead letter queue items
+const dlqItems = flows.getDeadLetterQueue('workflow-id');
+
+// Retry a specific item
+const success = await flows.retryDeadLetterItem('workflow-id', 'item-id');
+
+// Custom DLQ handler
+const config = {
+  failureHandling: {
+    strategy: FailureStrategy.RETRY_AND_DLQ,
+    deadLetter: {
+      enabled: true,
+      handler: (node, error, attempts) => {
+        // Send to external queue system
+        sendToExternalQueue({
+          nodeId: node.id,
+          error,
+          attempts,
+          timestamp: new Date(),
+        });
+      },
+    },
+  },
+};
+```
+
+### Failure Monitoring and Alerting
+
+Real-time monitoring with configurable alerts:
+
+```typescript
+const config = {
+  storage: { type: StorageType.MEMORY },
+  failureHandling: {
+    strategy: FailureStrategy.CIRCUIT_BREAKER,
+    monitoring: {
+      enabled: true,
+      failureRateThreshold: 25,        // Alert if >25% failure rate
+      alertingEnabled: true,
+      metricsCollectionInterval: 30000, // Collect every 30s
+      retentionPeriod: 2592000000,     // Keep for 30 days
+      alertHandler: (alert) => {
+        switch (alert.alertType) {
+          case 'HIGH_FAILURE_RATE':
+            sendSlackAlert(`⚠️ High failure rate: ${alert.message}`);
+            break;
+          case 'CIRCUIT_OPEN':
+            sendPageDutyAlert(`🚨 Circuit breaker opened: ${alert.message}`);
+            break;
+          case 'POISON_MESSAGE':
+            sendEmailAlert(`☠️ Poison message detected: ${alert.message}`);
+            break;
+        }
+      },
+    },
+  },
+};
+```
+
+### Poison Message Detection
+
+Automatically detect and handle messages that consistently fail:
+
+```typescript
+const config = {
+  storage: { type: StorageType.MEMORY },
+  failureHandling: {
+    strategy: FailureStrategy.RETRY_AND_DLQ,
+    poisonMessageThreshold: 5, // Mark as poison after 5 attempts
+    monitoring: {
+      enabled: true,
+      alertingEnabled: true,
+      alertHandler: (alert) => {
+        if (alert.alertType === 'POISON_MESSAGE') {
+          // Quarantine the message
+          quarantineMessage(alert.workflowId, alert.nodeId);
+        }
+      },
+    },
+  },
+};
+```
+
+### Failure Metrics
+
+Access detailed failure metrics for monitoring and debugging:
+
+```typescript
+// Get metrics for specific workflow/node
+const metrics = flows.getFailureMetrics('workflow-id', 'node-id');
+
+console.log('Failure Rate:', metrics[0].failureRate);
+console.log('Total Executions:', metrics[0].totalExecutions);
+console.log('Failures by Type:', metrics[0].failuresByType);
+console.log('Circuit Breaker Opens:', metrics[0].circuitOpenCount);
+console.log('Dead Letter Items:', metrics[0].deadLetterCount);
+```
+
+### Node-Level Configuration
+
+Override global settings for individual nodes:
+
+```typescript
+const workflow = createWorkflow('mixed-strategies', 'Mixed Strategies Example', [
+  {
+    id: 'critical-payment',
+    type: 'payment-service',
+    inputs: { amount: 100 },
+    dependencies: [],
+    failureHandling: {
+      strategy: FailureStrategy.FAIL_FAST, // Critical - must succeed
+    },
+  },
+  {
+    id: 'optional-analytics',
+    type: 'analytics-service',
+    inputs: { event: 'payment_completed' },
+    dependencies: ['critical-payment'],
+    failureHandling: {
+      strategy: FailureStrategy.RETRY_AND_SKIP, // Optional - can skip
+    },
+  },
+  {
+    id: 'user-notification',
+    type: 'email-service',
+    inputs: { template: 'payment-confirmation' },
+    dependencies: ['critical-payment'],
+    failureHandling: {
+      strategy: FailureStrategy.RETRY_AND_DLQ, // Important - retry later
+      deadLetter: { enabled: true, maxRetries: 5 },
+    },
+  },
+]);
+```
+
+### Enterprise Configuration Example
+
+Complete production-ready configuration:
+
+```typescript
+const config: FlowsConfig = {
+  storage: { 
+    type: StorageType.REMOTE,
+    config: {
+      baseUrl: 'https://api.company.com',
+      apiKey: process.env.API_KEY,
+      timeout: 10000,
+    },
+  },
+  failureHandling: {
+    strategy: FailureStrategy.CIRCUIT_BREAKER,
+    circuitBreaker: {
+      failureThreshold: 5,
+      timeWindow: 300000,      // 5 minutes
+      recoveryTimeout: 120000, // 2 minutes  
+      successThreshold: 3,
+    },
+    deadLetter: {
+      enabled: true,
+      maxRetries: 3,
+      retentionPeriod: 86400000, // 24 hours
+      storage: 'persistent',
+    },
+    monitoring: {
+      enabled: true,
+      failureRateThreshold: 10,
+      alertingEnabled: true,
+      metricsCollectionInterval: 30000,
+      retentionPeriod: 2592000000, // 30 days
+      alertHandler: integrateWithPagerDuty,
+    },
+    poisonMessageThreshold: 8,
+  },
+  security: {
+    validateNodes: true,
+    allowedNodeTypes: ['http-request', 'database-query', 'cache-lookup'],
+    maxExecutionTime: 300000,
+  },
+  logging: {
+    level: 'info',
+    handler: (message, level) => {
+      logger.log(level, message);
+    },
+  },
+};
+```
+
 ## Node Types
 
 ### Built-in Node Types
@@ -226,6 +535,7 @@ const config = {
 
 - **`WorkflowExecutor`**: Main workflow execution engine
 - **`WorkflowEventSystem`**: Event handling system
+- **`FailureManager`**: Comprehensive failure handling and monitoring
 - **Storage Adapters**: `MemoryStorageAdapter`, `LocalStorageAdapter`, `RemoteStorageAdapter`
 
 ### Utility Functions
@@ -233,6 +543,86 @@ const config = {
 - **`createFlows(config)`**: Factory function to create a configured workflow executor
 - **`createWorkflow(id, name, nodes, options)`**: Helper to create workflow definitions
 - **`createEvent(type, data, nodeId)`**: Helper to create workflow events
+
+### Failure Handling Methods
+
+#### WorkflowExecutor Methods
+- **`getFailureMetrics(workflowId, nodeId?)`**: Get failure metrics for monitoring
+- **`getDeadLetterQueue(workflowId)`**: Access dead letter queue items
+- **`retryDeadLetterItem(workflowId, itemId)`**: Retry a specific failed item
+- **`dispose()`**: Clean up resources and stop monitoring
+
+#### FailureManager Methods
+- **`shouldExecuteNode(node, nodeState, workflowState)`**: Check if node can execute
+- **`handleNodeFailure(node, nodeState, workflowState, error)`**: Process node failures
+- **`handleNodeSuccess(node, nodeState, workflowState)`**: Process node successes
+- **`calculateRetryDelay(baseDelay, attempt, backoffMultiplier, maxDelay, useJitter)`**: Calculate retry delays
+
+### Configuration Types
+
+#### FailureHandlingConfig
+```typescript
+interface FailureHandlingConfig {
+  strategy: FailureStrategy;
+  circuitBreaker?: CircuitBreakerConfig;
+  deadLetter?: DeadLetterConfig;
+  monitoring?: FailureMonitoringConfig;
+  poisonMessageThreshold?: number;
+  gracefulDegradationConfig?: {
+    continueOnNodeFailure?: boolean;
+    skipDependentNodes?: boolean;
+    fallbackResults?: Record<NodeId, unknown>;
+  };
+}
+```
+
+#### Enhanced RetryConfig
+```typescript
+interface RetryConfig {
+  maxAttempts: number;
+  delay: number;
+  backoffMultiplier?: number;
+  maxDelay?: number;
+  retryableErrors?: string[];     // Specific errors to retry
+  nonRetryableErrors?: string[];  // Errors that should not be retried
+  jitter?: boolean;              // Add randomization to delays
+}
+```
+
+### Enums
+
+#### FailureStrategy
+```typescript
+enum FailureStrategy {
+  FAIL_FAST = 'fail_fast',
+  RETRY_AND_FAIL = 'retry_and_fail',
+  RETRY_AND_DLQ = 'retry_and_dlq',
+  RETRY_AND_SKIP = 'retry_and_skip',
+  CIRCUIT_BREAKER = 'circuit_breaker',
+  GRACEFUL_DEGRADATION = 'graceful_degradation',
+}
+```
+
+#### FailureType
+```typescript
+enum FailureType {
+  TRANSIENT = 'transient',       // Network, timeout errors
+  PERMANENT = 'permanent',       // Validation, logic errors
+  POISON = 'poison',            // Consistently failing messages
+  DEPENDENCY = 'dependency',     // External service failures
+  RESOURCE = 'resource',        // Memory, quota limitations
+  SECURITY = 'security',        // Authentication, permissions
+}
+```
+
+#### CircuitState
+```typescript
+enum CircuitState {
+  CLOSED = 'closed',         // Normal operation
+  OPEN = 'open',            // Circuit is open, requests fail fast
+  HALF_OPEN = 'half_open',  // Testing if service recovered
+}
+```
 
 ### Types
 

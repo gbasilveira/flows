@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+update the package version lowest value, or according to the PR or prompt specificity

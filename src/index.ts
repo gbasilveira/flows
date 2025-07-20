@@ -36,11 +36,24 @@ export type {
 
   // Configuration
   FlowsConfig,
+
+  // Failure handling types
+  FailureHandlingConfig,
+  CircuitBreakerConfig,
+  DeadLetterConfig,
+  FailureMonitoringConfig,
+  FailureAlert,
+  FailureMetrics,
+  DeadLetterItem,
+  CircuitBreakerState,
 } from './types/index.js';
 
 export { 
   ExecutionStatus, 
-  StorageType 
+  StorageType,
+  FailureStrategy,
+  FailureType,
+  CircuitState,
 } from './types/index.js';
 
 // Storage adapters
@@ -55,6 +68,7 @@ export {
 export {
   WorkflowExecutor,
   WorkflowEventSystem,
+  FailureManager,
 } from './core/index.js';
 
 /**

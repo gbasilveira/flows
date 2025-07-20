@@ -13,6 +13,7 @@ import type {
 } from '../types/index.js';
 import { ExecutionStatus } from '../types/index.js';
 import { WorkflowEventSystem } from './event-system.js';
+import { FailureManager } from './failure-manager.js';
 
 /**
  * Default node executor that handles basic node types
@@ -20,7 +21,7 @@ import { WorkflowEventSystem } from './event-system.js';
 class DefaultNodeExecutor implements NodeExecutor {
   async execute(
     node: WorkflowNode,
-    context: Record<string, unknown>,
+    _context: Record<string, unknown>,
     inputs: Record<string, unknown>
   ): Promise<unknown> {
     switch (node.type) {
@@ -50,6 +51,7 @@ export class WorkflowExecutor {
   private storage: StorageAdapter;
   private nodeExecutor: NodeExecutor;
   private eventSystem: WorkflowEventSystem;
+  private failureManager: FailureManager;
   private config: FlowsConfig;
   private runningWorkflows: Set<WorkflowId> = new Set();
 
@@ -62,6 +64,7 @@ export class WorkflowExecutor {
     this.config = config;
     this.nodeExecutor = nodeExecutor || new DefaultNodeExecutor();
     this.eventSystem = new WorkflowEventSystem();
+    this.failureManager = new FailureManager(config.failureHandling);
   }
 
   /**
@@ -92,6 +95,9 @@ export class WorkflowExecutor {
       startedAt: new Date(),
       context: initialContext,
       events: [],
+      circuitBreakers: {},
+      failureMetrics: {},
+      deadLetterQueue: [],
     };
 
     // Initialize node states
@@ -100,6 +106,7 @@ export class WorkflowExecutor {
         id: node.id,
         status: ExecutionStatus.PENDING,
         attempts: 0,
+        consecutiveFailures: 0,
       };
     });
 
@@ -138,6 +145,37 @@ export class WorkflowExecutor {
       return result;
     } finally {
       this.runningWorkflows.delete(workflowId);
+    }
+  }
+
+  /**
+   * Get failure metrics for a workflow
+   */
+  getFailureMetrics(workflowId: WorkflowId, nodeId?: NodeId) {
+    return this.failureManager.getFailureMetrics(workflowId, nodeId);
+  }
+
+  /**
+   * Get dead letter queue items for a workflow
+   */
+  getDeadLetterQueue(workflowId: WorkflowId) {
+    return this.failureManager.getDeadLetterQueue(workflowId);
+  }
+
+  /**
+   * Retry a dead letter queue item
+   */
+  async retryDeadLetterItem(workflowId: WorkflowId, itemId: string): Promise<boolean> {
+    const item = this.failureManager.retryDeadLetterItem(workflowId, itemId);
+    if (!item) return false;
+
+    // Resume the workflow to retry the item
+    try {
+      await this.resumeWorkflow(workflowId);
+      return true;
+    } catch (error) {
+      this.log('error', `Failed to retry dead letter item ${itemId}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      return false;
     }
   }
 
@@ -198,6 +236,8 @@ export class WorkflowExecutor {
         status: state.status,
         duration,
         nodeResults,
+        failureMetrics: this.failureManager.getFailureMetrics(state.id),
+        deadLetterItems: this.failureManager.getDeadLetterQueue(state.id),
       };
 
     } catch (error) {
@@ -213,17 +253,26 @@ export class WorkflowExecutor {
         error: errorMessage,
         duration: Date.now() - startTime,
         nodeResults: {},
+        failureMetrics: this.failureManager.getFailureMetrics(state.id),
+        deadLetterItems: this.failureManager.getDeadLetterQueue(state.id),
       };
     }
   }
 
   /**
-   * Execute a single node
+   * Execute a single node with comprehensive failure handling
    */
   private async executeNode(state: WorkflowState, node: WorkflowNode): Promise<void> {
     const nodeState = state.nodes[node.id];
     
     this.log('debug', `Executing node: ${node.id} (${node.type})`);
+
+    // Check if the node should execute based on failure handling rules
+    const { canExecute, reason } = this.failureManager.shouldExecuteNode(node, nodeState, state);
+    if (!canExecute) {
+      this.log('warn', `Node ${node.id} cannot execute: ${reason}`);
+      return;
+    }
     
     nodeState.status = ExecutionStatus.RUNNING;
     nodeState.startedAt = new Date();
@@ -249,33 +298,50 @@ export class WorkflowExecutor {
       nodeState.status = ExecutionStatus.COMPLETED;
       nodeState.completedAt = new Date();
       
+      // Handle success
+      this.failureManager.handleNodeSuccess(node, nodeState, state);
+      
       this.log('debug', `Node ${node.id} completed successfully`);
 
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      nodeState.error = errorMessage;
+      const nodeError = error instanceof Error ? error : new Error('Unknown error');
+      nodeState.error = nodeError.message;
       
-      // Check if we should retry
-      if (node.retryConfig && nodeState.attempts < node.retryConfig.maxAttempts) {
-        this.log('warn', `Node ${node.id} failed, will retry. Attempt ${nodeState.attempts}/${node.retryConfig.maxAttempts}`);
+      // Handle failure using failure manager
+      const { shouldRetry, shouldContinue } = await this.failureManager.handleNodeFailure(
+        node, nodeState, state, nodeError
+      );
+
+      if (shouldRetry) {
+        this.log('warn', `Node ${node.id} failed, will retry. Attempt ${nodeState.attempts}`);
         
-        nodeState.status = ExecutionStatus.PENDING;
-        
-        // Calculate delay for retry
-        const baseDelay = node.retryConfig.delay;
-        const multiplier = node.retryConfig.backoffMultiplier || 1;
-        const maxDelay = node.retryConfig.maxDelay || baseDelay * 10;
-        const delay = Math.min(baseDelay * Math.pow(multiplier, nodeState.attempts - 1), maxDelay);
-        
-        // Schedule retry
-        setTimeout(() => {
-          // Node will be picked up in the next execution cycle
-        }, delay);
-        
-      } else {
+        // Calculate retry delay
+        if (node.retryConfig) {
+          const delay = this.failureManager.calculateRetryDelay(
+            node.retryConfig.delay,
+            nodeState.attempts,
+            node.retryConfig.backoffMultiplier,
+            node.retryConfig.maxDelay,
+            node.retryConfig.jitter
+          );
+          
+          // Schedule retry
+          setTimeout(() => {
+            nodeState.status = ExecutionStatus.PENDING;
+          }, delay);
+        } else {
+          nodeState.status = ExecutionStatus.PENDING;
+        }
+      } else if (!shouldContinue) {
+        // Node failed permanently and workflow should stop
         nodeState.status = ExecutionStatus.FAILED;
         nodeState.completedAt = new Date();
-        this.log('error', `Node ${node.id} failed permanently: ${errorMessage}`);
+        this.log('error', `Node ${node.id} failed permanently: ${nodeError.message}`);
+        throw nodeError; // This will cause the workflow to fail
+      } else {
+        // Node failed but workflow should continue (already handled by failure manager)
+        nodeState.completedAt = new Date();
+        this.log('warn', `Node ${node.id} failed but workflow continues: ${nodeError.message}`);
       }
     }
   }
@@ -293,7 +359,7 @@ export class WorkflowExecutor {
       // All dependencies must be completed
       const dependenciesComplete = node.dependencies.every(depId => {
         const depState = state.nodes[depId];
-        return depState && depState.status === ExecutionStatus.COMPLETED;
+        return depState && (depState.status === ExecutionStatus.COMPLETED || depState.status === ExecutionStatus.SKIPPED);
       });
       
       if (!dependenciesComplete) return false;
@@ -402,5 +468,12 @@ export class WorkflowExecutor {
         }
       }
     }
+  }
+
+  /**
+   * Cleanup resources
+   */
+  dispose(): void {
+    this.failureManager.dispose();
   }
 } 
