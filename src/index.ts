@@ -79,6 +79,12 @@ export {
   SubflowHandler,
 } from './core/handlers/index.js';
 
+// Plugin system
+export {
+  PluginRegistry,
+  type HandlerPlugin,
+} from './core/plugin-registry.js';
+
 /**
  * Factory function to create a workflow executor with common configurations
  */

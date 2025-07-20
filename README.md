@@ -135,6 +135,7 @@ rm -rf dist-temp
 - **`simple-workflow.ts`**: Basic workflow execution patterns
 - **`failure-examples.ts`**: Comprehensive failure handling strategies
 - **`custom-handlers-example.ts`**: Creating custom node handlers for new node types
+- **`plugin-system-example.ts`**: Using the plugin system for extensible node handlers
 
 Each example includes detailed comments explaining the concepts and can be run independently.
 
@@ -190,33 +191,55 @@ const flows = createFlows(config, executor);
 ```
 
 **Built-in Node Types & Handlers**:
-- `'data'` - Pass-through nodes that merge inputs (handled by `DataHandler`)
-- `'delay'` - Nodes that wait for a specified duration (handled by `DelayHandler`)
+- `'data'` - Pass-through nodes that merge inputs (handled by `DataHandler` - always available)
+- `'delay'` - Nodes that wait for a specified duration (handled by `DelayHandler` - always available)
 - `'subflow'` - Nodes that execute other workflows (handled by `SubflowHandler`, requires `enableSubflows: true`)
 
 **Handler Architecture**:
 ```typescript
-// Each node type has a dedicated handler
-import { DataHandler, DelayHandler, SubflowHandler } from 'flows/core/handlers';
-
-// Handlers are automatically used by NodeExecutor
+// Core handlers are always available
 const executor = new DefaultNodeExecutor({
   enableSubflows: true,
   maxSubflowDepth: 5,
 });
 
-// Custom handlers can be created for new node types
-class HttpHandler {
-  async execute(node, context, inputs) {
-    const response = await fetch(node.inputs.url, {
-      method: node.inputs.method || 'GET',
-      headers: node.inputs.headers,
-      body: node.inputs.body ? JSON.stringify(node.inputs.body) : undefined,
-    });
-    return response.json();
-  }
-}
+// Plugin system for extensibility
+import { PluginRegistry, type HandlerPlugin } from 'flows';
+
+// Create plugins for custom node types
+const httpPlugin: HandlerPlugin = {
+  nodeType: 'http-request',
+  handler: {
+    async execute(node, context, inputs) {
+      const response = await fetch(node.inputs.url, {
+        method: node.inputs.method || 'GET',
+        headers: node.inputs.headers,
+      });
+      return response.json();
+    },
+  },
+  metadata: {
+    name: 'HTTP Request Plugin',
+    version: '1.0.0',
+  },
+};
+
+// Register plugins during creation or after
+const executor = new DefaultNodeExecutor({
+  plugins: [httpPlugin],
+  allowCustomHandlers: true, // default: true
+});
+
+// Or register dynamically
+executor.registerPlugin(httpPlugin);
 ```
+
+**Plugin System Benefits**:
+- ✅ **Core handlers always available** - `data` and `delay` never need configuration
+- ✅ **Extensible** - Add custom node types without modifying core code
+- ✅ **Secure** - Cannot override built-in handlers
+- ✅ **Configurable** - Can disable custom handlers entirely
+- ✅ **Metadata support** - Plugins include version and description info
 
 **Custom Node Executors**:
 ```typescript
