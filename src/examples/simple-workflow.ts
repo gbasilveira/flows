@@ -33,18 +33,11 @@ const nodes: WorkflowNode[] = [
     dependencies: [],
   },
   {
-    id: 'transform',
-    type: 'transform',
-    name: 'Transform Node',
-    inputs: { operation: 'uppercase' },
-    dependencies: ['start'],
-  },
-  {
     id: 'delay',
     type: 'delay',
     name: 'Delay Node',
     inputs: { delay: 1000 },
-    dependencies: ['transform'],
+    dependencies: ['start'],
   },
   {
     id: 'wait_for_user',

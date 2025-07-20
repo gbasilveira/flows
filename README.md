@@ -50,8 +50,8 @@ const workflow = createWorkflow('my-workflow', 'My First Workflow', [
   },
   {
     id: 'process',
-    type: 'transform',
-    inputs: { operation: 'uppercase' },
+    type: 'data',
+    inputs: { result: 'processed' },
     dependencies: ['start'],
   },
 ]);
@@ -122,7 +122,7 @@ const workflow = createWorkflow('event-workflow', 'Event-Driven Workflow', [
   },
   {
     id: 'process-after-confirmation',
-    type: 'transform',
+    type: 'data',
     inputs: { operation: 'process' },
     dependencies: ['wait-for-user'],
   },
@@ -147,7 +147,6 @@ const result = await executionPromise;
 ### Built-in Node Types
 
 - **`data`**: Pass-through nodes that output their inputs
-- **`transform`**: Simple transformation nodes
 - **`delay`**: Nodes that wait for a specified time
 
 ### Custom Node Executors
@@ -215,7 +214,7 @@ const config = {
   storage: { type: StorageType.MEMORY },
   security: {
     validateNodes: true,
-    allowedNodeTypes: ['data', 'transform', 'http-request'], // Whitelist
+    allowedNodeTypes: ['data', 'delay', 'http-request'], // Whitelist
     maxExecutionTime: 300000, // 5 minutes max per node
   },
 };
