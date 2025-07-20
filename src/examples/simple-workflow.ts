@@ -97,7 +97,28 @@ export async function runExample() {
   return result;
 }
 
-// Run the example if this file is executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  runExample().catch(console.error);
+// ================================
+// Main Execution Block
+// ================================
+
+// This block will run when the file is executed directly
+async function main() {
+  console.log('🎯 Starting Simple Workflow Example...\n');
+  
+  try {
+    await runExample();
+    console.log('\n✨ Simple workflow example completed successfully!');
+    process.exit(0);
+  } catch (error) {
+    console.error('\n💥 Simple workflow example failed:', error);
+    process.exit(1);
+  }
+}
+
+// Check if this file is being run directly
+if (require.main === module) {
+  main().catch((error) => {
+    console.error('Unhandled error:', error);
+    process.exit(1);
+  });
 } 

@@ -431,4 +431,30 @@ export async function runAllExamples() {
   await enterpriseConfigExample();
 
   console.log('\n✅ All examples completed!');
+}
+
+// ================================
+// Main Execution Block
+// ================================
+
+// This block will run when the file is executed directly
+async function main() {
+  console.log('🎯 Starting Failure Handling Examples...\n');
+  
+  try {
+    await runAllExamples();
+    console.log('\n✨ Failure handling examples completed successfully!');
+    process.exit(0);
+  } catch (error) {
+    console.error('\n💥 Failure handling examples failed:', error);
+    process.exit(1);
+  }
+}
+
+// Check if this file is being run directly
+if (require.main === module) {
+  main().catch((error) => {
+    console.error('Unhandled error:', error);
+    process.exit(1);
+  });
 } 
