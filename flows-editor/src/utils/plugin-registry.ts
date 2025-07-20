@@ -14,15 +14,25 @@ import {
  */
 export class EditorPluginRegistry {
   private plugins: Map<string, PluginManifest> = new Map()
+  private initialized = false
 
   constructor() {
-    this.initializeBuiltInPlugins()
+    // Only initialize once
+    if (!this.initialized) {
+      this.initializeBuiltInPlugins()
+      this.initialized = true
+    }
   }
 
   /**
    * Initialize built-in plugins from the flows library
    */
   private initializeBuiltInPlugins() {
+    // Check if plugin is already registered
+    if (this.plugins.has('flows-built-in')) {
+      return
+    }
+
     // Core plugin with all built-in operations
     const builtInPlugin: PluginManifest = {
       id: 'flows-built-in',
