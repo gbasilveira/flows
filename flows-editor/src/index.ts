@@ -1,41 +1,77 @@
 // Main exports
 export { Editor } from './components/Editor'
-export { Sidebar } from './components/sidebar/Sidebar'
-export { BaseNode } from './components/nodes/BaseNode'
-
-// Store and hooks
-export { useEditorStore, useNodes, useEdges, useSelectedNodes, useSelectedEdges, useWorkflow, useIsDirty, useIsExecuting, useNodeTypes, useCategories, useViewport } from './store'
+export type { EditorProps } from './components/Editor'
 
 // Types
 export type {
-  EditorConfig,
-  UIConfig,
-  FlowsConfig,
-  EditorFeatures,
+  Workflow,
+  WorkflowNode,
   NodeCategory,
   NodeTypeDefinition,
   NodeInputDefinition,
   NodeOutputDefinition,
   PluginManifest,
+  UIConfig,
+  FlowsConfig,
+  EditorFeatures,
   EditorState,
   ExecutionResult,
   EditorEvents,
   NodeData,
   EdgeData,
   WorkflowExport,
+  EditorConfig,
 } from './types'
+
+// Constants
+export {
+  DEFAULT_CATEGORIES,
+  DEFAULT_NODE_TYPES,
+} from './types'
+
+// Plugin system
+export {
+  EditorPluginRegistry,
+  pluginRegistry,
+  getPluginRegistry,
+  registerPlugin,
+  getNodeType,
+  getAllNodeTypes,
+  getAllCategories,
+} from './utils/plugin-registry'
+
+// Flows integration
+export {
+  FlowsIntegration,
+  createFlowsIntegration,
+  executeWorkflow,
+  validateWorkflow,
+  getDefaultFlowsConfig,
+  getAvailableNodeTypes,
+} from './utils/flows-integration'
 
 // Utilities
 export {
   convertToWorkflow,
   convertFromWorkflow,
-  validateWorkflow,
   createNewNode,
   createNewEdge,
+  validateWorkflow as validateWorkflowStructure,
 } from './utils/workflow-converter'
 
-// Default configurations
+// Store
 export {
-  DEFAULT_CATEGORIES,
-  DEFAULT_NODE_TYPES,
-} from './types' 
+  useEditorStore,
+  useNodes,
+  useEdges,
+  useSelectedNodes,
+  useSelectedEdges,
+  useIsDirty,
+  useNodeTypes,
+  useCategories,
+} from './store'
+
+// Demo components
+export { default as SimpleDemo } from './demo/SimpleDemo'
+export { default as App } from './demo/App'
+export { default as ComprehensiveExample } from './demo/ComprehensiveExample' 

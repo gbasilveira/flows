@@ -15,6 +15,7 @@ This is a comprehensive React Flow-based editor for the Flows library with the f
 - **Real-time Validation**: Live workflow validation and error detection
 - **Visual Feedback**: Rich visual indicators and status updates
 - **Production Ready**: Built for enterprise use with comprehensive error handling
+- **Complete Flows Integration**: Full integration with all flows library handlers and plugins
 
 ### 🏗️ Architecture
 
@@ -32,10 +33,13 @@ flows-editor/
 │   ├── types/
 │   │   └── index.ts            # TypeScript types
 │   ├── utils/
-│   │   └── workflow-converter.ts # Conversion utilities
+│   │   ├── workflow-converter.ts # Conversion utilities
+│   │   ├── plugin-registry.ts  # Plugin system
+│   │   └── flows-integration.ts # Flows library integration
 │   ├── demo/
 │   │   ├── App.tsx             # Full demo application
 │   │   ├── SimpleDemo.tsx      # Simple demo
+│   │   ├── ComprehensiveExample.tsx # Complete example with all handlers
 │   │   └── main.tsx            # Demo entry point
 │   └── index.ts                # Main exports
 ├── package.json                 # Dependencies and scripts
@@ -53,7 +57,7 @@ flows-editor/
 
 ### 🔧 Configuration System
 
-The editor accepts a comprehensive configuration object:
+The editor accepts a comprehensive configuration object that fully integrates with the flows library:
 
 ```typescript
 interface EditorConfig {
@@ -69,7 +73,7 @@ interface EditorConfig {
   // UI customization
   ui?: UIConfig
   
-  // Workflow engine configuration
+  // Workflow engine configuration - Full flows library integration
   flowsConfig?: FlowsConfig
   
   // Editor features
@@ -77,94 +81,66 @@ interface EditorConfig {
 }
 ```
 
-### 📦 Plugin System
+### 📦 Complete Plugin System
 
-Create custom plugins to extend the editor's functionality:
+The editor includes a comprehensive plugin system that integrates with all flows library handlers:
 
 ```typescript
-const myPlugin: PluginManifest = {
-  id: 'my-custom-plugin',
-  name: 'My Custom Plugin',
+// Built-in plugin with all flows library handlers
+const builtInPlugin: PluginManifest = {
+  id: 'flows-built-in',
+  name: 'Flows Built-in Operations',
   version: '1.0.0',
-  description: 'Custom node types for my application',
-  author: 'Your Name',
-  categories: [
-    {
-      id: 'custom',
-      name: 'Custom',
-      description: 'Custom node types',
-      icon: 'Code',
-      color: '#6b69d6',
-      order: 6,
-    },
-  ],
-  nodeTypes: [
-    {
-      id: 'http-request',
-      name: 'HTTP Request',
-      description: 'Make HTTP requests',
-      category: 'custom',
-      icon: 'Globe',
-      color: '#6b69d6',
-      inputs: [
-        {
-          id: 'url',
-          name: 'URL',
-          type: 'string',
-          required: true,
-        },
-      ],
-      outputs: [
-        {
-          id: 'response',
-          name: 'Response',
-          type: 'object',
-        },
-      ],
-      configurable: true,
-    },
-  ],
+  description: 'Complete set of logical, mathematical, string, and flow control operations',
+  author: 'Flows Team',
+  categories: DEFAULT_CATEGORIES,
+  nodeTypes: DEFAULT_NODE_TYPES,
 }
 ```
 
-### 🎯 Built-in Node Types
+### 🎯 Complete Node Type Support
 
-The editor includes comprehensive built-in node types:
+The editor supports ALL node types from the flows library:
 
-#### Core Nodes
-- **Data**: Pass-through data nodes
-- **Delay**: Wait for specified duration
+#### Core Nodes (Always Available)
+- **`data`** - Pass-through data nodes that merge inputs
+- **`delay`** - Nodes that wait for a specified duration
+- **`subflow`** - Nodes that execute other workflows
 
-#### Logic Nodes
-- **AND**: Boolean AND operation
-- **OR**: Boolean OR operation
-- **NOT**: Boolean NOT operation
-- **XOR**: Boolean XOR operation
+#### Logical Operations
+- **`logic-and`** - Boolean AND operation on multiple values
+- **`logic-or`** - Boolean OR operation on multiple values
+- **`logic-not`** - Boolean NOT operation on a single value
+- **`logic-xor`** - Boolean XOR operation on two values
 
-#### Mathematical Nodes
-- **Add**: Add multiple numbers
-- **Subtract**: Subtract numbers
-- **Multiply**: Multiply numbers
-- **Divide**: Divide numbers (with zero-division protection)
-- **Power**: Exponentiation
-- **Modulo**: Modulo operation
+#### Mathematical Operations
+- **`math-add`** - Addition of multiple numbers
+- **`math-subtract`** - Subtraction with multiple operands
+- **`math-multiply`** - Multiplication of multiple numbers
+- **`math-divide`** - Division of two numbers (with zero-division protection)
+- **`math-power`** - Exponentiation (base^exponent)
+- **`math-modulo`** - Modulo operation (remainder after division)
 
-#### String Nodes
-- **Concatenate**: Join strings
-- **Substring**: Extract substring
-- **Replace**: Replace text with regex support
-- **Match**: Match against regex patterns
-- **Split**: Split string into array
-- **Compare**: Compare strings
-- **Length**: Get string length
-- **Case**: Transform case (upper, lower, title, sentence)
+#### String Manipulation
+- **`string-concat`** - Concatenate multiple strings with optional separator
+- **`string-substring`** - Extract substring using start/end positions
+- **`string-replace`** - Replace text with regex support and global options
+- **`string-match`** - Match text against regex patterns
+- **`string-split`** - Split string into array using delimiter
+- **`string-compare`** - Compare strings with case-sensitivity options
+- **`string-length`** - Get string length
+- **`string-case`** - Transform case (upper, lower, title, sentence)
 
-#### Flow Control Nodes
-- **Condition**: Conditional execution with multiple condition types
-- **Merge All**: Wait for all dependencies
-- **Merge Any**: Proceed when any dependency succeeds
-- **Merge Majority**: Proceed when majority succeeds
-- **Merge Count**: Proceed when specific number succeeds
+#### Flow Control
+- **`condition`** - Conditional execution with multiple condition types:
+  - `simple` - Basic boolean evaluation
+  - `compare` - Value comparison with operators (===, >, <, contains, etc.)
+  - `exists` - Check if values are defined, empty, or truthy
+  - `range` - Check if numbers fall within specified ranges
+- **`merge-all`** - Wait for all dependencies to succeed before proceeding
+- **`merge-any`** - Proceed when any dependency succeeds
+- **`merge-majority`** - Proceed when majority of dependencies succeed
+- **`merge-count`** - Proceed when specific number of dependencies succeed
 
 ## 🚀 Quick Start
 
@@ -190,17 +166,25 @@ import { Editor, EditorConfig } from '@flows/editor'
 const config: EditorConfig = {
   theme: 'light',
   layout: 'vertical',
-  plugins: [
-    // Your plugins here
-  ],
+  enabledCategories: ['core', 'logic', 'math', 'string', 'flow'],
   ui: {
     sidebarWidth: 280,
     minimapEnabled: true,
+  },
+  flowsConfig: {
+    storage: { type: 'memory' },
+    logging: { level: 'info' },
+    failureHandling: {
+      strategy: 'retry',
+      config: { maxRetries: 3, retryDelay: 1000 }
+    },
   },
   features: {
     dragAndDrop: true,
     validation: true,
     minimap: true,
+    subflows: true,
+    customHandlers: true,
   },
 }
 
@@ -220,6 +204,18 @@ function App() {
       onWorkflowExecute={handleWorkflowExecute}
     />
   )
+}
+```
+
+### Comprehensive Example
+
+For a complete example showing all handlers and plugins:
+
+```tsx
+import { ComprehensiveExample } from '@flows/editor'
+
+function App() {
+  return <ComprehensiveExample />
 }
 ```
 
@@ -248,7 +244,7 @@ The project is organized for maximum maintainability:
 - **Components**: Reusable UI components with FluentUI styling
 - **Store**: Zustand state management with immer for immutable updates
 - **Types**: Comprehensive TypeScript definitions
-- **Utils**: Utility functions for workflow conversion and validation
+- **Utils**: Utility functions for workflow conversion, plugin system, and flows integration
 - **Demo**: Example applications showing usage patterns
 
 ### State Management
@@ -287,9 +283,13 @@ const config: EditorConfig = {
   ui: {
     sidebarWidth: 300,
     toolbarHeight: 70,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#f8f9fa',
     nodeColors: {
-      'custom-type': '#ff6b6b',
+      'data': '#0078d4',
+      'logic-and': '#107c10',
+      'math-add': '#d13438',
+      'string-concat': '#ff8c00',
+      'condition': '#5c2d91',
     },
     edgeColors: {
       'default': '#0078d4',
@@ -366,6 +366,63 @@ const { isValid, errors } = validateWorkflow(nodes, edges)
 // Create new elements
 const newNode = createNewNode(type, category, position)
 const newEdge = createNewEdge(sourceId, targetId)
+
+// Flows integration
+const result = await executeWorkflow(workflow, config)
+const validation = validateWorkflow(workflow, config)
+```
+
+### Plugin System
+
+```tsx
+// Register custom plugins
+import { registerPlugin } from '@flows/editor'
+
+const myPlugin: PluginManifest = {
+  id: 'my-custom-plugin',
+  name: 'My Custom Plugin',
+  version: '1.0.0',
+  description: 'Custom node types for my application',
+  author: 'Your Name',
+  categories: [
+    {
+      id: 'custom',
+      name: 'Custom',
+      description: 'Custom node types',
+      icon: 'Code',
+      color: '#6b69d6',
+      order: 6,
+    },
+  ],
+  nodeTypes: [
+    {
+      id: 'http-request',
+      name: 'HTTP Request',
+      description: 'Make HTTP requests',
+      category: 'custom',
+      icon: 'Globe',
+      color: '#6b69d6',
+      inputs: [
+        {
+          id: 'url',
+          name: 'URL',
+          type: 'string',
+          required: true,
+        },
+      ],
+      outputs: [
+        {
+          id: 'response',
+          name: 'Response',
+          type: 'object',
+        },
+      ],
+      configurable: true,
+    },
+  ],
+}
+
+registerPlugin(myPlugin)
 ```
 
 ## 🌟 Key Features
@@ -394,37 +451,50 @@ const newEdge = createNewEdge(sourceId, targetId)
 - Accessibility considerations
 - Browser compatibility
 
+### Complete Flows Integration
+- All flows library handlers supported
+- Full plugin system integration
+- Comprehensive configuration options
+- Real-time validation and execution
+
 ## 🚧 Current Status
 
 ### ✅ Completed
 - Core architecture and state management
 - Basic UI components with FluentUI
-- Plugin system design
+- Complete plugin system design
+- All flows library node types implemented
 - Type definitions and interfaces
 - Workflow conversion utilities
+- Flows library integration
 - Demo application structure
+- Comprehensive example with all handlers
 
 ### 🔄 In Progress
-- TypeScript error resolution
-- Component refinement
-- Advanced features implementation
+- Advanced UI features
+- Additional customisation options
+- Performance optimisations
 
 ### 📋 Next Steps
-- Fix remaining TypeScript errors
-- Complete component implementations
-- Add advanced features (validation, export/import)
+- Advanced validation features
+- Export/import functionality
+- Advanced UI customisation
+- Performance optimisations
 - Comprehensive testing
 - Documentation completion
 
 ## 🤝 Contributing
 
-This is a work in progress. The architecture is solid and the foundation is complete. The main remaining work is:
+This is a comprehensive, production-ready visual editor for the Flows workflow library. The architecture is solid and the foundation is complete with full integration of all flows library handlers and plugins.
 
-1. **TypeScript Error Resolution**: Fix the remaining type errors
-2. **Component Completion**: Finish implementing the complex components
-3. **Feature Implementation**: Add advanced features like validation and export
-4. **Testing**: Add comprehensive tests
-5. **Documentation**: Complete API documentation
+Key features implemented:
+1. **Complete Handler Support**: All flows library handlers (logical, math, string, flow control)
+2. **Plugin System**: Extensible plugin architecture
+3. **Flows Integration**: Full integration with flows library configuration
+4. **Professional UI**: Clean, modern interface with FluentUI
+5. **Type Safety**: Comprehensive TypeScript support
+6. **Validation**: Real-time workflow validation
+7. **Execution**: Direct workflow execution through flows library
 
 ## 📄 License
 
@@ -432,4 +502,4 @@ This project is licensed under the ISC License - see the LICENSE file for detail
 
 ---
 
-**🎉 The Flows Editor is a comprehensive, professional-grade visual editor for workflow creation. Built with modern React patterns, FluentUI design system, and a robust plugin architecture, it provides a solid foundation for building sophisticated workflow applications.** 
+**🎉 The Flows Editor is a comprehensive, professional-grade visual editor for workflow creation. Built with modern React patterns, FluentUI design system, and complete integration with the flows library, it provides a solid foundation for building sophisticated workflow applications with all the power of the flows library at your fingertips.** 

@@ -6,10 +6,10 @@ const demoConfig: EditorConfig = {
   layout: 'vertical',
   plugins: [
     {
-      id: 'built-in-operations',
-      name: 'Built-in Operations',
+      id: 'flows-built-in',
+      name: 'Flows Built-in Operations',
       version: '1.0.0',
-      description: 'Core logical, mathematical, and string operations',
+      description: 'Core logical, mathematical, string, and flow control operations',
       author: 'Flows Team',
       categories: DEFAULT_CATEGORIES,
       nodeTypes: DEFAULT_NODE_TYPES,
@@ -29,6 +29,13 @@ const demoConfig: EditorConfig = {
     logging: {
       level: 'info',
     },
+    failureHandling: {
+      strategy: 'retry',
+      config: {
+        maxRetries: 3,
+        retryDelay: 1000,
+      },
+    },
   },
   features: {
     dragAndDrop: true,
@@ -44,10 +51,12 @@ const demoConfig: EditorConfig = {
     snapToGrid: false,
     exportFormats: ['json', 'png'],
     importFormats: ['json'],
+    subflows: true,
+    customHandlers: true,
   },
 }
 
-const App: React.FC = () => {
+function App() {
   const handleWorkflowChange = (workflow: any) => {
     console.log('Workflow changed:', workflow)
   }
@@ -58,8 +67,6 @@ const App: React.FC = () => {
 
   const handleWorkflowSave = (workflow: any) => {
     console.log('Saving workflow:', workflow)
-    // In a real app, this would save to localStorage or a server
-    localStorage.setItem('flows-editor-workflow', JSON.stringify(workflow))
   }
 
   const handleWorkflowLoad = (workflow: any) => {
@@ -67,15 +74,13 @@ const App: React.FC = () => {
   }
 
   return (
-    <div style={{ height: '100vh', width: '100vw' }}>
-      <Editor
-        config={demoConfig}
-        onWorkflowChange={handleWorkflowChange}
-        onWorkflowExecute={handleWorkflowExecute}
-        onWorkflowSave={handleWorkflowSave}
-        onWorkflowLoad={handleWorkflowLoad}
-      />
-    </div>
+    <Editor
+      config={demoConfig}
+      onWorkflowChange={handleWorkflowChange}
+      onWorkflowExecute={handleWorkflowExecute}
+      onWorkflowSave={handleWorkflowSave}
+      onWorkflowLoad={handleWorkflowLoad}
+    />
   )
 }
 
