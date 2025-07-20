@@ -386,6 +386,7 @@ export const Editor: React.FC<EditorProps> = ({
           <Sidebar
             onNodeDragStart={handleNodeDragStart}
             onNodeDragEnd={handleNodeDragEnd}
+            width={config.ui?.sidebarWidth}
           />
           
           <div className={styles.flowContainer} ref={reactFlowWrapper}>

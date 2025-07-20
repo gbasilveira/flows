@@ -16,6 +16,7 @@ This is a comprehensive React Flow-based editor for the Flows library with the f
 - **Visual Feedback**: Rich visual indicators and status updates
 - **Production Ready**: Built for enterprise use with comprehensive error handling
 - **Complete Flows Integration**: Full integration with all flows library handlers and plugins
+- **Intelligent Tab Navigation**: Smart scrollable tabs with auto-scroll, keyboard navigation, and touch support
 
 ### 🏗️ Architecture
 
@@ -54,6 +55,39 @@ flows-editor/
 - **Responsive Design**: Adapts to different screen sizes
 - **Theme Support**: Light/dark theme support (configurable)
 - **Professional Styling**: Clean, modern interface with proper spacing and typography
+- **Intelligent Tab Navigation**: Smart scrollable tabs that automatically handle category overflow with navigation arrows, keyboard shortcuts, and touch/swipe support
+
+### 🎯 Intelligent Tab Navigation
+
+The editor features smart scrollable tabs that automatically handle category overflow:
+
+#### **Automatic Overflow Detection**
+- Detects when tabs don't fit in the available space
+- Shows navigation arrows only when needed
+- Responsive to window resizing and configuration changes
+
+#### **Multiple Navigation Methods**
+- **Arrow Buttons**: Click left/right arrows to scroll through tabs
+- **Keyboard Navigation**: Use arrow keys to navigate between tabs
+- **Touch/Swipe Support**: Swipe left/right on touch devices
+- **Auto-scroll**: Automatically scrolls to selected tab when it's out of view
+
+#### **Smart Features**
+- **Smooth Scrolling**: Smooth animations when navigating between tabs
+- **Disabled States**: Arrow buttons are disabled when at the beginning/end
+- **Touch-friendly**: Optimised for mobile and tablet devices
+- **Accessible**: Full keyboard navigation support
+
+#### **Configuration**
+```typescript
+const config: EditorConfig = {
+  ui: {
+    sidebarWidth: 320, // Increase width for more tab space
+    // ... other UI options
+  },
+  // ... other config options
+}
+```
 
 ### 🔧 Configuration System
 
