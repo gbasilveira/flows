@@ -10,7 +10,7 @@ import type {
   ExecutionResult,
   EditorEvents 
 } from '../types'
-import { DEFAULT_CATEGORIES, DEFAULT_NODE_TYPES } from '../types'
+import { DEFAULT_CATEGORIES } from '../types'
 
 interface EditorStore extends EditorState {
   // Actions
@@ -61,7 +61,7 @@ export const useEditorStore = create<EditorStore>()(
     zoom: 1,
     pan: { x: 0, y: 0 },
     viewport: { x: 0, y: 0, zoom: 1 },
-    nodeTypes: DEFAULT_NODE_TYPES, // Initialize with default node types
+    nodeTypes: [], // Initialize with empty array - node types will come from plugins
     categories: DEFAULT_CATEGORIES, // Initialize with default categories
     events: {},
     
@@ -72,10 +72,10 @@ export const useEditorStore = create<EditorStore>()(
           state.categories = [...state.categories, ...config.customCategories]
         }
         
-        // Update node types from plugins
+        // Update node types from plugins - replace existing node types to avoid duplication
         if (config.plugins) {
           const pluginNodeTypes = config.plugins.flatMap(plugin => plugin.nodeTypes)
-          state.nodeTypes = [...state.nodeTypes, ...pluginNodeTypes]
+          state.nodeTypes = pluginNodeTypes
         }
         
         // Filter node types based on enabled categories
