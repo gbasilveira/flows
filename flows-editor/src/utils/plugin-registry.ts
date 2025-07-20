@@ -4,10 +4,8 @@ import type {
   NodeCategory 
 } from '../types'
 
-// Import flows library types and plugins
-import type { 
-  HandlerPlugin, 
-  PluginRegistry as FlowsPluginRegistry 
+import { 
+  HandlerPlugin
 } from 'flows'
 
 /**
@@ -16,7 +14,6 @@ import type {
  */
 export class EditorPluginRegistry {
   private plugins: Map<string, PluginManifest> = new Map()
-  private flowsRegistry?: FlowsPluginRegistry
 
   constructor() {
     this.initializeBuiltInPlugins()

@@ -1,8 +1,7 @@
 import type { 
   EditorConfig, 
   FlowsConfig, 
-  Workflow, 
-  WorkflowNode 
+  Workflow
 } from '../types'
 
 // Import flows library
@@ -123,11 +122,11 @@ export class FlowsIntegration {
       // The flows library will handle plugin loading internally
     }
 
-    // Add custom plugins from configuration
+    // Add custom plugins if configured
     if (this.config.plugins) {
-      for (const plugin of this.config.plugins) {
+      for (const _plugin of this.config.plugins) {
         // Convert editor plugin to flows plugin format
-        const flowsPlugin = this.convertEditorPluginToFlowsPlugin(plugin)
+        const flowsPlugin = this.convertEditorPluginToFlowsPlugin()
         if (flowsPlugin) {
           plugins.push(flowsPlugin)
         }
@@ -142,10 +141,9 @@ export class FlowsIntegration {
   /**
    * Convert editor plugin to flows plugin format
    */
-  private convertEditorPluginToFlowsPlugin(editorPlugin: any): any {
-    // This is a simplified conversion - in a real implementation,
-    // you would need to map the editor plugin format to flows plugin format
-    return null
+  private convertEditorPluginToFlowsPlugin(): any {
+    // Placeholder for plugin conversion logic
+    return {}
   }
 
   /**
