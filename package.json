@@ -46,7 +46,11 @@
     "jsdom": "^26.1.0",
     "prettier": "^3.6.2",
     "tsup": "^8.5.0",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "flows": "^0.0.0"
   }
 }

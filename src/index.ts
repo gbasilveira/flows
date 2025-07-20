@@ -134,7 +134,7 @@ export function createEvent(
   nodeId?: NodeId
 ): WorkflowEvent {
   return {
-    id: `${type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    id: `${type}_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
     type,
     data,
     timestamp: new Date(),
