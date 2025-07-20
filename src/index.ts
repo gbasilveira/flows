@@ -44,6 +44,7 @@ export {
   StringHandler,
   ConditionHandler,
   MergeHandler,
+  ConsoleHandler,
 } from './core/handlers/index.js';
 
 export {
@@ -88,6 +89,35 @@ export {
   getPluginsByCategory,
   getPluginMetadata,
 } from './core/built-in-plugins.js';
+
+// Console plugins (separate export for better organisation)
+export {
+  // Individual console plugins
+  consoleLogPlugin,
+  consoleErrorPlugin,
+  consoleWarnPlugin,
+  consoleInfoPlugin,
+  consoleDebugPlugin,
+  consoleTablePlugin,
+  consoleTimePlugin,
+  consoleTimeEndPlugin,
+  consoleGroupPlugin,
+  consoleGroupEndPlugin,
+  consoleClearPlugin,
+  consoleTracePlugin,
+  consoleCountPlugin,
+  consoleCountResetPlugin,
+  
+  // Console plugin collections
+  consoleLoggingPlugins,
+  consoleTimingPlugins,
+  consoleGroupingPlugins,
+  consoleUtilityPlugins,
+  allConsolePlugins,
+  
+  // Console utility functions
+  getConsolePluginsByCategory,
+} from './core/console-plugins.js';
 
 // Storage adapters
 export {

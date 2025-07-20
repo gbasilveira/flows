@@ -727,6 +727,473 @@ Checks numeric ranges:
 
 ---
 
+## Console Operations
+
+Flows includes comprehensive console operation handlers for debugging, logging, and development purposes. These handlers provide various console operations that integrate seamlessly with workflow execution.
+
+### Console Logging Operations
+
+#### `console-log` - Console Log Operation
+
+**Purpose**: Outputs messages to console.log with optional data and formatting.
+
+**Configuration**:
+- `message` (string): Message to log
+- `data` (unknown): Optional data to log alongside message
+- `options` (object): Optional formatting options
+  - `timestamp` (boolean): Add timestamp prefix (default: false)
+  - `prefix` (string): Custom prefix for the message
+
+**Usage**:
+```typescript
+{
+  id: 'log-user-info',
+  type: 'console-log',
+  inputs: {
+    message: 'User registration started',
+    data: { userId: '123', action: 'user-registration' },
+    options: { timestamp: true, prefix: '[FLOWS]' }
+  },
+  dependencies: ['start'],
+}
+```
+
+**Output**:
+```javascript
+{
+  message: "[2023-12-07T10:30:00.000Z] [FLOWS] User registration started",
+  data: { userId: '123', action: 'user-registration' },
+  logged: true,
+  operation: 'log',
+  executedAt: "2023-12-07T10:30:00.000Z"
+}
+```
+
+#### `console-error` - Console Error Operation
+
+**Purpose**: Outputs error messages to console.error with optional data and formatting.
+
+**Configuration**: Same as `console-log`
+
+**Usage**:
+```typescript
+{
+  id: 'log-error',
+  type: 'console-error',
+  inputs: {
+    message: 'Invalid age format detected',
+    data: { userId: '123', age: 'invalid-age' },
+    options: { timestamp: true, prefix: '[ERROR]' }
+  },
+  dependencies: ['validate-data'],
+}
+```
+
+**Output**:
+```javascript
+{
+  message: "[2023-12-07T10:30:00.000Z] [ERROR] Invalid age format detected",
+  data: { userId: '123', age: 'invalid-age' },
+  error: true,
+  operation: 'error',
+  executedAt: "2023-12-07T10:30:00.000Z"
+}
+```
+
+#### `console-warn` - Console Warning Operation
+
+**Purpose**: Outputs warning messages to console.warn with optional data and formatting.
+
+**Configuration**: Same as `console-log`
+
+**Usage**:
+```typescript
+{
+  id: 'log-warning',
+  type: 'console-warn',
+  inputs: {
+    message: 'Email verification not completed',
+    data: { userId: '123', email: 'john@example.com' },
+    options: { timestamp: true, prefix: '[WARNING]' }
+  },
+  dependencies: ['check-email'],
+}
+```
+
+#### `console-info` - Console Info Operation
+
+**Purpose**: Outputs informational messages to console.info with optional data and formatting.
+
+**Configuration**: Same as `console-log`
+
+**Usage**:
+```typescript
+{
+  id: 'log-success',
+  type: 'console-info',
+  inputs: {
+    message: 'User registration completed successfully',
+    data: { userId: '123', status: 'active' },
+    options: { timestamp: true, prefix: '[SUCCESS]' }
+  },
+  dependencies: ['complete-registration'],
+}
+```
+
+#### `console-debug` - Console Debug Operation
+
+**Purpose**: Outputs debug messages to console.debug with optional data and formatting.
+
+**Configuration**: Same as `console-log`
+
+**Usage**:
+```typescript
+{
+  id: 'log-debug',
+  type: 'console-debug',
+  inputs: {
+    message: 'Processing user preferences',
+    data: { preferences: ['dark-mode', 'notifications'] },
+    options: { timestamp: true, prefix: '[DEBUG]' }
+  },
+  dependencies: ['load-preferences'],
+}
+```
+
+### Console Table Operation
+
+#### `console-table` - Console Table Operation
+
+**Purpose**: Displays tabular data in the console using console.table.
+
+**Configuration**:
+- `data` (unknown): Data to display as table (required)
+- `options` (object): Optional formatting options
+  - `columns` (string[]): Specific columns to display
+
+**Usage**:
+```typescript
+{
+  id: 'log-user-table',
+  type: 'console-table',
+  inputs: {
+    data: [
+      { id: '123', name: 'John Doe', email: 'john@example.com', age: 30 },
+      { id: '124', name: 'Jane Smith', email: 'jane@example.com', age: 28 }
+    ],
+    options: { columns: ['name', 'email', 'age'] }
+  },
+  dependencies: ['fetch-users'],
+}
+```
+
+**Output**:
+```javascript
+{
+  data: [...],
+  columns: ['name', 'email', 'age'],
+  table: true,
+  rowCount: 2,
+  operation: 'table',
+  executedAt: "2023-12-07T10:30:00.000Z"
+}
+```
+
+### Console Timing Operations
+
+#### `console-time` - Console Time Operation
+
+**Purpose**: Starts a timer for performance measurement using console.time.
+
+**Configuration**:
+- `message` (string): Timer label
+- `options` (object): Optional configuration
+  - `label` (string): Custom timer label
+
+**Usage**:
+```typescript
+{
+  id: 'start-timer',
+  type: 'console-time',
+  inputs: {
+    message: 'workflow-execution',
+    options: { label: 'workflow-execution' }
+  },
+  dependencies: [],
+}
+```
+
+**Output**:
+```javascript
+{
+  label: 'workflow-execution',
+  timeStarted: true,
+  startTime: "2023-12-07T10:30:00.000Z",
+  operation: 'time',
+  executedAt: "2023-12-07T10:30:00.000Z"
+}
+```
+
+#### `console-timeend` - Console Time End Operation
+
+**Purpose**: Ends a timer and displays elapsed time using console.timeEnd.
+
+**Configuration**: Same as `console-time`
+
+**Usage**:
+```typescript
+{
+  id: 'end-timer',
+  type: 'console-timeend',
+  inputs: {
+    message: 'workflow-execution',
+    options: { label: 'workflow-execution' }
+  },
+  dependencies: ['process-data'],
+}
+```
+
+**Output**:
+```javascript
+{
+  label: 'workflow-execution',
+  timeEnded: true,
+  endTime: "2023-12-07T10:30:05.000Z",
+  operation: 'timeend',
+  executedAt: "2023-12-07T10:30:05.000Z"
+}
+```
+
+### Console Grouping Operations
+
+#### `console-group` - Console Group Operation
+
+**Purpose**: Creates a collapsible group in the console using console.group.
+
+**Configuration**:
+- `message` (string): Group label
+- `options` (object): Optional configuration
+  - `collapsed` (boolean): Start group collapsed (default: false)
+
+**Usage**:
+```typescript
+{
+  id: 'start-group',
+  type: 'console-group',
+  inputs: {
+    message: 'User Processing Workflow',
+    options: { collapsed: false }
+  },
+  dependencies: [],
+}
+```
+
+**Output**:
+```javascript
+{
+  message: 'User Processing Workflow',
+  groupStarted: true,
+  collapsed: false,
+  operation: 'group',
+  executedAt: "2023-12-07T10:30:00.000Z"
+}
+```
+
+#### `console-groupend` - Console Group End Operation
+
+**Purpose**: Ends a console group using console.groupEnd.
+
+**Configuration**: No specific configuration required
+
+**Usage**:
+```typescript
+{
+  id: 'end-group',
+  type: 'console-groupend',
+  inputs: {},
+  dependencies: ['log-final-result'],
+}
+```
+
+**Output**:
+```javascript
+{
+  groupEnded: true,
+  operation: 'groupend',
+  executedAt: "2023-12-07T10:30:00.000Z"
+}
+```
+
+### Console Utility Operations
+
+#### `console-clear` - Console Clear Operation
+
+**Purpose**: Clears the console using console.clear.
+
+**Configuration**:
+- `options` (object): Optional configuration
+  - `preserve` (boolean): Preserve certain logs (default: false)
+
+**Usage**:
+```typescript
+{
+  id: 'clear-console',
+  type: 'console-clear',
+  inputs: {
+    options: { preserve: false }
+  },
+  dependencies: ['log-trace'],
+}
+```
+
+**Output**:
+```javascript
+{
+  cleared: true,
+  preserve: false,
+  operation: 'clear',
+  executedAt: "2023-12-07T10:30:00.000Z"
+}
+```
+
+#### `console-trace` - Console Trace Operation
+
+**Purpose**: Outputs a stack trace using console.trace.
+
+**Configuration**:
+- `message` (string): Trace label
+- `options` (object): Optional configuration
+  - `label` (string): Custom trace label
+
+**Usage**:
+```typescript
+{
+  id: 'log-trace',
+  type: 'console-trace',
+  inputs: {
+    message: 'Workflow execution trace',
+    options: { label: 'workflow-trace' }
+  },
+  dependencies: ['count-operations'],
+}
+```
+
+**Output**:
+```javascript
+{
+  label: 'workflow-trace',
+  trace: true,
+  stackTrace: "Error\n    at ...",
+  operation: 'trace',
+  executedAt: "2023-12-07T10:30:00.000Z"
+}
+```
+
+#### `console-count` - Console Count Operation
+
+**Purpose**: Counts the number of times this node is executed using console.count.
+
+**Configuration**:
+- `message` (string): Counter label
+- `options` (object): Optional configuration
+  - `label` (string): Custom counter label
+
+**Usage**:
+```typescript
+{
+  id: 'count-operations',
+  type: 'console-count',
+  inputs: {
+    message: 'workflow-execution',
+    options: { label: 'workflow-execution' }
+  },
+  dependencies: ['start-data'],
+}
+```
+
+**Output**:
+```javascript
+{
+  label: 'workflow-execution',
+  count: true,
+  operation: 'count',
+  executedAt: "2023-12-07T10:30:00.000Z"
+}
+```
+
+#### `console-countreset` - Console Count Reset Operation
+
+**Purpose**: Resets a counter using console.countReset.
+
+**Configuration**: Same as `console-count`
+
+**Usage**:
+```typescript
+{
+  id: 'reset-counter',
+  type: 'console-countreset',
+  inputs: {
+    message: 'workflow-execution',
+    options: { label: 'workflow-execution' }
+  },
+  dependencies: ['clear-console'],
+}
+```
+
+**Output**:
+```javascript
+{
+  label: 'workflow-execution',
+  countReset: true,
+  operation: 'countreset',
+  executedAt: "2023-12-07T10:30:00.000Z"
+}
+```
+
+### Using Console Plugins
+
+#### Installing Console Plugins
+
+```typescript
+import { createFlows, DefaultNodeExecutor, allConsolePlugins } from 'flows';
+
+// Enable all console operations
+const executor = new DefaultNodeExecutor({
+  plugins: allConsolePlugins,
+});
+
+const flows = createFlows(config, executor);
+```
+
+#### Selective Console Plugin Installation
+
+```typescript
+import { 
+  consoleLoggingPlugins, 
+  consoleTimingPlugins, 
+  consoleGroupingPlugins, 
+  consoleUtilityPlugins 
+} from 'flows';
+
+// Enable specific console categories
+const executor = new DefaultNodeExecutor({
+  plugins: [...consoleLoggingPlugins, ...consoleTimingPlugins],
+});
+```
+
+#### Getting Console Plugin Information
+
+```typescript
+import { getConsolePluginsByCategory } from 'flows';
+
+// Get console plugins by category
+const loggingPlugins = getConsolePluginsByCategory('logging');
+const timingPlugins = getConsolePluginsByCategory('timing');
+const allConsolePlugins = getConsolePluginsByCategory('all');
+```
+
+---
+
 ## Using Built-in Handlers
 
 ### Installing Built-in Plugins

@@ -6,6 +6,7 @@ import {
   ConditionHandler, 
   MergeHandler 
 } from './handlers/index.js';
+import { allConsolePlugins } from './console-plugins.js';
 
 /**
  * Built-in plugins collection providing comprehensive operation handlers
@@ -455,13 +456,14 @@ export const allBuiltInPlugins: HandlerPlugin[] = [
   ...logicalPlugins,
   ...mathPlugins,
   ...stringPlugins,
-  ...flowControlPlugins
+  ...flowControlPlugins,
+  ...allConsolePlugins
 ];
 
 /**
  * Utility function to get plugins by category
  */
-export function getPluginsByCategory(category: 'logical' | 'math' | 'string' | 'flow-control' | 'all'): HandlerPlugin[] {
+export function getPluginsByCategory(category: 'logical' | 'math' | 'string' | 'flow-control' | 'console' | 'all'): HandlerPlugin[] {
   switch (category) {
     case 'logical':
       return logicalPlugins;
@@ -471,6 +473,8 @@ export function getPluginsByCategory(category: 'logical' | 'math' | 'string' | '
       return stringPlugins;
     case 'flow-control':
       return flowControlPlugins;
+    case 'console':
+      return allConsolePlugins;
     case 'all':
       return allBuiltInPlugins;
     default:

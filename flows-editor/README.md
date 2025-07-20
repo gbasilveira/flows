@@ -142,6 +142,22 @@ The editor supports ALL node types from the flows library:
 - **`merge-majority`** - Proceed when majority of dependencies succeed
 - **`merge-count`** - Proceed when specific number of dependencies succeed
 
+#### Console Operations
+- **`console-log`** - Output messages to console.log with optional data and formatting
+- **`console-error`** - Output error messages to console.error with optional data and formatting
+- **`console-warn`** - Output warning messages to console.warn with optional data and formatting
+- **`console-info`** - Output informational messages to console.info with optional data and formatting
+- **`console-debug`** - Output debug messages to console.debug with optional data and formatting
+- **`console-table`** - Display tabular data in the console using console.table
+- **`console-time`** - Start a timer for performance measurement using console.time
+- **`console-timeend`** - End a timer and display elapsed time using console.timeEnd
+- **`console-group`** - Create a collapsible group in the console using console.group
+- **`console-groupend`** - End a console group using console.groupEnd
+- **`console-clear`** - Clear the console using console.clear
+- **`console-trace`** - Output a stack trace using console.trace
+- **`console-count`** - Count the number of times this node is executed using console.count
+- **`console-countreset`** - Reset a counter using console.countReset
+
 ## 🚀 Quick Start
 
 ### Installation
@@ -166,7 +182,7 @@ import { Editor, EditorConfig } from '@flows/editor'
 const config: EditorConfig = {
   theme: 'light',
   layout: 'vertical',
-  enabledCategories: ['core', 'logic', 'math', 'string', 'flow'],
+  enabledCategories: ['core', 'logic', 'math', 'string', 'flow', 'console'],
   ui: {
     sidebarWidth: 280,
     minimapEnabled: true,

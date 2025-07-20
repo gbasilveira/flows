@@ -238,6 +238,22 @@ const flows = createFlows(config, executor);
 - **`merge-majority`** - Proceed when majority of dependencies succeed
 - **`merge-count`** - Proceed when specific number of dependencies succeed
 
+**Console Operations**:
+- **`console-log`** - Output messages to console.log with optional data and formatting
+- **`console-error`** - Output error messages to console.error with optional data and formatting
+- **`console-warn`** - Output warning messages to console.warn with optional data and formatting
+- **`console-info`** - Output informational messages to console.info with optional data and formatting
+- **`console-debug`** - Output debug messages to console.debug with optional data and formatting
+- **`console-table`** - Display tabular data in the console using console.table
+- **`console-time`** - Start a timer for performance measurement using console.time
+- **`console-timeend`** - End a timer and display elapsed time using console.timeEnd
+- **`console-group`** - Create a collapsible group in the console using console.group
+- **`console-groupend`** - End a console group using console.groupEnd
+- **`console-clear`** - Clear the console using console.clear
+- **`console-trace`** - Output a stack trace using console.trace
+- **`console-count`** - Count the number of times this node is executed using console.count
+- **`console-countreset`** - Reset a counter using console.countReset
+
 **Using Built-in Operations**:
 ```typescript
 import { createFlows, DefaultNodeExecutor, allBuiltInPlugins } from 'flows';
@@ -245,16 +261,16 @@ import { createFlows, DefaultNodeExecutor, allBuiltInPlugins } from 'flows';
 // Enable all built-in operations
 const executor = new DefaultNodeExecutor({
   enableSubflows: false,
-  plugins: allBuiltInPlugins, // Includes all logical, math, string, and flow control handlers
+  plugins: allBuiltInPlugins, // Includes all logical, math, string, flow control, and console handlers
 });
 
 const flows = createFlows(config, executor);
 
 // Or enable specific categories
-import { logicalPlugins, mathPlugins, stringPlugins, flowControlPlugins } from 'flows';
+import { logicalPlugins, mathPlugins, stringPlugins, flowControlPlugins, allConsolePlugins } from 'flows';
 
 const executor = new DefaultNodeExecutor({
-  plugins: [...logicalPlugins, ...mathPlugins, ...stringPlugins],
+  plugins: [...logicalPlugins, ...mathPlugins, ...stringPlugins, ...allConsolePlugins],
 });
 ```
 
@@ -268,10 +284,30 @@ const workflow = createWorkflow('calculation-example', 'Mathematical Workflow', 
     dependencies: [],
   },
   {
+    id: 'log-start',
+    type: 'console-log',
+    inputs: { 
+      message: 'Starting calculation',
+      data: { values: [10, 20, 30] },
+      options: { timestamp: true, prefix: '[CALC]' }
+    },
+    dependencies: ['input-numbers'],
+  },
+  {
     id: 'sum-values',
     type: 'math-add',
     inputs: { values: [10, 20, 30] }, // Result: 60
-    dependencies: ['input-numbers'],
+    dependencies: ['log-start'],
+  },
+  {
+    id: 'log-result',
+    type: 'console-info',
+    inputs: { 
+      message: 'Calculation completed',
+      data: { result: 60 },
+      options: { timestamp: true, prefix: '[RESULT]' }
+    },
+    dependencies: ['sum-values'],
   },
   {
     id: 'format-result',
@@ -280,7 +316,7 @@ const workflow = createWorkflow('calculation-example', 'Mathematical Workflow', 
       values: ['Total: £', '60'],
       separator: ''
     }, // Result: 'Total: £60'
-    dependencies: ['sum-values'],
+    dependencies: ['log-result'],
   },
   {
     id: 'check-threshold',
@@ -293,7 +329,7 @@ const workflow = createWorkflow('calculation-example', 'Mathematical Workflow', 
       thenValue: 'High value',
       elseValue: 'Normal value'
     }, // Result: 'High value'
-    dependencies: ['sum-values'],
+    dependencies: ['format-result'],
   },
 ]);
 ```
