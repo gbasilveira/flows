@@ -139,9 +139,35 @@ export const Editor: React.FC<EditorProps> = ({
     isExecuting,
   } = useEditorStore()
 
-  // Initialize config
+  // Initialize config with defaults
   React.useEffect(() => {
-    setConfig(config)
+    const defaultConfig: EditorConfig = {
+      theme: 'light',
+      layout: 'vertical',
+      enabledCategories: ['core', 'logic', 'math', 'string', 'flow'],
+      ui: {
+        sidebarWidth: 280,
+        minimapEnabled: true,
+      },
+      flowsConfig: {
+        storage: { type: 'memory' },
+        logging: { level: 'info' },
+        failureHandling: {
+          strategy: 'retry',
+          config: { maxRetries: 3, retryDelay: 1000 }
+        },
+      },
+      features: {
+        dragAndDrop: true,
+        validation: true,
+        minimap: true,
+        subflows: true,
+        customHandlers: true,
+      },
+      ...config, // Override with provided config
+    }
+    
+    setConfig(defaultConfig)
     setEvents({
       onWorkflowChange,
       onWorkflowExecute,
@@ -209,15 +235,17 @@ export const Editor: React.FC<EditorProps> = ({
       if (!reactFlowBounds) return
 
       const data = JSON.parse(event.dataTransfer.getData('application/reactflow'))
-      if (data.type !== 'node') return
+      
+      // Handle nodeType data from sidebar
+      if (data.id && data.type) {
+        const position = reactFlowInstance.project({
+          x: event.clientX - reactFlowBounds.left,
+          y: event.clientY - reactFlowBounds.top,
+        })
 
-      const position = reactFlowInstance.project({
-        x: event.clientX - reactFlowBounds.left,
-        y: event.clientY - reactFlowBounds.top,
-      })
-
-      const newNode = createNewNode(data.nodeType, data.category, position)
-      addNode(newNode)
+        const newNode = createNewNode(data.id, data.category, position)
+        addNode(newNode)
+      }
     },
     [reactFlowInstance, addNode]
   )
