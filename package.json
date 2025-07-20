@@ -1,60 +1,60 @@
 {
   "name": "flows",
-  "version": "1.0.0",
-  "description": "A stateful, secure, JS-embedded DAG workflow executor for frontend applications",
+  "version": "1.2.0",
+  "description": "A stateful, secure, JavaScript-embedded DAG (Directed Acyclic Graph) workflow executor designed for frontend applications",
+  "type": "module",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    }
+  "engines": {
+    "node": ">=18.0.0"
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "build": "tsc",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "lint": "eslint src --ext .ts,.tsx",
-    "format": "prettier --write src/**/*.{ts,tsx}",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0",
+    "format": "prettier --write .",
     "type-check": "tsc --noEmit",
-    "docs:dev": "cd docs && pnpm dev",
-    "docs:build": "cd docs && pnpm build",
-    "docs:preview": "cd docs && pnpm preview",
-    "docs:install": "cd docs && pnpm install"
+    "docs:install": "cd docs && npm install",
+    "docs:dev": "cd docs && npm run dev",
+    "docs:build": "cd docs && npm run build",
+    "docs:preview": "cd docs && npm run preview"
   },
   "keywords": [
-    "dag",
     "workflow",
-    "stateful",
+    "dag",
+    "directed-acyclic-graph",
+    "state-management",
     "frontend",
-    "executor",
-    "async",
-    "typescript"
+    "javascript",
+    "typescript",
+    "orchestration",
+    "flow-control",
+    "event-driven",
+    "built-in-handlers",
+    "logical-operations",
+    "mathematical-operations",
+    "string-manipulation",
+    "conditional-execution",
+    "merge-strategies"
   ],
-  "author": "",
+  "author": "Flows Team",
   "license": "ISC",
-  "packageManager": "pnpm@10.9.0",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.1",
-    "@types/node": "^24.0.15",
-    "@typescript-eslint/eslint-plugin": "^8.37.0",
-    "@typescript-eslint/parser": "^8.37.0",
-    "@vitest/ui": "^3.2.4",
-    "eslint": "^9.31.0",
-    "jsdom": "^26.1.0",
-    "prettier": "^3.6.2",
-    "tsup": "^8.5.0",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
-  },
-  "dependencies": {
-    "flows": "^0.0.0"
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1",
+    "@vitest/ui": "^1.0.0",
+    "eslint": "^8.54.0",
+    "prettier": "^3.1.0",
+    "tsx": "^4.6.0",
+    "typescript": "^5.3.2",
+    "vitest": "^1.0.0"
   }
 }

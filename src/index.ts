@@ -9,167 +9,113 @@
  * - TypeScript support
  */
 
-// Core types
+// Core workflow types
 export type {
-  // Basic types
-  NodeId,
-  WorkflowId,
-  EventType,
-
-  // Node and workflow definitions
-  WorkflowNode,
   WorkflowDefinition,
-  RetryConfig,
-
-  // Runtime state
-  NodeState,
-  WorkflowState,
-  WorkflowEvent,
-
-  // Execution
-  ExecutionResult,
+  WorkflowNode,
+  WorkflowId,
+  NodeId,
+  ExecutionStatus,
   NodeExecutor,
-  EventListener,
-
-  // Storage
-  StorageAdapter,
-
-  // Configuration
-  FlowsConfig,
-
-  // Failure handling types
-  FailureHandlingConfig,
-  CircuitBreakerConfig,
-  DeadLetterConfig,
-  FailureMonitoringConfig,
-  FailureAlert,
-  FailureMetrics,
-  DeadLetterItem,
-  CircuitBreakerState,
 } from './types/index.js';
 
-export { 
-  ExecutionStatus, 
-  StorageType,
-  FailureStrategy,
-  FailureType,
-  CircuitState,
-} from './types/index.js';
+export type {
+  HandlerPlugin,
+} from './core/plugin-registry.js';
+
+// Core workflow components
+export {
+  WorkflowExecutor,
+  WorkflowEventSystem,
+  FailureManager,
+} from './core/index.js';
+
+// Node executors and handlers
+export {
+  DefaultNodeExecutor,
+} from './core/node-executor.js';
+
+export {
+  DataHandler,
+  DelayHandler,
+  SubflowHandler,
+  LogicalHandler,
+  MathHandler,
+  StringHandler,
+  ConditionHandler,
+  MergeHandler,
+} from './core/handlers/index.js';
+
+export {
+  PluginRegistry,
+} from './core/plugin-registry.js';
+
+// Built-in plugins and collections
+export {
+  // Individual plugins
+  logicalAndPlugin,
+  logicalOrPlugin,
+  logicalNotPlugin,
+  logicalXorPlugin,
+  mathAddPlugin,
+  mathSubtractPlugin,
+  mathMultiplyPlugin,
+  mathDividePlugin,
+  mathPowerPlugin,
+  mathModuloPlugin,
+  stringConcatPlugin,
+  stringSubstringPlugin,
+  stringReplacePlugin,
+  stringMatchPlugin,
+  stringSplitPlugin,
+  stringComparePlugin,
+  stringLengthPlugin,
+  stringCasePlugin,
+  conditionPlugin,
+  mergeAllPlugin,
+  mergeAnyPlugin,
+  mergeMajorityPlugin,
+  mergeCountPlugin,
+  
+  // Plugin collections
+  logicalPlugins,
+  mathPlugins,
+  stringPlugins,
+  flowControlPlugins,
+  allBuiltInPlugins,
+  
+  // Utility functions
+  getPluginsByCategory,
+  getPluginMetadata,
+} from './core/built-in-plugins.js';
 
 // Storage adapters
 export {
   MemoryStorageAdapter,
   LocalStorageAdapter,
   RemoteStorageAdapter,
-  type RemoteStorageConfig,
 } from './storage/index.js';
 
-// Core workflow engine
+// Configuration and enums
 export {
-  WorkflowExecutor,
-  WorkflowEventSystem,
-  FailureManager,
-  NodeExecutor as DefaultNodeExecutor,
-} from './core/index.js';
-
-// Built-in handlers
-export {
-  DataHandler,
-  DelayHandler,
-  SubflowHandler,
-} from './core/handlers/index.js';
-
-// Plugin system
-export {
-  PluginRegistry,
-  type HandlerPlugin,
-} from './core/plugin-registry.js';
-
-/**
- * Factory function to create a workflow executor with common configurations
- */
-import { WorkflowExecutor, NodeExecutor as DefaultNodeExecutorImpl } from './core/index.js';
-import { 
-  MemoryStorageAdapter, 
-  LocalStorageAdapter, 
-  RemoteStorageAdapter,
-  type RemoteStorageConfig 
-} from './storage/index.js';
-import { 
-  StorageType, 
-  type FlowsConfig,
-  type WorkflowId,
-  type WorkflowNode,
-  type WorkflowDefinition,
-  type WorkflowEvent,
-  type EventType,
-  type NodeId,
-  type NodeExecutor,
+  StorageType,
+  FailureStrategy,
+  ExecutionStatus as ExecutionStatusEnum,
 } from './types/index.js';
 
-export function createFlows(config: FlowsConfig, nodeExecutor?: NodeExecutor): WorkflowExecutor {
-  let storage;
-  
-  switch (config.storage.type) {
-    case StorageType.MEMORY:
-      storage = new MemoryStorageAdapter();
-      break;
-      
-    case StorageType.LOCAL_STORAGE:
-      const prefix = config.storage.config?.keyPrefix as string;
-      storage = new LocalStorageAdapter(prefix);
-      break;
-      
-    case StorageType.REMOTE:
-      const remoteConfig = config.storage.config as unknown as RemoteStorageConfig;
-      if (!remoteConfig?.baseUrl) {
-        throw new Error('Remote storage requires baseUrl in config');
-      }
-      storage = new RemoteStorageAdapter(remoteConfig);
-      break;
-      
-    default:
-      throw new Error(`Unsupported storage type: ${config.storage.type}`);
-  }
-  
-  // Use provided executor or default to NodeExecutor with basic settings
-  const executor = nodeExecutor || new DefaultNodeExecutorImpl({ enableSubflows: false });
-  
-  return new WorkflowExecutor(storage, executor, config);
-}
+export type {
+  FlowsConfig,
+  FailureHandlingConfig,
+} from './types/index.js';
 
-// Utility function to create a simple workflow definition
-export function createWorkflow(
-  id: WorkflowId,
-  name: string,
-  nodes: WorkflowNode[],
-  options: {
-    description?: string;
-    version?: string;
-    metadata?: Record<string, unknown>;
-  } = {}
-): WorkflowDefinition {
-  return {
-    id,
-    name,
-    description: options.description,
-    version: options.version || '1.0.0',
-    nodes,
-    metadata: options.metadata,
-  };
-}
+// Factory functions
+export {
+  createFlows,
+  createWorkflow,
+  createEvent,
+} from './factory/index.js';
 
-// Utility function to create workflow events
-export function createEvent(
-  type: EventType,
-  data?: unknown,
-  nodeId?: NodeId
-): WorkflowEvent {
-  return {
-    id: `${type}_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
-    type,
-    data,
-    timestamp: new Date(),
-    nodeId,
-  };
-} 
+// Utilities
+export {
+  createFlowsWithSubflows,
+} from './utils/subflow-utils.js'; 

@@ -112,6 +112,9 @@ npx tsx src/examples/simple-workflow.ts
 
 # Run the failure handling examples
 npx tsx src/examples/failure-examples.ts
+
+# Run the comprehensive handlers example (NEW!)
+npx tsx src/examples/comprehensive-handlers-example.ts
 ```
 
 ### Method 2: Using TypeScript Compiler
@@ -136,6 +139,7 @@ rm -rf dist-temp
 - **`failure-examples.ts`**: Comprehensive failure handling strategies
 - **`custom-handlers-example.ts`**: Creating custom node handlers for new node types
 - **`plugin-system-example.ts`**: Using the plugin system for extensible node handlers
+- **`comprehensive-handlers-example.ts`**: ✨ **NEW!** Demonstrates all built-in handlers (logical, math, string, conditional, merge operations)
 
 Each example includes detailed comments explaining the concepts and can be run independently.
 
@@ -191,9 +195,108 @@ const flows = createFlows(config, executor);
 ```
 
 **Built-in Node Types & Handlers**:
-- `'data'` - Pass-through nodes that merge inputs (handled by `DataHandler` - always available)
-- `'delay'` - Nodes that wait for a specified duration (handled by `DelayHandler` - always available)
-- `'subflow'` - Nodes that execute other workflows (handled by `SubflowHandler`, requires `enableSubflows: true`)
+
+#### Core Handlers (Always Available)
+- **`data`** - Pass-through nodes that merge inputs (handled by `DataHandler`)
+- **`delay`** - Nodes that wait for a specified duration (handled by `DelayHandler`)
+- **`subflow`** - Nodes that execute other workflows (handled by `SubflowHandler`, requires `enableSubflows: true`)
+
+#### ✨ Built-in Operation Handlers (via Plugins)
+
+**Logical Operations**:
+- **`logic-and`** - Boolean AND operation on multiple values
+- **`logic-or`** - Boolean OR operation on multiple values  
+- **`logic-not`** - Boolean NOT operation on a single value
+- **`logic-xor`** - Boolean XOR operation on two values
+
+**Mathematical Operations**:
+- **`math-add`** - Addition of multiple numbers
+- **`math-subtract`** - Subtraction with multiple operands
+- **`math-multiply`** - Multiplication of multiple numbers
+- **`math-divide`** - Division of two numbers (with zero-division protection)
+- **`math-power`** - Exponentiation (base^exponent)
+- **`math-modulo`** - Modulo operation (remainder after division)
+
+**String Manipulation**:
+- **`string-concat`** - Concatenate multiple strings with optional separator
+- **`string-substring`** - Extract substring using start/end positions
+- **`string-replace`** - Replace text with regex support and global options
+- **`string-match`** - Match text against regex patterns
+- **`string-split`** - Split string into array using delimiter
+- **`string-compare`** - Compare strings with case-sensitivity options
+- **`string-length`** - Get string length
+- **`string-case`** - Transform case (upper, lower, title, sentence)
+
+**Flow Control**:
+- **`condition`** - Conditional execution with multiple condition types:
+  - `simple` - Basic boolean evaluation
+  - `compare` - Value comparison with operators (===, >, <, contains, etc.)
+  - `exists` - Check if values are defined, empty, or truthy
+  - `range` - Check if numbers fall within specified ranges
+- **`merge-all`** - Wait for all dependencies to succeed before proceeding
+- **`merge-any`** - Proceed when any dependency succeeds
+- **`merge-majority`** - Proceed when majority of dependencies succeed
+- **`merge-count`** - Proceed when specific number of dependencies succeed
+
+**Using Built-in Operations**:
+```typescript
+import { createFlows, DefaultNodeExecutor, allBuiltInPlugins } from 'flows';
+
+// Enable all built-in operations
+const executor = new DefaultNodeExecutor({
+  enableSubflows: false,
+  plugins: allBuiltInPlugins, // Includes all logical, math, string, and flow control handlers
+});
+
+const flows = createFlows(config, executor);
+
+// Or enable specific categories
+import { logicalPlugins, mathPlugins, stringPlugins, flowControlPlugins } from 'flows';
+
+const executor = new DefaultNodeExecutor({
+  plugins: [...logicalPlugins, ...mathPlugins, ...stringPlugins],
+});
+```
+
+**Example Usage**:
+```typescript
+const workflow = createWorkflow('calculation-example', 'Mathematical Workflow', [
+  {
+    id: 'input-numbers',
+    type: 'data',
+    inputs: { values: [10, 20, 30] },
+    dependencies: [],
+  },
+  {
+    id: 'sum-values',
+    type: 'math-add',
+    inputs: { values: [10, 20, 30] }, // Result: 60
+    dependencies: ['input-numbers'],
+  },
+  {
+    id: 'format-result',
+    type: 'string-concat',
+    inputs: { 
+      values: ['Total: £', '60'],
+      separator: ''
+    }, // Result: 'Total: £60'
+    dependencies: ['sum-values'],
+  },
+  {
+    id: 'check-threshold',
+    type: 'condition',
+    inputs: {
+      conditionType: 'compare',
+      left: 60,
+      right: 50,
+      operator: '>',
+      thenValue: 'High value',
+      elseValue: 'Normal value'
+    }, // Result: 'High value'
+    dependencies: ['sum-values'],
+  },
+]);
+```
 
 **Handler Architecture**:
 ```typescript
@@ -226,7 +329,7 @@ const httpPlugin: HandlerPlugin = {
 
 // Register plugins during creation or after
 const executor = new DefaultNodeExecutor({
-  plugins: [httpPlugin],
+  plugins: [httpPlugin, ...allBuiltInPlugins],
   allowCustomHandlers: true, // default: true
 });
 
@@ -236,6 +339,7 @@ executor.registerPlugin(httpPlugin);
 
 **Plugin System Benefits**:
 - ✅ **Core handlers always available** - `data` and `delay` never need configuration
+- ✅ **Built-in operations** - Rich set of logical, math, string, and flow control operations
 - ✅ **Extensible** - Add custom node types without modifying core code
 - ✅ **Secure** - Cannot override built-in handlers
 - ✅ **Configurable** - Can disable custom handlers entirely
@@ -448,6 +552,9 @@ Flows is perfect for:
 ✅ **Applications requiring persistence** (survive page reloads, resume later)  
 ✅ **Enterprise applications** (requiring monitoring, failure handling)  
 ✅ **Microservice orchestration** (coordinating frontend API calls)  
+✅ **Data processing pipelines** (ETL, calculations, transformations)
+✅ **Form wizards with conditional logic** (dynamic step progression)
+✅ **Content management workflows** (approval chains, publishing)
 
 ## Why Choose Flows?
 
@@ -469,6 +576,8 @@ Unlike server-side workflow engines, Flows is built specifically for frontend ap
 ### Developer Experience
 - **TypeScript Support**: Full type definitions and IDE support
 - **Declarative Workflows**: Define workflows as simple JavaScript objects
+- **Rich Built-in Operations**: Logical, mathematical, string, and flow control operations out of the box
+- **Extensible Plugin System**: Add custom node types easily
 - **Comprehensive Documentation**: Guides, examples, and API reference
 - **Testable**: Easy to unit test individual nodes and workflows
 

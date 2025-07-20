@@ -140,4 +140,7 @@ export class NodeExecutor implements INodeExecutor {
         throw new Error(`Unknown node type: ${node.type}. Available types: ${availableTypes.join(', ')}`);
     }
   }
-} 
+}
+
+// Export as DefaultNodeExecutor for convenience and backwards compatibility
+export { NodeExecutor as DefaultNodeExecutor }; 

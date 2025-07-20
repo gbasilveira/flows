@@ -44,8 +44,9 @@ export class PluginRegistry {
       throw new Error('Custom handlers are disabled. Enable them in constructor options.');
     }
 
-    if (this.isReservedNodeType(plugin.nodeType)) {
-      throw new Error(`Cannot override built-in node type: ${plugin.nodeType}`);
+    // Only prevent override of core handlers, not built-in plugins
+    if (this.isCoreHandlerType(plugin.nodeType)) {
+      throw new Error(`Cannot override core handler type: ${plugin.nodeType}. Core types are: data, delay, subflow`);
     }
 
     this.plugins.set(plugin.nodeType, plugin);
@@ -55,8 +56,8 @@ export class PluginRegistry {
    * Unregister a handler plugin
    */
   unregister(nodeType: string): boolean {
-    if (this.isReservedNodeType(nodeType)) {
-      throw new Error(`Cannot unregister built-in node type: ${nodeType}`);
+    if (this.isCoreHandlerType(nodeType)) {
+      throw new Error(`Cannot unregister core handler type: ${nodeType}`);
     }
 
     return this.plugins.delete(nodeType);
@@ -98,11 +99,16 @@ export class PluginRegistry {
   }
 
   /**
-   * Check if a node type is reserved (built-in)
+   * Check if a node type is a core handler (data, delay, subflow)
+   * These cannot be overridden by plugins
    */
-  private isReservedNodeType(nodeType: string): boolean {
-    const reservedTypes = ['data', 'delay'];
-    return reservedTypes.includes(nodeType);
+  private isCoreHandlerType(nodeType: string): boolean {
+    const coreTypes = [
+      'data',     // DataHandler - always available
+      'delay',    // DelayHandler - always available  
+      'subflow',  // SubflowHandler - available when enabled
+    ];
+    return coreTypes.includes(nodeType);
   }
 
   /**

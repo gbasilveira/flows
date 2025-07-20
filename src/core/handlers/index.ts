@@ -1,3 +1,8 @@
 export { DataHandler } from './data-handler.js';
 export { DelayHandler } from './delay-handler.js';
-export { SubflowHandler } from './subflow-handler.js'; 
+export { SubflowHandler } from './subflow-handler.js';
+export { LogicalHandler } from './logical-handler.js';
+export { MathHandler } from './math-handler.js';
+export { StringHandler } from './string-handler.js';
+export { ConditionHandler } from './condition-handler.js';
+export { MergeHandler } from './merge-handler.js'; 
