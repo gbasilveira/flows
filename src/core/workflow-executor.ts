@@ -16,34 +16,6 @@ import { WorkflowEventSystem } from './event-system.js';
 import { FailureManager } from './failure-manager.js';
 
 /**
- * Default node executor that handles basic node types
- */
-class DefaultNodeExecutor implements NodeExecutor {
-  async execute(
-    node: WorkflowNode,
-    _context: Record<string, unknown>,
-    inputs: Record<string, unknown>
-  ): Promise<unknown> {
-    switch (node.type) {
-      case 'data':
-        // Data nodes just pass through their inputs
-        return { ...node.inputs, ...inputs };
-      
-      case 'delay':
-        // Delay node waits for a specified time
-        const delayMs = (node.inputs.delay as number) || 1000;
-        await new Promise(resolve => setTimeout(resolve, delayMs));
-        return { delayed: true, duration: delayMs };
-      
-      default:
-        throw new Error(`Unknown node type: ${node.type}`);
-    }
-  }
-
-
-}
-
-/**
  * Main workflow executor class
  * Handles DAG execution with state persistence and event coordination
  */
@@ -57,12 +29,12 @@ export class WorkflowExecutor {
 
   constructor(
     storage: StorageAdapter,
-    config: FlowsConfig,
-    nodeExecutor?: NodeExecutor
+    nodeExecutor: NodeExecutor,
+    config: FlowsConfig
   ) {
     this.storage = storage;
+    this.nodeExecutor = nodeExecutor;
     this.config = config;
-    this.nodeExecutor = nodeExecutor || new DefaultNodeExecutor();
     this.eventSystem = new WorkflowEventSystem();
     this.failureManager = new FailureManager(config.failureHandling);
   }

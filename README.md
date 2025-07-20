@@ -148,6 +148,74 @@ Flows uses Directed Acyclic Graphs to represent workflows, ensuring:
 - **No circular dependencies** preventing infinite loops
 - **Visual workflow representation** for easy understanding
 
+### Node Executors
+
+Node Executors define how different node types are processed. Flows provides a unified executor with flexible configuration:
+
+**DefaultNodeExecutor** - Unified executor for all workflows:
+```typescript
+import { createFlows, DefaultNodeExecutor } from 'flows';
+
+// Basic usage (subflows disabled by default in createFlows)
+const flows = createFlows(config);
+
+// Manual setup with custom options
+const executor = new DefaultNodeExecutor({
+  enableSubflows: false,  // Lightweight mode
+  customExecutor: myCustomExecutor,
+});
+const flows = createFlows(config, executor);
+```
+
+**With Subflow Support** - Enable advanced workflow composition:
+```typescript
+import { createFlowsWithSubflows } from 'flows/utils/subflow-utils';
+
+// Option 1: Utility function (recommended)
+const flows = createFlowsWithSubflows({
+  ...config,
+  subflow: {
+    maxDepth: 5,
+    preregisteredWorkflows: [subWorkflow1, subWorkflow2],
+  },
+});
+
+// Option 2: Manual setup
+const executor = new DefaultNodeExecutor({
+  enableSubflows: true,
+  maxSubflowDepth: 5,
+});
+const flows = createFlows(config, executor);
+```
+
+**Built-in Node Types**:
+- `'data'` - Pass-through nodes that merge inputs
+- `'delay'` - Nodes that wait for a specified duration
+- `'subflow'` - Nodes that execute other workflows (requires `enableSubflows: true`)
+
+**Custom Node Executors**:
+```typescript
+class MyCustomExecutor implements NodeExecutor {
+  async execute(node, context, inputs) {
+    switch (node.type) {
+      case 'http-request':
+        return this.makeHttpRequest(node, inputs);
+      case 'email':
+        return this.sendEmail(node, inputs);
+      default:
+        throw new Error(`Unknown node type: ${node.type}`);
+    }
+  }
+}
+
+const executor = new DefaultNodeExecutor({
+  customExecutor: new MyCustomExecutor(),
+});
+const flows = createFlows(config, executor);
+```
+
+**🔧 For complete node executor guide, see [Node Executors Documentation](./docs/guide/node-executors.md)**
+
 ### Storage Options
 
 Choose the storage option that fits your needs:

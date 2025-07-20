@@ -6,7 +6,7 @@ import type {
   WorkflowId,
 } from '../types/index.js';
 import { createFlows } from '../index.js';
-import { EnhancedNodeExecutor } from '../core/enhanced-node-executor.js';
+import { NodeExecutor as DefaultNodeExecutor } from '../core/enhanced-node-executor.js';
 import type { WorkflowExecutor } from '../core/workflow-executor.js';
 
 /**
@@ -30,40 +30,33 @@ export function createFlowsWithSubflows(
   unregisterSubflow: (workflowId: WorkflowId) => void;
   getRegisteredSubflows: () => WorkflowDefinition[];
 } {
-  // Create base flows instance
-  const baseFlows = createFlows(config);
-  
-  // Create enhanced executor with subflow support
-  const enhancedExecutor = new EnhancedNodeExecutor(
-    baseFlows,
+  // Create executor with subflow support enabled
+  const nodeExecutor = new DefaultNodeExecutor({
     customExecutor,
-    config.subflow?.maxDepth || 5
-  );
-
-  // Create new instance with enhanced executor
-  const flowsWithSubflows = createFlows({
-    ...config,
-    // Note: We'd need to modify createFlows to accept a nodeExecutor parameter
-    // For now, we'll create the enhanced version manually
+    maxSubflowDepth: config.subflow?.maxDepth || 5,
+    enableSubflows: true,
   });
 
   // Register preloaded workflows
   if (config.subflow?.preregisteredWorkflows) {
     config.subflow.preregisteredWorkflows.forEach(workflow => {
-      enhancedExecutor.registerSubflow(workflow);
+      nodeExecutor.registerSubflow(workflow);
     });
   }
 
+  // Create workflow executor with subflow-enabled node executor
+  const workflowExecutor = createFlows(config, nodeExecutor);
+
   // Return enhanced version with subflow methods
-  return Object.assign(flowsWithSubflows, {
+  return Object.assign(workflowExecutor, {
     registerSubflow: (definition: WorkflowDefinition) => {
-      enhancedExecutor.registerSubflow(definition);
+      nodeExecutor.registerSubflow(definition);
     },
     unregisterSubflow: (workflowId: WorkflowId) => {
-      enhancedExecutor.unregisterSubflow(workflowId);
+      nodeExecutor.unregisterSubflow(workflowId);
     },
     getRegisteredSubflows: () => {
-      return enhancedExecutor.getRegisteredSubflows();
+      return nodeExecutor.getRegisteredSubflows();
     },
   });
 }

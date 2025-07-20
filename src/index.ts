@@ -69,12 +69,13 @@ export {
   WorkflowExecutor,
   WorkflowEventSystem,
   FailureManager,
+  NodeExecutor as DefaultNodeExecutor,
 } from './core/index.js';
 
 /**
  * Factory function to create a workflow executor with common configurations
  */
-import { WorkflowExecutor } from './core/index.js';
+import { WorkflowExecutor, NodeExecutor as DefaultNodeExecutorImpl } from './core/index.js';
 import { 
   MemoryStorageAdapter, 
   LocalStorageAdapter, 
@@ -90,9 +91,10 @@ import {
   type WorkflowEvent,
   type EventType,
   type NodeId,
+  type NodeExecutor,
 } from './types/index.js';
 
-export function createFlows(config: FlowsConfig): WorkflowExecutor {
+export function createFlows(config: FlowsConfig, nodeExecutor?: NodeExecutor): WorkflowExecutor {
   let storage;
   
   switch (config.storage.type) {
@@ -117,7 +119,10 @@ export function createFlows(config: FlowsConfig): WorkflowExecutor {
       throw new Error(`Unsupported storage type: ${config.storage.type}`);
   }
   
-  return new WorkflowExecutor(storage, config);
+  // Use provided executor or default to NodeExecutor with basic settings
+  const executor = nodeExecutor || new DefaultNodeExecutorImpl({ enableSubflows: false });
+  
+  return new WorkflowExecutor(storage, executor, config);
 }
 
 // Utility function to create a simple workflow definition

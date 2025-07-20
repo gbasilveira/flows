@@ -8,7 +8,7 @@ import {
   StorageType,
   type FlowsConfig,
 } from '../index.js';
-import { EnhancedNodeExecutor } from '../core/enhanced-node-executor.js';
+import { createFlowsWithSubflows } from '../utils/subflow-utils.js';
 import { 
   createSubflowNode, 
   createWorkflowModule,
@@ -274,22 +274,22 @@ export async function runSubflowExample() {
     },
   };
 
-  const flows = createFlows(config);
-
-  // Create enhanced executor with subflow support
-  const enhancedExecutor = new EnhancedNodeExecutor(flows);
-  
-  // Register workflow modules
-  enhancedExecutor.registerSubflow(userValidationModule);
-  enhancedExecutor.registerSubflow(paymentModule);
-  enhancedExecutor.registerSubflow(notificationModule);
-  enhancedExecutor.registerSubflow(dataProcessingModule);
-
-  // Note: In a real implementation, we'd need to modify createFlows 
-  // to accept a custom nodeExecutor parameter
+  // Create enhanced flows instance with subflow support
+  const flows = createFlowsWithSubflows({
+    ...config,
+    subflow: {
+      maxDepth: 5,
+      preregisteredWorkflows: [
+        userValidationModule,
+        paymentModule,
+        notificationModule,
+        dataProcessingModule,
+      ],
+    },
+  });
 
   console.log('📋 Registered subflow modules:', 
-    enhancedExecutor.getRegisteredSubflows().map(w => w.name)
+    flows.getRegisteredSubflows().map(w => w.name)
   );
 
   // Execute the main e-commerce workflow
