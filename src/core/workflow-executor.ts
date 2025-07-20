@@ -28,10 +28,6 @@ class DefaultNodeExecutor implements NodeExecutor {
         // Data nodes just pass through their inputs
         return { ...node.inputs, ...inputs };
       
-      case 'transform':
-        // Simple transformation node
-        return this.applyTransformation(node.inputs, inputs, context);
-      
       case 'delay':
         // Delay node waits for a specified time
         const delayMs = (node.inputs.delay as number) || 1000;
@@ -43,19 +39,7 @@ class DefaultNodeExecutor implements NodeExecutor {
     }
   }
 
-  private applyTransformation(
-    nodeInputs: Record<string, unknown>,
-    runtimeInputs: Record<string, unknown>,
-    context: Record<string, unknown>
-  ): Record<string, unknown> {
-    // Simple merge for now - can be extended with more complex logic
-    return {
-      ...nodeInputs,
-      ...runtimeInputs,
-      context: context,
-      transformed: true,
-    };
-  }
+
 }
 
 /**
