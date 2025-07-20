@@ -153,6 +153,12 @@ export interface WorkflowNode {
   timeout?: number;
   failureHandling?: FailureHandlingConfig;
   metadata?: Record<string, unknown>;
+  
+  // Subflow-specific properties
+  subflowDefinition?: WorkflowDefinition;  // Direct workflow definition
+  subflowId?: WorkflowId;                 // Reference to workflow by ID
+  subflowMaxDepth?: number;               // Maximum recursion depth (default: 5)
+  subflowContext?: Record<string, unknown>; // Additional context to pass to subflow
 }
 
 /**

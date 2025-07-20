@@ -64,6 +64,48 @@ const result = await flows.startWorkflow(workflow);
 console.log('Workflow completed:', result);
 ```
 
+## Running Examples
+
+The project includes comprehensive examples in the `src/examples/` directory. You can run them in two ways:
+
+### Method 1: Using tsx (Recommended)
+
+The quickest way to run the examples directly from TypeScript:
+
+```bash
+# Run the subflow example
+npx tsx src/examples/subflow-example.ts
+
+# Run the simple workflow example  
+npx tsx src/examples/simple-workflow.ts
+
+# Run the failure handling examples
+npx tsx src/examples/failure-examples.ts
+```
+
+### Method 2: Using TypeScript Compiler
+
+Compile and run the examples using `tsc`:
+
+```bash
+# Compile the example
+npx tsc src/examples/subflow-example.ts --outDir dist-temp --module commonjs --target es2020 --moduleResolution node --esModuleInterop --skipLibCheck
+
+# Run the compiled JavaScript
+node dist-temp/examples/subflow-example.js
+
+# Clean up
+rm -rf dist-temp
+```
+
+### Available Examples
+
+- **`subflow-example.ts`**: Demonstrates modular workflows using subflows
+- **`simple-workflow.ts`**: Basic workflow execution patterns
+- **`failure-examples.ts`**: Comprehensive failure handling strategies
+
+Each example includes detailed comments explaining the concepts and can be run independently.
+
 ## Storage Options
 
 ### Memory Storage
