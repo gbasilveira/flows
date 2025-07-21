@@ -41,6 +41,10 @@ interface EditorStore extends EditorState {
   addCategory: (category: NodeCategory) => void
   removeCategory: (categoryId: string) => void
   
+  // Panel management
+  isManipulationPanelOpen: boolean
+  setManipulationPanelOpen: (open: boolean) => void
+  
   // Events
   events: EditorEvents
   setEvents: (events: EditorEvents) => void
@@ -63,6 +67,7 @@ export const useEditorStore = create<EditorStore>()(
     viewport: { x: 0, y: 0, zoom: 1 },
     nodeTypes: [], // Initialize with empty array - node types will come from plugins
     categories: DEFAULT_CATEGORIES, // Initialize with default categories
+    isManipulationPanelOpen: false,
     events: {},
     
     setConfig: (config: EditorConfig) => {
@@ -245,6 +250,12 @@ export const useEditorStore = create<EditorStore>()(
         state.categories = state.categories.filter(c => c.id !== categoryId)
       })
     },
+
+    setManipulationPanelOpen: (open: boolean) => {
+      set((state) => {
+        state.isManipulationPanelOpen = open
+      })
+    },
     
     setEvents: (events: EditorEvents) => {
       set((state) => {
@@ -265,3 +276,4 @@ export const useIsExecuting = () => useEditorStore((state) => state.isExecuting)
 export const useNodeTypes = () => useEditorStore((state) => state.nodeTypes)
 export const useCategories = () => useEditorStore((state) => state.categories)
 export const useViewport = () => useEditorStore((state) => state.viewport) 
+export const useIsManipulationPanelOpen = () => useEditorStore((state) => state.isManipulationPanelOpen) 

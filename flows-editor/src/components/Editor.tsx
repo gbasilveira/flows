@@ -1,102 +1,88 @@
 import React, { useCallback, useRef, useState } from 'react'
-import ReactFlow, {
-  Node,
-  Edge,
-  Connection,
+import {
+  ReactFlow,
   Controls,
-  Background,
   MiniMap,
+  Background,
+  useNodesState,
+  useEdgesState,
+  Connection,
+  Edge,
+  Node,
+  BackgroundVariant,
   OnConnect,
-  OnEdgesDelete,
-  OnNodesDelete,
-  OnNodesChange,
-  OnEdgesChange,
-  NodeChange,
+  ReactFlowProvider,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import {
-  FluentProvider,
-  webLightTheme,
+  Toolbar,
+  ToolbarButton,
+  ToolbarDivider,
   makeStyles,
   tokens,
-} from '@fluentui/react-components'
-import {
-  Button,
-  Badge,
-  Title3,
-  Caption1,
+  Text,
 } from '@fluentui/react-components'
 import {
   PlayRegular,
   SaveRegular,
   FolderOpenRegular,
-  ZoomInRegular,
-  ZoomOutRegular,
-  ArrowMaximizeRegular,
+  SettingsRegular,
+  DismissRegular,
 } from '@fluentui/react-icons'
-import { Sidebar } from './sidebar/Sidebar'
+
 import { BaseNode } from './nodes/BaseNode'
+import { Sidebar } from './sidebar/Sidebar'
+import { NodeManipulationPanel } from './NodeManipulationPanel'
 import { useEditorStore } from '../store'
-import { convertToWorkflow, convertFromWorkflow, createNewNode } from '../utils/workflow-converter'
-import type { EdgeData, EditorConfig, NodeTypeDefinition } from '../types'
+import type { EditorConfig } from '../types'
+import { convertToWorkflow, createNewNode } from '../utils/workflow-converter'
 
 const useStyles = makeStyles({
   root: {
+    width: '100%',
     height: '100vh',
-    width: '100vw',
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: tokens.colorNeutralBackground1,
+    fontFamily: tokens.fontFamilyBase,
   },
   toolbar: {
+    padding: '12px 16px',
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
-    backgroundColor: tokens.colorNeutralBackground2,
-    padding: '8px 16px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-  },
-  main: {
-    flex: 1,
-    display: 'flex',
-    overflow: 'hidden',
-  },
-  flowContainer: {
-    flex: 1,
-    position: 'relative',
-  },
-  reactFlow: {
-    backgroundColor: tokens.colorNeutralBackground1,
-  },
-  statusBar: {
-    padding: '8px 16px',
-    borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
     backgroundColor: tokens.colorNeutralBackground2,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    fontSize: tokens.fontSizeBase100,
-    color: tokens.colorNeutralForeground3,
+    flexShrink: 0,
   },
-  statusItem: {
+  toolbarLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+  },
+  toolbarRight: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
   },
-  minimap: {
-    backgroundColor: tokens.colorNeutralBackground2,
-    border: `1px solid ${tokens.colorNeutralStroke2}`,
+  title: {
+    fontSize: tokens.fontSizeBase600,
+    fontWeight: tokens.fontWeightSemibold,
+    color: tokens.colorNeutralForeground1,
   },
-  controls: {
-    backgroundColor: tokens.colorNeutralBackground1,
-    border: `1px solid ${tokens.colorNeutralStroke2}`,
-    borderRadius: tokens.borderRadiusMedium,
-    boxShadow: tokens.shadow4,
-  },
-  toolbarGroup: {
+  mainContent: {
+    flex: 1,
     display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
+    overflow: 'hidden',
+  },
+  canvasContainer: {
+    flex: 1,
+    position: 'relative',
+    display: 'flex',
+  },
+  reactFlowWrapper: {
+    flex: 1,
+    height: '100%',
   },
 })
 
@@ -202,324 +188,236 @@ export interface EditorProps {
   onWorkflowLoad?: (workflow: any) => void
 }
 
-export const Editor: React.FC<EditorProps> = ({
-  config = {},
-  onWorkflowChange,
+interface EditorContentProps extends EditorProps {}
+
+const EditorContent: React.FC<EditorContentProps> = ({
+  config,
   onWorkflowExecute,
   onWorkflowSave,
   onWorkflowLoad,
 }) => {
   const styles = useStyles()
   const reactFlowWrapper = useRef<HTMLDivElement>(null)
-  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null)
-  
-  const {
-    nodes: storeNodes,
-    edges: storeEdges,
-    addNode,
-    removeNode,
-    updateNode,
-    addEdge,
-    removeEdge,
-    setDirty,
-    setExecuting,
+  const { 
+    nodes, 
+    edges, 
+    isManipulationPanelOpen,
+    addNode, 
+    addEdge: storeAddEdge, 
+    setSelectedNodes, 
     setConfig,
-    setEvents,
-    isDirty,
-    isExecuting,
+    setManipulationPanelOpen,
   } = useEditorStore()
+  
+  const [reactFlowNodes, setNodes, onNodesChange] = useNodesState(nodes)
+  const [reactFlowEdges, setEdges, onEdgesChange] = useEdgesState(edges)
+  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null)
 
-  // Initialize config with defaults
+  // Sync store state with ReactFlow state
   React.useEffect(() => {
-    const defaultConfig: EditorConfig = {
-      theme: 'light',
-      layout: 'vertical',
-      enabledCategories: ['core', 'logic', 'math', 'string', 'flow', 'console', 'number', 'array', 'object', 'boolean', 'json', 'type-checking', 'data-validation'],
-      ui: {
-        sidebarWidth: 280,
-        minimapEnabled: true,
-      },
-      flowsConfig: {
-        storage: { type: 'memory' },
-        logging: { level: 'info' },
-        failureHandling: {
-          strategy: 'retry',
-          config: { maxRetries: 3, retryDelay: 1000 }
-        },
-      },
-      features: {
-        dragAndDrop: true,
-        validation: true,
-        minimap: true,
-        subflows: true,
-        customHandlers: true,
-      },
-      ...config, // Override with provided config
+    setNodes(nodes)
+  }, [nodes, setNodes])
+
+  React.useEffect(() => {
+    setEdges(edges)
+  }, [edges, setEdges])
+
+  // Set configuration on mount
+  React.useEffect(() => {
+    if (config) {
+      setConfig(config)
     }
-    
-    setConfig(defaultConfig)
-    setEvents({
-      onWorkflowChange,
-      onWorkflowExecute,
-      onWorkflowSave,
-      onWorkflowLoad,
-    })
-  }, [config, onWorkflowChange, onWorkflowExecute, onWorkflowSave, onWorkflowLoad])
+  }, [config, setConfig])
 
   const onConnect: OnConnect = useCallback(
     (params: Connection) => {
-      const newEdge = {
+      if (!params.source || !params.target) return
+      
+      const newEdge: Edge = {
         id: `${params.source}-${params.target}`,
-        source: params.source!,
-        target: params.target!,
+        source: params.source,
+        target: params.target,
         type: 'default',
-        data: { label: '', type: 'default' } as EdgeData,
+        data: { label: '', type: 'default' },
       }
-      addEdge(newEdge)
+      storeAddEdge(newEdge)
     },
-    [addEdge]
+    [storeAddEdge]
   )
 
-  const onNodesDelete: OnNodesDelete = useCallback(
-    (deleted: Node[]) => {
-      deleted.forEach(node => removeNode(node.id))
-    },
-    [removeNode]
-  )
-
-  const onEdgesDelete: OnEdgesDelete = useCallback(
-    (deleted: Edge[]) => {
-      deleted.forEach(edge => removeEdge(edge.id))
-    },
-    [removeEdge]
-  )
-
-  const onNodesChange: OnNodesChange = useCallback(
-    (changes: NodeChange[]) => {
-      changes.forEach(change => {
-        if (change.type === 'position' && change.position) {
-          updateNode(change.id, { position: change.position })
-        }
-      })
-    },
-    [updateNode]
-  )
-
-  const onEdgesChange: OnEdgesChange = useCallback(
-    () => {
-      // Handle edge changes if needed
-    },
-    []
-  )
-
-  const onDragOver = useCallback((event: React.DragEvent) => {
+  const handleDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault()
     event.dataTransfer.dropEffect = 'move'
   }, [])
 
-  const onDrop = useCallback(
+  const handleDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault()
 
-      const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect()
-      if (!reactFlowBounds || !reactFlowInstance) return
-
-      try {
-        const data = JSON.parse(event.dataTransfer.getData('application/reactflow'))
-        
-        // Handle nodeType data from sidebar
-        if (data.id && data.category) {
-          const position = reactFlowInstance.project({
-            x: event.clientX - reactFlowBounds.left,
-            y: event.clientY - reactFlowBounds.top,
-          })
-
-          const newNode = createNewNode(data.id, data.category, position)
-          addNode(newNode)
-        }
-      } catch (error) {
-        console.warn('Failed to parse drag data:', error)
+      if (!reactFlowWrapper.current || !reactFlowInstance) {
+        return
       }
+
+      const nodeType = event.dataTransfer.getData('application/reactflow')
+      
+      if (!nodeType) {
+        return
+      }
+
+      const position = reactFlowInstance.screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      })
+
+      // Determine category based on node type
+      const category = determineNodeCategory(nodeType)
+      const newNode = createNewNode(nodeType, category, position)
+      addNode(newNode)
     },
     [reactFlowInstance, addNode]
   )
 
-  const handleNodeDragStart = useCallback((_nodeType: NodeTypeDefinition, _event: React.DragEvent) => {
-    // setDraggedNodeType(nodeType) // This line is removed
-  }, [])
+  // Helper function to determine node category
+  const determineNodeCategory = (nodeType: string): string => {
+    if (nodeType.startsWith('logic-')) return 'logic'
+    if (nodeType.startsWith('math-')) return 'math'
+    if (nodeType.startsWith('string-')) return 'string'
+    if (nodeType.startsWith('console-')) return 'console'
+    if (nodeType.startsWith('number-')) return 'number'
+    if (nodeType.startsWith('array-')) return 'array'
+    if (nodeType.startsWith('object-')) return 'object'
+    if (nodeType.startsWith('boolean-')) return 'boolean'
+    if (nodeType.startsWith('json-')) return 'json'
+    if (nodeType.startsWith('type-')) return 'type-checking'
+    if (nodeType.startsWith('data-')) return 'data-validation'
+    if (nodeType === 'condition') return 'flow'
+    if (nodeType.startsWith('merge-')) return 'flow'
+    return 'core'
+  }
 
-  const handleNodeDragEnd = useCallback((_event: React.DragEvent) => {
-    // setDraggedNodeType(null) // This line is removed
-  }, [])
+  const handleSelectionChange = useCallback(
+    ({ nodes: selectedNodes }: { nodes: Node[] }) => {
+      setSelectedNodes(selectedNodes.map(n => n.id))
+    },
+    [setSelectedNodes]
+  )
 
   const handleExecute = useCallback(() => {
-    const workflow = convertToWorkflow(storeNodes, storeEdges)
-    setExecuting(true)
-    
-    // Simulate execution
-    setTimeout(() => {
-      setExecuting(false)
-      onWorkflowExecute?.(workflow)
-    }, 2000)
-  }, [storeNodes, storeEdges, setExecuting, onWorkflowExecute])
+    if (onWorkflowExecute) {
+      const workflow = convertToWorkflow(nodes, edges)
+      onWorkflowExecute(workflow)
+    }
+  }, [nodes, edges, onWorkflowExecute])
 
   const handleSave = useCallback(() => {
-    const workflow = convertToWorkflow(storeNodes, storeEdges)
-    onWorkflowSave?.(workflow)
-    setDirty(false)
-  }, [storeNodes, storeEdges, onWorkflowSave, setDirty])
+    if (onWorkflowSave) {
+      const workflow = convertToWorkflow(nodes, edges)
+      onWorkflowSave(workflow)
+    }
+  }, [nodes, edges, onWorkflowSave])
 
   const handleLoad = useCallback(() => {
-    // This would typically open a file picker
-    // For now, we'll create a sample workflow
-    const sampleWorkflow = {
-      id: 'sample-workflow',
-      name: 'Sample Workflow',
-      nodes: [
-        {
-          id: 'start',
-          type: 'data',
-          inputs: { message: 'Hello, World!' },
-          dependencies: [],
-        },
-        {
-          id: 'process',
-          type: 'data',
-          inputs: { result: 'processed' },
-          dependencies: ['start'],
-        },
-      ],
+    if (onWorkflowLoad) {
+      onWorkflowLoad(null)
     }
-    
-    const { nodes, edges } = convertFromWorkflow(sampleWorkflow)
-    nodes.forEach(node => addNode(node))
-    edges.forEach(edge => addEdge(edge))
-    onWorkflowLoad?.(sampleWorkflow)
-  }, [addNode, addEdge, onWorkflowLoad])
-
-  const handleZoomIn = useCallback(() => {
-    reactFlowInstance?.zoomIn()
-  }, [reactFlowInstance])
-
-  const handleZoomOut = useCallback(() => {
-    reactFlowInstance?.zoomOut()
-  }, [reactFlowInstance])
-
-  const handleFitView = useCallback(() => {
-    reactFlowInstance?.fitView()
-  }, [reactFlowInstance])
+  }, [onWorkflowLoad])
 
   return (
-    <FluentProvider theme={webLightTheme}>
-      <div className={styles.root}>
-        <div className={styles.toolbar}>
-          <div className={styles.toolbarGroup}>
-            <Title3>Flows Editor</Title3>
-          </div>
-          
-          <div className={styles.toolbarGroup}>
-            <Button
-              appearance="primary"
+    <div className={styles.root}>
+      {/* Toolbar */}
+      <div className={styles.toolbar}>
+        <div className={styles.toolbarLeft}>
+          <Text className={styles.title}>Flows Editor</Text>
+          <Toolbar>
+            <ToolbarButton 
+              appearance="primary" 
               icon={<PlayRegular />}
               onClick={handleExecute}
-              disabled={isExecuting}
             >
-              {isExecuting ? 'Executing...' : 'Execute'}
-            </Button>
-            
-            <Button
-              appearance="subtle"
-              icon={<SaveRegular />}
-              onClick={handleSave}
-              disabled={!isDirty}
-            >
+              Execute
+            </ToolbarButton>
+            <ToolbarDivider />
+            <ToolbarButton icon={<SaveRegular />} onClick={handleSave}>
               Save
-            </Button>
-            
-            <Button
-              appearance="subtle"
-              icon={<FolderOpenRegular />}
-              onClick={handleLoad}
-            >
+            </ToolbarButton>
+            <ToolbarButton icon={<FolderOpenRegular />} onClick={handleLoad}>
               Load
-            </Button>
-          </div>
-          
-          <div className={styles.toolbarGroup}>
-            <Button
-              appearance="subtle"
-              icon={<ZoomInRegular />}
-              onClick={handleZoomIn}
-            />
-            
-            <Button
-              appearance="subtle"
-              icon={<ZoomOutRegular />}
-              onClick={handleZoomOut}
-            />
-            
-            <Button
-              appearance="subtle"
-              icon={<ArrowMaximizeRegular />}
-              onClick={handleFitView}
-            />
-          </div>
-          
-          <div className={styles.toolbarGroup}>
-            <Badge appearance="filled" color={isDirty ? 'danger' : 'brand'}>
-              {storeNodes.length} nodes
-            </Badge>
-            
-            <Badge appearance="filled" color="brand">
-              {storeEdges.length} edges
-            </Badge>
-          </div>
+            </ToolbarButton>
+          </Toolbar>
         </div>
+        <div className={styles.toolbarRight}>
+          <ToolbarButton 
+            icon={isManipulationPanelOpen ? <DismissRegular /> : <SettingsRegular />}
+            onClick={() => setManipulationPanelOpen(!isManipulationPanelOpen)}
+            appearance={isManipulationPanelOpen ? "primary" : "subtle"}
+          >
+            {isManipulationPanelOpen ? 'Close Settings' : 'Node Settings'}
+          </ToolbarButton>
+        </div>
+      </div>
 
-        <div className={styles.main}>
-          <Sidebar
-            onNodeDragStart={handleNodeDragStart}
-            onNodeDragEnd={handleNodeDragEnd}
-            width={config.ui?.sidebarWidth}
-          />
-          
-          <div className={styles.flowContainer} ref={reactFlowWrapper}>
+      {/* Main Content */}
+      <div className={styles.mainContent}>
+        {/* Sidebar */}
+        <Sidebar 
+          width={config?.ui?.sidebarWidth}
+          onNodeDragStart={(nodeType, event) => {
+            // Handle node drag start if needed
+            console.log('Node drag start:', nodeType, event)
+          }}
+          onNodeDragEnd={(event) => {
+            // Handle node drag end if needed
+            console.log('Node drag end:', event)
+          }}
+        />
+
+        {/* Canvas Container */}
+        <div className={styles.canvasContainer}>
+          <div ref={reactFlowWrapper} className={styles.reactFlowWrapper}>
             <ReactFlow
-              nodes={storeNodes}
-              edges={storeEdges}
+              nodes={reactFlowNodes}
+              edges={reactFlowEdges}
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
-              onNodesDelete={onNodesDelete}
-              onEdgesDelete={onEdgesDelete}
               onInit={setReactFlowInstance}
-              onDrop={onDrop}
-              onDragOver={onDragOver}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onSelectionChange={handleSelectionChange}
               nodeTypes={nodeTypes}
-              className={styles.reactFlow}
               fitView
+              fitViewOptions={{
+                padding: 0.1,
+              }}
             >
-              <Controls className={styles.controls} />
-              <Background />
-              <MiniMap className={styles.minimap} />
+              <Controls />
+              {config?.ui?.minimapEnabled && <MiniMap />}
+              <Background 
+                variant={BackgroundVariant.Dots} 
+                gap={12} 
+                size={1}
+                color={tokens.colorNeutralStroke3}
+              />
             </ReactFlow>
           </div>
-        </div>
-
-        <div className={styles.statusBar}>
-          <div className={styles.statusItem}>
-            <Caption1>
-              {isDirty ? 'Unsaved changes' : 'All changes saved'}
-            </Caption1>
-          </div>
           
-          <div className={styles.statusItem}>
-            <Caption1>
-              {storeNodes.length} nodes, {storeEdges.length} edges
-            </Caption1>
-          </div>
+          {/* Node Manipulation Panel */}
+          {isManipulationPanelOpen && (
+            <NodeManipulationPanel
+              isOpen={isManipulationPanelOpen}
+              onClose={() => setManipulationPanelOpen(false)}
+            />
+          )}
         </div>
       </div>
-    </FluentProvider>
+    </div>
+  )
+}
+
+export const Editor: React.FC<EditorProps> = (props) => {
+  return (
+    <ReactFlowProvider>
+      <EditorContent {...props} />
+    </ReactFlowProvider>
   )
 } 
