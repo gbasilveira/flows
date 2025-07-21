@@ -8,7 +8,6 @@ import {
   TabList,
   Tab,
   TabValue,
-  Button,
 } from '@fluentui/react-components'
 import {
   CircleRegular,
@@ -18,8 +17,6 @@ import {
   FlowRegular,
   CodeRegular,
   SearchRegular,
-  ChevronLeftRegular,
-  ChevronRightRegular,
 } from '@fluentui/react-icons'
 import type { NodeTypeDefinition } from '../../types'
 import { useCategories, useNodeTypes } from '../../store'
@@ -70,32 +67,6 @@ const useStyles = makeStyles({
     },
     scrollbarWidth: 'none',
     msOverflowStyle: 'none',
-  },
-  scrollButton: {
-    position: 'absolute',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    zIndex: 1,
-    minWidth: '32px',
-    height: '32px',
-    padding: '4px',
-    backgroundColor: tokens.colorNeutralBackground1,
-    border: `1px solid ${tokens.colorNeutralStroke2}`,
-    borderRadius: tokens.borderRadiusSmall,
-    boxShadow: tokens.shadow4,
-    '&:hover': {
-      backgroundColor: tokens.colorNeutralBackground2,
-    },
-    '&:disabled': {
-      opacity: 0.3,
-      cursor: 'not-allowed',
-    },
-  },
-  scrollButtonLeft: {
-    left: '4px',
-  },
-  scrollButtonRight: {
-    right: '4px',
   },
   tabPanel: {
     flex: 1,
@@ -183,10 +154,9 @@ export interface SidebarProps {
  * 
  * Features:
  * - Automatic overflow detection for category tabs
- * - Scrollable tabs with navigation arrows
+ * - Auto-centering of selected tab for optimal UX
  * - Keyboard navigation (arrow keys)
  * - Touch/swipe support for mobile devices
- * - Auto-scroll to selected tab
  * - Responsive to window resizing
  * - Configurable sidebar width
  * 
@@ -202,61 +172,41 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const styles = useStyles()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTab, setSelectedTab] = useState<TabValue>('all')
-  const [showScrollButtons, setShowScrollButtons] = useState(false)
-  const [canScrollLeft, setCanScrollLeft] = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(false)
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
   
   const tabListRef = useRef<HTMLDivElement>(null)
   const categories = useCategories()
   const nodeTypes = useNodeTypes()
 
-  // Check if scroll buttons are needed
+  // Auto-center selected tab when it changes
   useEffect(() => {
-    const checkScrollButtons = () => {
-      if (tabListRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = tabListRef.current
-        setCanScrollLeft(scrollLeft > 0)
-        setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1)
-        setShowScrollButtons(scrollWidth > clientWidth)
-      }
-    }
-
-    checkScrollButtons()
-    window.addEventListener('resize', checkScrollButtons)
-    return () => window.removeEventListener('resize', checkScrollButtons)
-  }, [categories])
-
-  // Auto-scroll to selected tab when it changes
-  useEffect(() => {
-    if (tabListRef.current && selectedTab !== 'all') {
+    if (tabListRef.current && selectedTab) {
       const tabElement = tabListRef.current.querySelector(`[data-value="${selectedTab}"]`) as HTMLElement
       if (tabElement) {
         const container = tabListRef.current
-        const tabRect = tabElement.getBoundingClientRect()
         const containerRect = container.getBoundingClientRect()
+        const tabRect = tabElement.getBoundingClientRect()
         
-        // Check if tab is outside visible area
-        if (tabRect.left < containerRect.left || tabRect.right > containerRect.right) {
-          tabElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+        // Calculate the center position
+        const containerCenter = containerRect.left + containerRect.width / 2
+        const tabCenter = tabRect.left + tabRect.width / 2
+        const offset = tabCenter - containerCenter
+        
+        // Only scroll if the tab is not already centered
+        if (Math.abs(offset) > 10) {
+          container.scrollBy({
+            left: offset,
+            behavior: 'smooth'
+          })
         }
       }
     }
   }, [selectedTab])
 
-  const scrollTabs = (direction: 'left' | 'right') => {
-    if (tabListRef.current) {
-      const scrollAmount = 200 // Adjust scroll amount as needed
-      const newScrollLeft = tabListRef.current.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount)
-      tabListRef.current.scrollTo({ left: newScrollLeft, behavior: 'smooth' })
-    }
-  }
-
   // Keyboard navigation
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
       event.preventDefault()
-      const currentIndex = categories.findIndex(cat => cat.id === selectedTab)
       const allTabs = ['all', ...categories.map(cat => cat.id)]
       const currentTabIndex = allTabs.indexOf(selectedTab as string)
       
@@ -268,7 +218,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   }
 
-  // Touch/swipe support
+  // Touch/swipe support for mobile devices
   const handleTouchStart = (event: React.TouchEvent) => {
     setTouchStartX(event.touches[0].clientX)
   }
@@ -281,12 +231,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const threshold = 50 // Minimum swipe distance
     
     if (Math.abs(diff) > threshold) {
-      if (diff > 0) {
-        // Swiped left - scroll right
-        scrollTabs('right')
-      } else {
-        // Swiped right - scroll left
-        scrollTabs('left')
+      const allTabs = ['all', ...categories.map(cat => cat.id)]
+      const currentTabIndex = allTabs.indexOf(selectedTab as string)
+      
+      if (diff > 0 && currentTabIndex < allTabs.length - 1) {
+        // Swiped left - go to next tab
+        setSelectedTab(allTabs[currentTabIndex + 1])
+      } else if (diff < 0 && currentTabIndex > 0) {
+        // Swiped right - go to previous tab
+        setSelectedTab(allTabs[currentTabIndex - 1])
       }
     }
     
@@ -352,32 +305,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Content */}
       <div className={styles.content}>
-        {/* Scrollable Tabs */}
+        {/* Auto-centering Tabs */}
         <div className={styles.tabContainer}>
-          {showScrollButtons && (
-            <Button
-              className={`${styles.scrollButton} ${styles.scrollButtonLeft}`}
-              appearance="subtle"
-              icon={<ChevronLeftRegular />}
-              disabled={!canScrollLeft}
-              onClick={() => scrollTabs('left')}
-              title="Scroll left"
-            />
-          )}
-          
           <TabList
             ref={tabListRef}
             className={styles.tabList}
             selectedValue={selectedTab}
             onTabSelect={(_, data) => setSelectedTab(data.value)}
-            onScroll={() => {
-              // Update scroll button states when scrolling
-              if (tabListRef.current) {
-                const { scrollLeft, scrollWidth, clientWidth } = tabListRef.current
-                setCanScrollLeft(scrollLeft > 0)
-                setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1)
-              }
-            }}
             onKeyDown={handleKeyDown}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
@@ -389,17 +323,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </Tab>
             ))}
           </TabList>
-
-          {showScrollButtons && (
-            <Button
-              className={`${styles.scrollButton} ${styles.scrollButtonRight}`}
-              appearance="subtle"
-              icon={<ChevronRightRegular />}
-              disabled={!canScrollRight}
-              onClick={() => scrollTabs('right')}
-              title="Scroll right"
-            />
-          )}
         </div>
 
         {/* Tab Panels */}

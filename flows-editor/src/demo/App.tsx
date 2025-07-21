@@ -16,7 +16,7 @@ const demoConfig: EditorConfig = {
   ],
   enabledCategories: ['core', 'logic', 'math', 'string', 'flow', 'console'],
   ui: {
-    sidebarWidth: 240, // Reduced width to test scrollable tabs
+    sidebarWidth: 320, // Wider width to test auto-centering behavior
     toolbarHeight: 60,
     minimapEnabled: true,
     backgroundColor: '#f5f5f5',

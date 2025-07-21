@@ -16,7 +16,7 @@ This is a comprehensive React Flow-based editor for the Flows library with the f
 - **Visual Feedback**: Rich visual indicators and status updates
 - **Production Ready**: Built for enterprise use with comprehensive error handling
 - **Complete Flows Integration**: Full integration with all flows library handlers and plugins
-- **Intelligent Tab Navigation**: Smart scrollable tabs with auto-scroll, keyboard navigation, and touch support
+- **Intelligent Tab Navigation**: Auto-centering tabs with keyboard and touch support
 
 ### 🏗️ Architecture
 
@@ -59,30 +59,31 @@ flows-editor/
 
 ### 🎯 Intelligent Tab Navigation
 
-The editor features smart scrollable tabs that automatically handle category overflow:
+The editor features smart auto-centering tabs that provide optimal UX:
 
-#### **Automatic Overflow Detection**
-- Detects when tabs don't fit in the available space
-- Shows navigation arrows only when needed
-- Responsive to window resizing and configuration changes
+#### **Auto-centering Behavior**
+- Automatically centers the selected tab in the visible area
+- Smooth scrolling animation when switching between tabs
+- Only scrolls when necessary (within 10px tolerance)
+- Natural, intuitive behavior that users expect
 
 #### **Multiple Navigation Methods**
-- **Arrow Buttons**: Click left/right arrows to scroll through tabs
+- **Click Navigation**: Click any tab to select and auto-center it
 - **Keyboard Navigation**: Use arrow keys to navigate between tabs
-- **Touch/Swipe Support**: Swipe left/right on touch devices
-- **Auto-scroll**: Automatically scrolls to selected tab when it's out of view
+- **Touch/Swipe Support**: Swipe left/right on touch devices to switch tabs
+- **Auto-centering**: Selected tab is always centered for optimal visibility
 
 #### **Smart Features**
-- **Smooth Scrolling**: Smooth animations when navigating between tabs
-- **Disabled States**: Arrow buttons are disabled when at the beginning/end
+- **Smooth Animations**: Smooth scrolling behavior for better UX
 - **Touch-friendly**: Optimised for mobile and tablet devices
 - **Accessible**: Full keyboard navigation support
+- **Responsive**: Adapts to window resizing and configuration changes
 
 #### **Configuration**
 ```typescript
 const config: EditorConfig = {
   ui: {
-    sidebarWidth: 320, // Increase width for more tab space
+    sidebarWidth: 320, // Adjust width to control tab space
     // ... other UI options
   },
   // ... other config options
@@ -402,154 +403,3 @@ interface EditorProps {
   onWorkflowLoad?: (workflow: Workflow) => void
 }
 ```
-
-### Utility Functions
-
-```tsx
-// Convert between formats
-const workflow = convertToWorkflow(nodes, edges)
-const { nodes, edges } = convertFromWorkflow(workflow)
-
-// Validation
-const { isValid, errors } = validateWorkflow(nodes, edges)
-
-// Create new elements
-const newNode = createNewNode(type, category, position)
-const newEdge = createNewEdge(sourceId, targetId)
-
-// Flows integration
-const result = await executeWorkflow(workflow, config)
-const validation = validateWorkflow(workflow, config)
-```
-
-### Plugin System
-
-```tsx
-// Register custom plugins
-import { registerPlugin } from '@flows/editor'
-
-const myPlugin: PluginManifest = {
-  id: 'my-custom-plugin',
-  name: 'My Custom Plugin',
-  version: '1.0.0',
-  description: 'Custom node types for my application',
-  author: 'Your Name',
-  categories: [
-    {
-      id: 'custom',
-      name: 'Custom',
-      description: 'Custom node types',
-      icon: 'Code',
-      color: '#6b69d6',
-      order: 6,
-    },
-  ],
-  nodeTypes: [
-    {
-      id: 'http-request',
-      name: 'HTTP Request',
-      description: 'Make HTTP requests',
-      category: 'custom',
-      icon: 'Globe',
-      color: '#6b69d6',
-      inputs: [
-        {
-          id: 'url',
-          name: 'URL',
-          type: 'string',
-          required: true,
-        },
-      ],
-      outputs: [
-        {
-          id: 'response',
-          name: 'Response',
-          type: 'object',
-        },
-      ],
-      configurable: true,
-    },
-  ],
-}
-
-registerPlugin(myPlugin)
-```
-
-## 🌟 Key Features
-
-### Professional Design
-- Clean, modern interface using FluentUI
-- Consistent styling and typography
-- Responsive design for different screen sizes
-- Professional color scheme and spacing
-
-### Extensible Architecture
-- Plugin system for custom node types
-- Configurable UI and features
-- Modular component design
-- Type-safe TypeScript throughout
-
-### Developer Experience
-- Comprehensive TypeScript definitions
-- Optimised state management with Zustand
-- Immutable updates with immer
-- Rich event system for integration
-
-### Production Ready
-- Error handling and validation
-- Performance optimisations
-- Accessibility considerations
-- Browser compatibility
-
-### Complete Flows Integration
-- All flows library handlers supported
-- Full plugin system integration
-- Comprehensive configuration options
-- Real-time validation and execution
-
-## 🚧 Current Status
-
-### ✅ Completed
-- Core architecture and state management
-- Basic UI components with FluentUI
-- Complete plugin system design
-- All flows library node types implemented
-- Type definitions and interfaces
-- Workflow conversion utilities
-- Flows library integration
-- Demo application structure
-- Comprehensive example with all handlers
-
-### 🔄 In Progress
-- Advanced UI features
-- Additional customisation options
-- Performance optimisations
-
-### 📋 Next Steps
-- Advanced validation features
-- Export/import functionality
-- Advanced UI customisation
-- Performance optimisations
-- Comprehensive testing
-- Documentation completion
-
-## 🤝 Contributing
-
-This is a comprehensive, production-ready visual editor for the Flows workflow library. The architecture is solid and the foundation is complete with full integration of all flows library handlers and plugins.
-
-Key features implemented:
-1. **Complete Handler Support**: All flows library handlers (logical, math, string, flow control)
-2. **Plugin System**: Extensible plugin architecture
-3. **Flows Integration**: Full integration with flows library configuration
-4. **Professional UI**: Clean, modern interface with FluentUI
-5. **Type Safety**: Comprehensive TypeScript support
-6. **Validation**: Real-time workflow validation
-7. **Execution**: Direct workflow execution through flows library
-
-## 📄 License
-
-This project is licensed under the ISC License - see the LICENSE file for details.
-
----
-
-**🎉 The Flows Editor is a comprehensive, professional-grade visual editor for workflow creation. Built with modern React patterns, FluentUI design system, and complete integration with the flows library, it provides a solid foundation for building sophisticated workflow applications with all the power of the flows library at your fingertips.** 
