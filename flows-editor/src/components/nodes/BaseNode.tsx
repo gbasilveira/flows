@@ -1,30 +1,27 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Handle, Position, NodeProps } from 'reactflow'
 import {
-  Title3,
-  Caption1,
   Button,
   Input,
   Label,
+  Textarea,
   Checkbox,
-  Select,
+  Text,
   makeStyles,
   tokens,
-  Textarea,
 } from '@fluentui/react-components'
 import {
+  ChevronDownRegular,
+  ChevronUpRegular,
   CircleRegular,
+  DatabaseRegular,
   BranchRegular,
   CalculatorRegular,
   TextTRegular,
   FlowRegular,
-  CodeRegular,
-  ChevronDownRegular,
-  ChevronUpRegular,
-  DatabaseRegular,
-  ClockRegular,
   DocumentRegular,
-  SettingsRegular,
+  CodeRegular,
+  ClockRegular,
 } from '@fluentui/react-icons'
 import type { NodeData } from '../../types'
 
@@ -217,6 +214,20 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
             return <TextTRegular className={styles.icon} />
           case 'flow':
             return <FlowRegular className={styles.icon} />
+          case 'number':
+            return <CalculatorRegular className={styles.icon} />
+          case 'array':
+            return <DocumentRegular className={styles.icon} />
+          case 'object':
+            return <DatabaseRegular className={styles.icon} />
+          case 'boolean':
+            return <BranchRegular className={styles.icon} />
+          case 'json':
+            return <CodeRegular className={styles.icon} />
+          case 'type-checking':
+            return <CircleRegular className={styles.icon} />
+          case 'data-validation':
+            return <CircleRegular className={styles.icon} />
           case 'custom':
             return <CodeRegular className={styles.icon} />
           default:
@@ -308,6 +319,101 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
         return 'Count Calls'
       case 'console-countreset':
         return 'Reset Counter'
+      // Data Primitive node types
+      case 'number-parse':
+        return 'Parse Number'
+      case 'number-format':
+        return 'Format Number'
+      case 'number-validate':
+        return 'Validate Number'
+      case 'number-range':
+        return 'Number Range'
+      case 'number-round':
+        return 'Round Number'
+      case 'number-clamp':
+        return 'Clamp Number'
+      case 'string-parse':
+        return 'Parse String'
+      case 'string-validate':
+        return 'Validate String'
+      case 'string-encode':
+        return 'Encode String'
+      case 'string-decode':
+        return 'Decode String'
+      case 'string-format':
+        return 'Format String'
+      case 'string-sanitize':
+        return 'Sanitize String'
+      case 'array-create':
+        return 'Create Array'
+      case 'array-filter':
+        return 'Filter Array'
+      case 'array-map':
+        return 'Map Array'
+      case 'array-reduce':
+        return 'Reduce Array'
+      case 'array-sort':
+        return 'Sort Array'
+      case 'array-flatten':
+        return 'Flatten Array'
+      case 'array-unique':
+        return 'Unique Array'
+      case 'array-chunk':
+        return 'Chunk Array'
+      case 'array-slice':
+        return 'Slice Array'
+      case 'array-join':
+        return 'Join Array'
+      case 'object-create':
+        return 'Create Object'
+      case 'object-get':
+        return 'Get Object Property'
+      case 'object-set':
+        return 'Set Object Property'
+      case 'object-merge':
+        return 'Merge Objects'
+      case 'object-clone':
+        return 'Clone Object'
+      case 'object-keys':
+        return 'Get Object Keys'
+      case 'object-values':
+        return 'Get Object Values'
+      case 'object-entries':
+        return 'Get Object Entries'
+      case 'object-pick':
+        return 'Pick Object Properties'
+      case 'object-omit':
+        return 'Omit Object Properties'
+      case 'object-freeze':
+        return 'Freeze Object'
+      case 'boolean-parse':
+        return 'Parse Boolean'
+      case 'boolean-validate':
+        return 'Validate Boolean'
+      case 'json-parse':
+        return 'Parse JSON'
+      case 'json-stringify':
+        return 'Stringify JSON'
+      case 'json-validate':
+        return 'Validate JSON'
+      case 'json-schema-validate':
+        return 'Validate JSON Schema'
+      case 'type-check':
+        return 'Check Type'
+      case 'type-convert':
+        return 'Convert Type'
+      case 'type-validate':
+        return 'Validate Type'
+      case 'data-is-null':
+        return 'Is Null'
+      case 'data-is-undefined':
+        return 'Is Undefined'
+      case 'data-is-empty':
+        return 'Is Empty'
+      case 'data-is-valid':
+        return 'Is Valid'
+      case 'data-default':
+        return 'Default Value'
       default:
         return type
     }
@@ -396,30 +502,125 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
         return 'Counts function calls'
       case 'console-countreset':
         return 'Resets a counter'
+      // Data Primitive node descriptions
+      case 'number-parse':
+        return 'Convert values to numbers with fallback support'
+      case 'number-format':
+        return 'Format numbers using locale and options'
+      case 'number-validate':
+        return 'Validate numbers with range and constraint checks'
+      case 'number-range':
+        return 'Generate number ranges with step support'
+      case 'number-round':
+        return 'Round numbers using various methods and precision'
+      case 'number-clamp':
+        return 'Clamp numbers to specified min/max ranges'
+      case 'string-parse':
+        return 'Convert values to strings with encoding support'
+      case 'string-validate':
+        return 'Validate strings with length and pattern checks'
+      case 'string-encode':
+        return 'Encode strings using various encoding methods'
+      case 'string-decode':
+        return 'Decode strings using various encoding methods'
+      case 'string-format':
+        return 'Format strings using template substitution'
+      case 'string-sanitize':
+        return 'Sanitize strings by removing HTML, scripts, and normalizing whitespace'
+      case 'array-create':
+        return 'Create arrays with specified length, fill values, or initial values'
+      case 'array-filter':
+        return 'Filter arrays based on various conditions'
+      case 'array-map':
+        return 'Transform array elements using various operations'
+      case 'array-reduce':
+        return 'Reduce arrays using various aggregation operations'
+      case 'array-sort':
+        return 'Sort arrays with direction and key-based sorting'
+      case 'array-flatten':
+        return 'Flatten nested arrays to specified depth'
+      case 'array-unique':
+        return 'Remove duplicate values from arrays'
+      case 'array-chunk':
+        return 'Split arrays into chunks of specified size'
+      case 'array-slice':
+        return 'Extract portions of arrays using start/end indices'
+      case 'array-join':
+        return 'Join array elements into strings with separators'
+      case 'object-create':
+        return 'Create objects from properties or entries'
+      case 'object-get':
+        return 'Get object properties using dot notation paths'
+      case 'object-set':
+        return 'Set object properties using dot notation paths'
+      case 'object-merge':
+        return 'Merge multiple objects with shallow or deep merging'
+      case 'object-clone':
+        return 'Clone objects with shallow or deep copying'
+      case 'object-keys':
+        return 'Get array of object keys'
+      case 'object-values':
+        return 'Get array of object values'
+      case 'object-entries':
+        return 'Get array of object key-value pairs'
+      case 'object-pick':
+        return 'Create new object with selected properties'
+      case 'object-omit':
+        return 'Create new object without specified properties'
+      case 'object-freeze':
+        return 'Freeze objects to prevent modification'
+      case 'boolean-parse':
+        return 'Convert values to booleans with fallback support'
+      case 'boolean-validate':
+        return 'Validate boolean values and conversions'
+      case 'json-parse':
+        return 'Parse JSON strings with fallback support'
+      case 'json-stringify':
+        return 'Convert values to JSON strings with formatting'
+      case 'json-validate':
+        return 'Validate JSON strings for syntax correctness'
+      case 'json-schema-validate':
+        return 'Validate JSON against schemas'
+      case 'type-check':
+        return 'Determine the type of values'
+      case 'type-convert':
+        return 'Convert values between different types'
+      case 'type-validate':
+        return 'Validate values against expected types'
+      case 'data-is-null':
+        return 'Check if values are null'
+      case 'data-is-undefined':
+        return 'Check if values are undefined'
+      case 'data-is-empty':
+        return 'Check if values are empty (null, undefined, empty string, empty array, empty object)'
+      case 'data-is-valid':
+        return 'Validate data based on various criteria'
+      case 'data-default':
+        return 'Provide default values when data is invalid or missing'
       default:
         return 'Custom node type'
     }
   }
 
-  const getInputHandles = () => {
+  const inputHandles = useMemo(() => {
     if (!data.inputs) return []
-    
-    return Object.entries(data.inputs).map(([inputId, inputData], index) => ({
+    return Object.entries(data.inputs).map(([inputId], index) => ({
       id: inputId,
-      label: inputId,
-      position: { top: `${20 + index * 30}px` }
+      type: 'target',
+      position: Position.Left,
+      style: { top: `${20 + index * 40}px` },
     }))
-  }
+  }, [data.inputs])
 
-  const getOutputHandles = () => {
+  const outputHandles = useMemo(() => {
     if (!data.outputs) return []
-    
-    return Object.entries(data.outputs).map(([outputId, outputData], index) => ({
+    return Object.entries(data.outputs).map(([outputId], index) => ({
       id: outputId,
-      label: outputId,
-      position: { top: `${20 + index * 30}px` }
+      type: 'source',
+      position: Position.Right,
+      style: { top: `${20 + index * 40}px` },
     }))
-  }
+  }, [data.outputs])
 
   const renderConfigField = (key: string, value: any) => {
     const fieldType = typeof value
@@ -492,9 +693,6 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
     }
   }
 
-  const inputHandles = getInputHandles()
-  const outputHandles = getOutputHandles()
-
   return (
     <div className={`${styles.root} ${selected ? styles.selected : ''}`}>
       {/* Status Indicator */}
@@ -508,13 +706,13 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
             position={Position.Left}
             id={handle.id}
             className={`${styles.handle} ${styles.inputHandle}`}
-            style={handle.position}
+            style={handle.style}
           />
           <div 
             className={`${styles.handleLabel} ${styles.inputHandleLabel}`}
-            style={handle.position}
+            style={handle.style}
           >
-            {handle.label}
+            {handle.id}
           </div>
         </div>
       ))}
@@ -524,8 +722,8 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
         <div style={{ display: 'flex', alignItems: 'flex-start' }}>
           {getNodeIcon(data.type, data.category)}
           <div style={{ flex: 1 }}>
-            <Title3 className={styles.title}>{getNodeDisplayName(data.type)}</Title3>
-            <Caption1 className={styles.description}>{getNodeDescription(data.type)}</Caption1>
+            <Text className={styles.title}>{getNodeDisplayName(data.type)}</Text>
+            <Text className={styles.description}>{getNodeDescription(data.type)}</Text>
           </div>
         </div>
       </div>
@@ -567,13 +765,13 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
             position={Position.Right}
             id={handle.id}
             className={`${styles.handle} ${styles.outputHandle}`}
-            style={handle.position}
+            style={handle.style}
           />
           <div 
             className={`${styles.handleLabel} ${styles.outputHandleLabel}`}
-            style={handle.position}
+            style={handle.style}
           >
-            {handle.label}
+            {handle.id}
           </div>
         </div>
       ))}

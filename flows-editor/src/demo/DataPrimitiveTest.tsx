@@ -2,10 +2,10 @@ import { Editor } from '../components/Editor'
 import { DEFAULT_CATEGORIES, DEFAULT_NODE_TYPES, type EditorConfig } from '../types'
 
 /**
- * Test component to verify drag and drop functionality
- * This demonstrates that all node types can be dragged and dropped
+ * Test component to verify data primitive nodes are showing in the Node Palette
+ * This demonstrates that all data primitive categories and node types are properly configured
  */
-const dragDropTestConfig: EditorConfig = {
+const dataPrimitiveTestConfig: EditorConfig = {
   theme: 'light',
   layout: 'vertical',
   plugins: [
@@ -13,13 +13,13 @@ const dragDropTestConfig: EditorConfig = {
       id: 'flows-built-in',
       name: 'Flows Built-in Operations',
       version: '1.0.0',
-      description: 'Complete set of logical, mathematical, string, and flow control operations',
+      description: 'Complete set of logical, mathematical, string, flow control, and data primitive operations',
       author: 'Flows Team',
       categories: DEFAULT_CATEGORIES,
       nodeTypes: DEFAULT_NODE_TYPES,
     },
   ],
-  enabledCategories: ['core', 'logic', 'math', 'string', 'flow', 'console'],
+  enabledCategories: ['core', 'logic', 'math', 'string', 'flow', 'console', 'number', 'array', 'object', 'boolean', 'json', 'type-checking', 'data-validation'],
   ui: {
     sidebarWidth: 320,
     toolbarHeight: 60,
@@ -60,7 +60,7 @@ const dragDropTestConfig: EditorConfig = {
   },
 }
 
-export function DragDropTest() {
+export function DataPrimitiveTest() {
   const handleWorkflowChange = (workflow: any) => {
     console.log('✅ Workflow changed:', workflow)
   }
@@ -80,7 +80,7 @@ export function DragDropTest() {
   return (
     <div style={{ height: '100vh', width: '100vw' }}>
       <Editor
-        config={dragDropTestConfig}
+        config={dataPrimitiveTestConfig}
         onWorkflowChange={handleWorkflowChange}
         onWorkflowExecute={handleWorkflowExecute}
         onWorkflowSave={handleWorkflowSave}
@@ -90,4 +90,4 @@ export function DragDropTest() {
   )
 }
 
-export default DragDropTest 
+export default DataPrimitiveTest 

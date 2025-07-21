@@ -254,12 +254,68 @@ export const DEFAULT_CATEGORIES: NodeCategory[] = [
     order: 6,
   },
   {
+    id: 'number',
+    name: 'Numbers',
+    description: 'Number operations and manipulation',
+    icon: 'NumberSymbol',
+    color: '#00b294',
+    order: 7,
+  },
+  {
+    id: 'array',
+    name: 'Arrays',
+    description: 'Array operations and manipulation',
+    icon: 'List',
+    color: '#881798',
+    order: 8,
+  },
+  {
+    id: 'object',
+    name: 'Objects',
+    description: 'Object operations and manipulation',
+    icon: 'Object',
+    color: '#ff6b35',
+    order: 9,
+  },
+  {
+    id: 'boolean',
+    name: 'Booleans',
+    description: 'Boolean operations and validation',
+    icon: 'ToggleRight',
+    color: '#8c8c8c',
+    order: 10,
+  },
+  {
+    id: 'json',
+    name: 'JSON',
+    description: 'JSON parsing and validation',
+    icon: 'Code',
+    color: '#2b88d8',
+    order: 11,
+  },
+  {
+    id: 'type-checking',
+    name: 'Type Checking',
+    description: 'Type checking and conversion',
+    icon: 'CheckMark',
+    color: '#107c10',
+    order: 12,
+  },
+  {
+    id: 'data-validation',
+    name: 'Data Validation',
+    description: 'Data validation and default values',
+    icon: 'Shield',
+    color: '#d13438',
+    order: 13,
+  },
+  {
     id: 'custom',
     name: 'Custom',
     description: 'Custom node types',
     icon: 'Code',
     color: '#6b69d6',
-    order: 7,
+    order: 14,
   },
 ]
 
@@ -926,7 +982,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'number-parse',
     name: 'Number Parse',
     description: 'Convert values to numbers with fallback support',
-    category: 'data-primitive',
+    category: 'number',
     icon: 'NumberSymbol',
     color: '#0078d4',
     inputs: [
@@ -942,7 +998,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'number-format',
     name: 'Number Format',
     description: 'Format numbers using locale and options',
-    category: 'data-primitive',
+    category: 'number',
     icon: 'NumberSymbol',
     color: '#0078d4',
     inputs: [
@@ -959,7 +1015,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'number-validate',
     name: 'Number Validate',
     description: 'Validate numbers with range and constraint checks',
-    category: 'data-primitive',
+    category: 'number',
     icon: 'NumberSymbol',
     color: '#0078d4',
     inputs: [
@@ -978,7 +1034,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'number-range',
     name: 'Number Range',
     description: 'Generate number ranges with step support',
-    category: 'data-primitive',
+    category: 'number',
     icon: 'NumberSymbol',
     color: '#0078d4',
     inputs: [
@@ -995,7 +1051,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'number-round',
     name: 'Number Round',
     description: 'Round numbers using various methods and precision',
-    category: 'data-primitive',
+    category: 'number',
     icon: 'NumberSymbol',
     color: '#0078d4',
     inputs: [
@@ -1017,7 +1073,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'number-clamp',
     name: 'Number Clamp',
     description: 'Clamp numbers to specified min/max ranges',
-    category: 'data-primitive',
+    category: 'number',
     icon: 'NumberSymbol',
     color: '#0078d4',
     inputs: [
@@ -1036,7 +1092,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'string-parse',
     name: 'String Parse',
     description: 'Convert values to strings with encoding support',
-    category: 'data-primitive',
+    category: 'string',
     icon: 'Text',
     color: '#ff8c00',
     inputs: [
@@ -1052,7 +1108,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'string-validate',
     name: 'String Validate',
     description: 'Validate strings with length and pattern checks',
-    category: 'data-primitive',
+    category: 'string',
     icon: 'Text',
     color: '#ff8c00',
     inputs: [
@@ -1071,7 +1127,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'string-encode',
     name: 'String Encode',
     description: 'Encode strings using various encoding methods',
-    category: 'data-primitive',
+    category: 'string',
     icon: 'Text',
     color: '#ff8c00',
     inputs: [
@@ -1092,7 +1148,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'string-decode',
     name: 'String Decode',
     description: 'Decode strings using various encoding methods',
-    category: 'data-primitive',
+    category: 'string',
     icon: 'Text',
     color: '#ff8c00',
     inputs: [
@@ -1113,7 +1169,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'string-format',
     name: 'String Format',
     description: 'Format strings using template substitution',
-    category: 'data-primitive',
+    category: 'string',
     icon: 'Text',
     color: '#ff8c00',
     inputs: [
@@ -1129,7 +1185,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'string-sanitize',
     name: 'String Sanitize',
     description: 'Sanitize strings by removing HTML, scripts, and normalizing whitespace',
-    category: 'data-primitive',
+    category: 'string',
     icon: 'Text',
     color: '#ff8c00',
     inputs: [
@@ -1149,7 +1205,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'array-create',
     name: 'Array Create',
     description: 'Create arrays with specified length, fill values, or initial values',
-    category: 'data-primitive',
+    category: 'array',
     icon: 'List',
     color: '#107c10',
     inputs: [
@@ -1166,7 +1222,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'array-filter',
     name: 'Array Filter',
     description: 'Filter arrays based on various conditions',
-    category: 'data-primitive',
+    category: 'array',
     icon: 'List',
     color: '#107c10',
     inputs: [
@@ -1191,7 +1247,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'array-map',
     name: 'Array Map',
     description: 'Transform array elements using various operations',
-    category: 'data-primitive',
+    category: 'array',
     icon: 'List',
     color: '#107c10',
     inputs: [
@@ -1215,7 +1271,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'array-reduce',
     name: 'Array Reduce',
     description: 'Reduce arrays using various aggregation operations',
-    category: 'data-primitive',
+    category: 'array',
     icon: 'List',
     color: '#107c10',
     inputs: [
@@ -1240,7 +1296,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'array-sort',
     name: 'Array Sort',
     description: 'Sort arrays with direction and key-based sorting',
-    category: 'data-primitive',
+    category: 'array',
     icon: 'List',
     color: '#107c10',
     inputs: [
@@ -1260,7 +1316,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'array-flatten',
     name: 'Array Flatten',
     description: 'Flatten nested arrays to specified depth',
-    category: 'data-primitive',
+    category: 'array',
     icon: 'List',
     color: '#107c10',
     inputs: [
@@ -1276,7 +1332,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'array-unique',
     name: 'Array Unique',
     description: 'Remove duplicate values from arrays',
-    category: 'data-primitive',
+    category: 'array',
     icon: 'List',
     color: '#107c10',
     inputs: [
@@ -1292,7 +1348,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'array-chunk',
     name: 'Array Chunk',
     description: 'Split arrays into chunks of specified size',
-    category: 'data-primitive',
+    category: 'array',
     icon: 'List',
     color: '#107c10',
     inputs: [
@@ -1308,7 +1364,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'array-slice',
     name: 'Array Slice',
     description: 'Extract portions of arrays using start/end indices',
-    category: 'data-primitive',
+    category: 'array',
     icon: 'List',
     color: '#107c10',
     inputs: [
@@ -1325,7 +1381,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'array-join',
     name: 'Array Join',
     description: 'Join array elements into strings with separators',
-    category: 'data-primitive',
+    category: 'array',
     icon: 'List',
     color: '#107c10',
     inputs: [
@@ -1343,7 +1399,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'object-create',
     name: 'Object Create',
     description: 'Create objects from properties or entries',
-    category: 'data-primitive',
+    category: 'object',
     icon: 'Object',
     color: '#5c2d91',
     inputs: [
@@ -1359,7 +1415,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'object-get',
     name: 'Object Get',
     description: 'Get object properties using dot notation paths',
-    category: 'data-primitive',
+    category: 'object',
     icon: 'Object',
     color: '#5c2d91',
     inputs: [
@@ -1376,7 +1432,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'object-set',
     name: 'Object Set',
     description: 'Set object properties using dot notation paths',
-    category: 'data-primitive',
+    category: 'object',
     icon: 'Object',
     color: '#5c2d91',
     inputs: [
@@ -1393,7 +1449,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'object-merge',
     name: 'Object Merge',
     description: 'Merge multiple objects with shallow or deep merging',
-    category: 'data-primitive',
+    category: 'object',
     icon: 'Object',
     color: '#5c2d91',
     inputs: [
@@ -1409,7 +1465,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'object-clone',
     name: 'Object Clone',
     description: 'Clone objects with shallow or deep copying',
-    category: 'data-primitive',
+    category: 'object',
     icon: 'Object',
     color: '#5c2d91',
     inputs: [
@@ -1425,7 +1481,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'object-keys',
     name: 'Object Keys',
     description: 'Get array of object keys',
-    category: 'data-primitive',
+    category: 'object',
     icon: 'Object',
     color: '#5c2d91',
     inputs: [
@@ -1440,7 +1496,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'object-values',
     name: 'Object Values',
     description: 'Get array of object values',
-    category: 'data-primitive',
+    category: 'object',
     icon: 'Object',
     color: '#5c2d91',
     inputs: [
@@ -1455,7 +1511,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'object-entries',
     name: 'Object Entries',
     description: 'Get array of object key-value pairs',
-    category: 'data-primitive',
+    category: 'object',
     icon: 'Object',
     color: '#5c2d91',
     inputs: [
@@ -1470,7 +1526,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'object-pick',
     name: 'Object Pick',
     description: 'Create new object with selected properties',
-    category: 'data-primitive',
+    category: 'object',
     icon: 'Object',
     color: '#5c2d91',
     inputs: [
@@ -1486,7 +1542,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'object-omit',
     name: 'Object Omit',
     description: 'Create new object without specified properties',
-    category: 'data-primitive',
+    category: 'object',
     icon: 'Object',
     color: '#5c2d91',
     inputs: [
@@ -1502,7 +1558,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'object-freeze',
     name: 'Object Freeze',
     description: 'Freeze objects to prevent modification',
-    category: 'data-primitive',
+    category: 'object',
     icon: 'Object',
     color: '#5c2d91',
     inputs: [
@@ -1520,7 +1576,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'boolean-parse',
     name: 'Boolean Parse',
     description: 'Convert values to booleans with fallback support',
-    category: 'data-primitive',
+    category: 'boolean',
     icon: 'Toggle',
     color: '#d13438',
     inputs: [
@@ -1536,7 +1592,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'boolean-validate',
     name: 'Boolean Validate',
     description: 'Validate boolean values and conversions',
-    category: 'data-primitive',
+    category: 'boolean',
     icon: 'Toggle',
     color: '#d13438',
     inputs: [
@@ -1553,7 +1609,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'json-parse',
     name: 'JSON Parse',
     description: 'Parse JSON strings with fallback support',
-    category: 'data-primitive',
+    category: 'json',
     icon: 'Document',
     color: '#0078d4',
     inputs: [
@@ -1569,7 +1625,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'json-stringify',
     name: 'JSON Stringify',
     description: 'Convert values to JSON strings with formatting',
-    category: 'data-primitive',
+    category: 'json',
     icon: 'Document',
     color: '#0078d4',
     inputs: [
@@ -1585,7 +1641,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'json-validate',
     name: 'JSON Validate',
     description: 'Validate JSON strings for syntax correctness',
-    category: 'data-primitive',
+    category: 'json',
     icon: 'Document',
     color: '#0078d4',
     inputs: [
@@ -1600,7 +1656,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'json-schema-validate',
     name: 'JSON Schema Validate',
     description: 'Validate JSON against schemas',
-    category: 'data-primitive',
+    category: 'json',
     icon: 'Document',
     color: '#0078d4',
     inputs: [
@@ -1618,7 +1674,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'type-check',
     name: 'Type Check',
     description: 'Determine the type of values',
-    category: 'data-primitive',
+    category: 'type-checking',
     icon: 'Search',
     color: '#ff8c00',
     inputs: [
@@ -1633,7 +1689,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'type-convert',
     name: 'Type Convert',
     description: 'Convert values between different types',
-    category: 'data-primitive',
+    category: 'type-checking',
     icon: 'Search',
     color: '#ff8c00',
     inputs: [
@@ -1655,7 +1711,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'type-validate',
     name: 'Type Validate',
     description: 'Validate values against expected types',
-    category: 'data-primitive',
+    category: 'type-checking',
     icon: 'Search',
     color: '#ff8c00',
     inputs: [
@@ -1673,7 +1729,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'data-is-null',
     name: 'Data Is Null',
     description: 'Check if values are null',
-    category: 'data-primitive',
+    category: 'data-validation',
     icon: 'CheckMark',
     color: '#107c10',
     inputs: [
@@ -1688,7 +1744,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'data-is-undefined',
     name: 'Data Is Undefined',
     description: 'Check if values are undefined',
-    category: 'data-primitive',
+    category: 'data-validation',
     icon: 'CheckMark',
     color: '#107c10',
     inputs: [
@@ -1703,7 +1759,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'data-is-empty',
     name: 'Data Is Empty',
     description: 'Check if values are empty (null, undefined, empty string, empty array, empty object)',
-    category: 'data-primitive',
+    category: 'data-validation',
     icon: 'CheckMark',
     color: '#107c10',
     inputs: [
@@ -1718,7 +1774,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'data-is-valid',
     name: 'Data Is Valid',
     description: 'Validate data based on various criteria',
-    category: 'data-primitive',
+    category: 'data-validation',
     icon: 'CheckMark',
     color: '#107c10',
     inputs: [
@@ -1740,7 +1796,7 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     id: 'data-default',
     name: 'Data Default',
     description: 'Provide default values when data is invalid or missing',
-    category: 'data-primitive',
+    category: 'data-validation',
     icon: 'CheckMark',
     color: '#107c10',
     inputs: [

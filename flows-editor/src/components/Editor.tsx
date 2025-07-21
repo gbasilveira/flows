@@ -144,6 +144,54 @@ const nodeTypes = {
   'console-trace': BaseNode,
   'console-count': BaseNode,
   'console-countreset': BaseNode,
+  // Data Primitive node types
+  'number-parse': BaseNode,
+  'number-format': BaseNode,
+  'number-validate': BaseNode,
+  'number-range': BaseNode,
+  'number-round': BaseNode,
+  'number-clamp': BaseNode,
+  'string-parse': BaseNode,
+  'string-validate': BaseNode,
+  'string-encode': BaseNode,
+  'string-decode': BaseNode,
+  'string-format': BaseNode,
+  'string-sanitize': BaseNode,
+  'array-create': BaseNode,
+  'array-filter': BaseNode,
+  'array-map': BaseNode,
+  'array-reduce': BaseNode,
+  'array-sort': BaseNode,
+  'array-flatten': BaseNode,
+  'array-unique': BaseNode,
+  'array-chunk': BaseNode,
+  'array-slice': BaseNode,
+  'array-join': BaseNode,
+  'object-create': BaseNode,
+  'object-get': BaseNode,
+  'object-set': BaseNode,
+  'object-merge': BaseNode,
+  'object-clone': BaseNode,
+  'object-keys': BaseNode,
+  'object-values': BaseNode,
+  'object-entries': BaseNode,
+  'object-pick': BaseNode,
+  'object-omit': BaseNode,
+  'object-freeze': BaseNode,
+  'boolean-parse': BaseNode,
+  'boolean-validate': BaseNode,
+  'json-parse': BaseNode,
+  'json-stringify': BaseNode,
+  'json-validate': BaseNode,
+  'json-schema-validate': BaseNode,
+  'type-check': BaseNode,
+  'type-convert': BaseNode,
+  'type-validate': BaseNode,
+  'data-is-null': BaseNode,
+  'data-is-undefined': BaseNode,
+  'data-is-empty': BaseNode,
+  'data-is-valid': BaseNode,
+  'data-default': BaseNode,
 }
 
 export interface EditorProps {
@@ -186,7 +234,7 @@ export const Editor: React.FC<EditorProps> = ({
     const defaultConfig: EditorConfig = {
       theme: 'light',
       layout: 'vertical',
-      enabledCategories: ['core', 'logic', 'math', 'string', 'flow', 'console'],
+      enabledCategories: ['core', 'logic', 'math', 'string', 'flow', 'console', 'number', 'array', 'object', 'boolean', 'json', 'type-checking', 'data-validation'],
       ui: {
         sidebarWidth: 280,
         minimapEnabled: true,
@@ -296,14 +344,12 @@ export const Editor: React.FC<EditorProps> = ({
     [reactFlowInstance, addNode]
   )
 
-  const handleNodeDragStart = useCallback((nodeType: NodeTypeDefinition, event: React.DragEvent) => {
-    // Node drag started from sidebar
-    console.log('Node drag started:', nodeType)
+  const handleNodeDragStart = useCallback((_nodeType: NodeTypeDefinition, _event: React.DragEvent) => {
+    // setDraggedNodeType(nodeType) // This line is removed
   }, [])
 
-  const handleNodeDragEnd = useCallback((event: React.DragEvent) => {
-    // Node drag ended
-    console.log('Node drag ended')
+  const handleNodeDragEnd = useCallback((_event: React.DragEvent) => {
+    // setDraggedNodeType(null) // This line is removed
   }, [])
 
   const handleExecute = useCallback(() => {

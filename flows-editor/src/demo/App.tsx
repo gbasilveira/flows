@@ -8,13 +8,13 @@ const demoConfig: EditorConfig = {
       id: 'flows-built-in',
       name: 'Flows Built-in Operations',
       version: '1.0.0',
-      description: 'Core logical, mathematical, string, and flow control operations',
+      description: 'Core logical, mathematical, string, flow control, and data primitive operations',
       author: 'Flows Team',
       categories: DEFAULT_CATEGORIES,
       nodeTypes: DEFAULT_NODE_TYPES,
     },
   ],
-  enabledCategories: ['core', 'logic', 'math', 'string', 'flow', 'console'],
+  enabledCategories: ['core', 'logic', 'math', 'string', 'flow', 'console', 'number', 'array', 'object', 'boolean', 'json', 'type-checking', 'data-validation'],
   ui: {
     sidebarWidth: 320, // Wider width to test auto-centering behavior
     toolbarHeight: 60,
