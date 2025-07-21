@@ -246,12 +246,20 @@ export const DEFAULT_CATEGORIES: NodeCategory[] = [
     order: 5,
   },
   {
+    id: 'console',
+    name: 'Console',
+    description: 'Console output operations',
+    icon: 'Document',
+    color: '#6b69d6',
+    order: 6,
+  },
+  {
     id: 'custom',
     name: 'Custom',
     description: 'Custom node types',
     icon: 'Code',
     color: '#6b69d6',
-    order: 6,
+    order: 7,
   },
 ]
 
@@ -696,6 +704,218 @@ export const DEFAULT_NODE_TYPES: NodeTypeDefinition[] = [
     ],
     outputs: [
       { id: 'result', name: 'Result', type: 'object', description: 'Combined results from successful dependencies' }
+    ],
+    configurable: true,
+  },
+  
+  // Console nodes
+  {
+    id: 'console-log',
+    name: 'Log',
+    description: 'Output data to the console',
+    category: 'console',
+    icon: 'Document',
+    color: '#6b69d6',
+    inputs: [
+      { id: 'message', name: 'Message', type: 'string', required: true, description: 'Data to log' }
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', description: 'Original input data' }
+    ],
+    configurable: true,
+  },
+  {
+    id: 'console-error',
+    name: 'Error',
+    description: 'Output error data to the console',
+    category: 'console',
+    icon: 'Document',
+    color: '#6b69d6',
+    inputs: [
+      { id: 'message', name: 'Message', type: 'string', required: true, description: 'Error to log' }
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', description: 'Original input data' }
+    ],
+    configurable: true,
+  },
+  {
+    id: 'console-warn',
+    name: 'Warn',
+    description: 'Output warning data to the console',
+    category: 'console',
+    icon: 'Document',
+    color: '#6b69d6',
+    inputs: [
+      { id: 'message', name: 'Message', type: 'string', required: true, description: 'Warning to log' }
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', description: 'Original input data' }
+    ],
+    configurable: true,
+  },
+  {
+    id: 'console-info',
+    name: 'Info',
+    description: 'Output info data to the console',
+    category: 'console',
+    icon: 'Document',
+    color: '#6b69d6',
+    inputs: [
+      { id: 'message', name: 'Message', type: 'string', required: true, description: 'Info to log' }
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', description: 'Original input data' }
+    ],
+    configurable: true,
+  },
+  {
+    id: 'console-debug',
+    name: 'Debug',
+    description: 'Output debug data to the console',
+    category: 'console',
+    icon: 'Document',
+    color: '#6b69d6',
+    inputs: [
+      { id: 'message', name: 'Message', type: 'string', required: true, description: 'Debug info to log' }
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', description: 'Original input data' }
+    ],
+    configurable: true,
+  },
+  {
+    id: 'console-table',
+    name: 'Table',
+    description: 'Display tabular data in the console',
+    category: 'console',
+    icon: 'Document',
+    color: '#6b69d6',
+    inputs: [
+      { id: 'data', name: 'Data', type: 'array', required: true, description: 'Data to display as table' }
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', description: 'Original input data' }
+    ],
+    configurable: true,
+  },
+  {
+    id: 'console-time',
+    name: 'Time',
+    description: 'Start a timer for performance measurement',
+    category: 'console',
+    icon: 'Document',
+    color: '#6b69d6',
+    inputs: [
+      { id: 'label', name: 'Label', type: 'string', required: true, description: 'Timer label' }
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', description: 'Original input data' }
+    ],
+    configurable: true,
+  },
+  {
+    id: 'console-timeend',
+    name: 'Time End',
+    description: 'End a timer and display elapsed time',
+    category: 'console',
+    icon: 'Document',
+    color: '#6b69d6',
+    inputs: [
+      { id: 'label', name: 'Label', type: 'string', required: true, description: 'Timer label to end' }
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', description: 'Original input data' }
+    ],
+    configurable: true,
+  },
+  {
+    id: 'console-group',
+    name: 'Group',
+    description: 'Create a collapsible group in the console',
+    category: 'console',
+    icon: 'Document',
+    color: '#6b69d6',
+    inputs: [
+      { id: 'label', name: 'Label', type: 'string', required: true, description: 'Group label' }
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', description: 'Original input data' }
+    ],
+    configurable: true,
+  },
+  {
+    id: 'console-groupend',
+    name: 'Group End',
+    description: 'End a console group',
+    category: 'console',
+    icon: 'Document',
+    color: '#6b69d6',
+    inputs: [
+      { id: 'label', name: 'Label', type: 'string', required: false, description: 'Group label to end' }
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', description: 'Original input data' }
+    ],
+    configurable: true,
+  },
+  {
+    id: 'console-clear',
+    name: 'Clear',
+    description: 'Clear the console',
+    category: 'console',
+    icon: 'Document',
+    color: '#6b69d6',
+    inputs: [
+      { id: 'label', name: 'Label', type: 'string', required: false, description: 'Clear label' }
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', description: 'Original input data' }
+    ],
+    configurable: true,
+  },
+  {
+    id: 'console-trace',
+    name: 'Trace',
+    description: 'Output a stack trace to the console',
+    category: 'console',
+    icon: 'Document',
+    color: '#6b69d6',
+    inputs: [
+      { id: 'label', name: 'Label', type: 'string', required: false, description: 'Trace label' }
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', description: 'Original input data' }
+    ],
+    configurable: true,
+  },
+  {
+    id: 'console-count',
+    name: 'Count',
+    description: 'Count the number of times this node is executed',
+    category: 'console',
+    icon: 'Document',
+    color: '#6b69d6',
+    inputs: [
+      { id: 'label', name: 'Label', type: 'string', required: true, description: 'Counter label' }
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', description: 'Original input data' }
+    ],
+    configurable: true,
+  },
+  {
+    id: 'console-countreset',
+    name: 'Count Reset',
+    description: 'Reset a counter',
+    category: 'console',
+    icon: 'Document',
+    color: '#6b69d6',
+    inputs: [
+      { id: 'label', name: 'Label', type: 'string', required: true, description: 'Counter label to reset' }
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', description: 'Original input data' }
     ],
     configurable: true,
   },

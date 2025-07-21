@@ -19,6 +19,9 @@ import {
   CodeRegular,
   ChevronDownRegular,
   ChevronUpRegular,
+  DatabaseRegular,
+  ClockRegular,
+  DocumentRegular,
 } from '@fluentui/react-icons'
 import type { NodeData } from '../../types'
 
@@ -100,6 +103,11 @@ const useStyles = makeStyles({
   configToggle: {
     backgroundColor: tokens.colorBrandBackground,
   },
+  nodeType: {
+    fontSize: tokens.fontSizeBase100,
+    color: tokens.colorNeutralForeground3,
+    fontStyle: 'italic',
+  },
 })
 
 export interface BaseNodeProps extends NodeProps<NodeData> {
@@ -123,22 +131,136 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
     }
   }
 
-  const getNodeIcon = (type: string) => {
+  const getNodeIcon = (type: string, category: string) => {
+    // Handle specific node types first
     switch (type) {
       case 'data':
-        return <CircleRegular className={styles.icon} />
-      case 'logic':
-        return <BranchRegular className={styles.icon} />
-      case 'math':
-        return <CalculatorRegular className={styles.icon} />
-      case 'string':
-        return <TextTRegular className={styles.icon} />
-      case 'flow':
+        return <DatabaseRegular className={styles.icon} />
+      case 'delay':
+        return <ClockRegular className={styles.icon} />
+      case 'subflow':
         return <FlowRegular className={styles.icon} />
-      case 'custom':
-        return <CodeRegular className={styles.icon} />
+      case 'console-log':
+      case 'console-error':
+      case 'console-warn':
+      case 'console-info':
+      case 'console-debug':
+      case 'console-table':
+      case 'console-time':
+      case 'console-timeend':
+      case 'console-group':
+      case 'console-groupend':
+      case 'console-clear':
+      case 'console-trace':
+      case 'console-count':
+      case 'console-countreset':
+        return <DocumentRegular className={styles.icon} />
       default:
-        return <CircleRegular className={styles.icon} />
+        // Fall back to category-based icons
+        switch (category) {
+          case 'core':
+            return <CircleRegular className={styles.icon} />
+          case 'logic':
+            return <BranchRegular className={styles.icon} />
+          case 'math':
+            return <CalculatorRegular className={styles.icon} />
+          case 'string':
+            return <TextTRegular className={styles.icon} />
+          case 'flow':
+            return <FlowRegular className={styles.icon} />
+          case 'custom':
+            return <CodeRegular className={styles.icon} />
+          default:
+            return <CircleRegular className={styles.icon} />
+        }
+    }
+  }
+
+  const getNodeDisplayName = (type: string) => {
+    // Convert node type to display name
+    switch (type) {
+      case 'data':
+        return 'Data'
+      case 'delay':
+        return 'Delay'
+      case 'subflow':
+        return 'Subflow'
+      case 'logic-and':
+        return 'AND'
+      case 'logic-or':
+        return 'OR'
+      case 'logic-not':
+        return 'NOT'
+      case 'logic-xor':
+        return 'XOR'
+      case 'math-add':
+        return 'Add'
+      case 'math-subtract':
+        return 'Subtract'
+      case 'math-multiply':
+        return 'Multiply'
+      case 'math-divide':
+        return 'Divide'
+      case 'math-power':
+        return 'Power'
+      case 'math-modulo':
+        return 'Modulo'
+      case 'string-concat':
+        return 'Concatenate'
+      case 'string-substring':
+        return 'Substring'
+      case 'string-replace':
+        return 'Replace'
+      case 'string-match':
+        return 'Match'
+      case 'string-split':
+        return 'Split'
+      case 'string-compare':
+        return 'Compare'
+      case 'string-length':
+        return 'Length'
+      case 'string-case':
+        return 'Case Transform'
+      case 'condition':
+        return 'Condition'
+      case 'merge-all':
+        return 'Merge All'
+      case 'merge-any':
+        return 'Merge Any'
+      case 'merge-majority':
+        return 'Merge Majority'
+      case 'merge-count':
+        return 'Merge Count'
+      case 'console-log':
+        return 'Console Log'
+      case 'console-error':
+        return 'Console Error'
+      case 'console-warn':
+        return 'Console Warn'
+      case 'console-info':
+        return 'Console Info'
+      case 'console-debug':
+        return 'Console Debug'
+      case 'console-table':
+        return 'Console Table'
+      case 'console-time':
+        return 'Console Time'
+      case 'console-timeend':
+        return 'Console Time End'
+      case 'console-group':
+        return 'Console Group'
+      case 'console-groupend':
+        return 'Console Group End'
+      case 'console-clear':
+        return 'Console Clear'
+      case 'console-trace':
+        return 'Console Trace'
+      case 'console-count':
+        return 'Console Count'
+      case 'console-countreset':
+        return 'Console Count Reset'
+      default:
+        return type
     }
   }
 
@@ -159,9 +281,9 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
       {/* Node Header */}
       <div className={styles.header}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          {getNodeIcon(data.type)}
+          {getNodeIcon(data.type, data.category)}
           <div>
-            <Title3 className={styles.title}>{data.label}</Title3>
+            <Title3 className={styles.title}>{getNodeDisplayName(data.type)}</Title3>
             <Caption1 className={styles.category}>{data.category}</Caption1>
           </div>
         </div>
@@ -169,10 +291,10 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
 
       {/* Node Content */}
       <div className={styles.content}>
-        <p>Node type: {data.type}</p>
+        <p className={styles.nodeType}>Type: {data.type}</p>
         
         {/* Configuration Section */}
-        {configurable && data.config && (
+        {configurable && data.config && Object.keys(data.config).length > 0 && (
           <div className={styles.configSection}>
             <Button
               appearance="subtle"

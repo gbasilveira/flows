@@ -17,6 +17,7 @@ import {
   FlowRegular,
   CodeRegular,
   SearchRegular,
+  DocumentRegular,
 } from '@fluentui/react-icons'
 import type { NodeTypeDefinition } from '../../types'
 import { useCategories, useNodeTypes } from '../../store'
@@ -331,6 +332,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         return <FlowRegular className={styles.categoryIcon} />
       case 'custom':
         return <CodeRegular className={styles.categoryIcon} />
+      case 'console':
+        return <DocumentRegular className={styles.categoryIcon} />
       default:
         return <CircleRegular className={styles.categoryIcon} />
     }

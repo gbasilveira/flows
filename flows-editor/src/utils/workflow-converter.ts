@@ -233,18 +233,253 @@ export function createNewNode(
   category: string,
   position: { x: number; y: number }
 ): Node<NodeData> {
+  // Get default inputs and outputs based on node type
+  const { inputs, outputs } = getDefaultNodeConfig(type)
+  
   return {
     id: uuidv4(),
-    type: 'default',
+    type: 'default', // All nodes use the default BaseNode component
     position,
     data: {
-      label: type,
+      label: getNodeDisplayName(type),
       type,
       category,
-      inputs: {},
-      outputs: {},
+      inputs,
+      outputs,
       config: {},
     } as NodeData,
+  }
+}
+
+/**
+ * Get default inputs and outputs for a node type
+ */
+function getDefaultNodeConfig(type: string): { inputs: Record<string, any>; outputs: Record<string, any> } {
+  switch (type) {
+    case 'data':
+      return {
+        inputs: { value: {} },
+        outputs: { value: {} }
+      }
+    case 'delay':
+      return {
+        inputs: { duration: 1000 },
+        outputs: { value: {} }
+      }
+    case 'subflow':
+      return {
+        inputs: { workflowId: '' },
+        outputs: { result: {} }
+      }
+    case 'logic-and':
+    case 'logic-or':
+    case 'logic-not':
+    case 'logic-xor':
+      return {
+        inputs: { values: [] },
+        outputs: { result: false }
+      }
+    case 'math-add':
+    case 'math-subtract':
+    case 'math-multiply':
+      return {
+        inputs: { values: [] },
+        outputs: { result: 0 }
+      }
+    case 'math-divide':
+    case 'math-power':
+    case 'math-modulo':
+      return {
+        inputs: { dividend: 0, divisor: 1 },
+        outputs: { result: 0 }
+      }
+    case 'string-concat':
+      return {
+        inputs: { values: [], separator: '' },
+        outputs: { result: '' }
+      }
+    case 'string-substring':
+      return {
+        inputs: { text: '', start: 0, end: 0 },
+        outputs: { result: '' }
+      }
+    case 'string-replace':
+      return {
+        inputs: { text: '', search: '', replace: '', global: true },
+        outputs: { result: '' }
+      }
+    case 'string-match':
+      return {
+        inputs: { text: '', pattern: '' },
+        outputs: { result: false }
+      }
+    case 'string-split':
+      return {
+        inputs: { text: '', delimiter: '' },
+        outputs: { result: [] }
+      }
+    case 'string-compare':
+      return {
+        inputs: { text1: '', text2: '', caseSensitive: true },
+        outputs: { result: false }
+      }
+    case 'string-length':
+      return {
+        inputs: { text: '' },
+        outputs: { result: 0 }
+      }
+    case 'string-case':
+      return {
+        inputs: { text: '', caseType: 'upper' },
+        outputs: { result: '' }
+      }
+    case 'condition':
+      return {
+        inputs: { 
+          conditionType: 'simple',
+          condition: true,
+          thenValue: null,
+          elseValue: null
+        },
+        outputs: { result: null }
+      }
+    case 'merge-all':
+    case 'merge-any':
+    case 'merge-majority':
+      return {
+        inputs: { strict: true },
+        outputs: { result: {} }
+      }
+    case 'merge-count':
+      return {
+        inputs: { requiredCount: 1, strict: true },
+        outputs: { result: {} }
+      }
+    case 'console-log':
+    case 'console-error':
+    case 'console-warn':
+    case 'console-info':
+    case 'console-debug':
+      return {
+        inputs: { message: '', data: null, options: {} },
+        outputs: { result: null }
+      }
+    case 'console-table':
+      return {
+        inputs: { data: [], options: {} },
+        outputs: { result: null }
+      }
+    case 'console-time':
+    case 'console-timeend':
+      return {
+        inputs: { label: '' },
+        outputs: { result: null }
+      }
+    case 'console-group':
+    case 'console-groupend':
+    case 'console-clear':
+    case 'console-trace':
+    case 'console-count':
+    case 'console-countreset':
+      return {
+        inputs: { label: '' },
+        outputs: { result: null }
+      }
+    default:
+      return {
+        inputs: {},
+        outputs: {}
+      }
+  }
+}
+
+/**
+ * Get display name for a node type
+ */
+function getNodeDisplayName(type: string): string {
+  switch (type) {
+    case 'data':
+      return 'Data'
+    case 'delay':
+      return 'Delay'
+    case 'subflow':
+      return 'Subflow'
+    case 'logic-and':
+      return 'AND'
+    case 'logic-or':
+      return 'OR'
+    case 'logic-not':
+      return 'NOT'
+    case 'logic-xor':
+      return 'XOR'
+    case 'math-add':
+      return 'Add'
+    case 'math-subtract':
+      return 'Subtract'
+    case 'math-multiply':
+      return 'Multiply'
+    case 'math-divide':
+      return 'Divide'
+    case 'math-power':
+      return 'Power'
+    case 'math-modulo':
+      return 'Modulo'
+    case 'string-concat':
+      return 'Concatenate'
+    case 'string-substring':
+      return 'Substring'
+    case 'string-replace':
+      return 'Replace'
+    case 'string-match':
+      return 'Match'
+    case 'string-split':
+      return 'Split'
+    case 'string-compare':
+      return 'Compare'
+    case 'string-length':
+      return 'Length'
+    case 'string-case':
+      return 'Case Transform'
+    case 'condition':
+      return 'Condition'
+    case 'merge-all':
+      return 'Merge All'
+    case 'merge-any':
+      return 'Merge Any'
+    case 'merge-majority':
+      return 'Merge Majority'
+    case 'merge-count':
+      return 'Merge Count'
+    case 'console-log':
+      return 'Console Log'
+    case 'console-error':
+      return 'Console Error'
+    case 'console-warn':
+      return 'Console Warn'
+    case 'console-info':
+      return 'Console Info'
+    case 'console-debug':
+      return 'Console Debug'
+    case 'console-table':
+      return 'Console Table'
+    case 'console-time':
+      return 'Console Time'
+    case 'console-timeend':
+      return 'Console Time End'
+    case 'console-group':
+      return 'Console Group'
+    case 'console-groupend':
+      return 'Console Group End'
+    case 'console-clear':
+      return 'Console Clear'
+    case 'console-trace':
+      return 'Console Trace'
+    case 'console-count':
+      return 'Console Count'
+    case 'console-countreset':
+      return 'Console Count Reset'
+    default:
+      return type
   }
 }
 

@@ -72,6 +72,7 @@ export {
 } from './store'
 
 // Demo components
-export { default as SimpleDemo } from './demo/SimpleDemo'
 export { default as App } from './demo/App'
-export { default as ComprehensiveExample } from './demo/ComprehensiveExample' 
+export { default as SimpleDemo } from './demo/SimpleDemo'
+export { default as ComprehensiveExample } from './demo/ComprehensiveExample'
+export { default as DragDropTest } from './demo/DragDropTest' 

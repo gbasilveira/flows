@@ -11,12 +11,92 @@ This is a comprehensive React Flow-based editor for the Flows library with the f
 - **Professional UI**: Clean, modern interface built with FluentUI
 - **Configurable Architecture**: Extensive configuration options for customisation
 - **Plugin System**: Extensible plugin architecture for custom node types
-- **Drag & Drop**: Intuitive drag-and-drop workflow creation
+- **Drag & Drop**: ✅ **FULLY FUNCTIONAL** - Intuitive drag-and-drop workflow creation with all handlers
 - **Real-time Validation**: Live workflow validation and error detection
 - **Visual Feedback**: Rich visual indicators and status updates
 - **Production Ready**: Built for enterprise use with comprehensive error handling
 - **Complete Flows Integration**: Full integration with all flows library handlers and plugins
 - **Intelligent Tab Navigation**: Auto-centering tabs with keyboard and touch support
+
+### 🎯 Drag & Drop Functionality
+
+The editor now features **complete drag and drop functionality** for all node types:
+
+#### **How It Works**
+1. **Drag from Sidebar**: Click and drag any node type from the sidebar palette
+2. **Drop on Canvas**: Drop the node anywhere on the ReactFlow canvas
+3. **Automatic Positioning**: Nodes are positioned at the exact drop location
+4. **Visual Feedback**: Smooth drag animations and visual indicators
+5. **Node Creation**: Nodes are created with proper inputs/outputs based on their type
+
+#### **Supported Node Types**
+All node types from the flows library are now draggable and functional:
+
+**Core Nodes**:
+- **`data`** - Pass-through data nodes with configurable inputs
+- **`delay`** - Wait nodes with duration configuration
+- **`subflow`** - Execute other workflows with workflow ID input
+
+**Logical Operations**:
+- **`logic-and`** - Boolean AND operation on multiple values
+- **`logic-or`** - Boolean OR operation on multiple values
+- **`logic-not`** - Boolean NOT operation on a single value
+- **`logic-xor`** - Boolean XOR operation on two values
+
+**Mathematical Operations**:
+- **`math-add`** - Addition of multiple numbers
+- **`math-subtract`** - Subtraction with multiple operands
+- **`math-multiply`** - Multiplication of multiple numbers
+- **`math-divide`** - Division of two numbers (with zero-division protection)
+- **`math-power`** - Exponentiation (base^exponent)
+- **`math-modulo`** - Modulo operation (remainder after division)
+
+**String Manipulation**:
+- **`string-concat`** - Concatenate multiple strings with optional separator
+- **`string-substring`** - Extract substring using start/end positions
+- **`string-replace`** - Replace text with regex support and global options
+- **`string-match`** - Match text against regex patterns
+- **`string-split`** - Split string into array using delimiter
+- **`string-compare`** - Compare strings with case-sensitivity options
+- **`string-length`** - Get string length
+- **`string-case`** - Transform case (upper, lower, title, sentence)
+
+**Flow Control**:
+- **`condition`** - Conditional execution with multiple condition types
+- **`merge-all`** - Wait for all dependencies to succeed before proceeding
+- **`merge-any`** - Proceed when any dependency succeeds
+- **`merge-majority`** - Proceed when majority of dependencies succeed
+- **`merge-count`** - Proceed when specific number of dependencies succeed
+
+**Console Operations**:
+- **`console-log`** - Output messages to console.log
+- **`console-error`** - Output error messages to console.error
+- **`console-warn`** - Output warning messages to console.warn
+- **`console-info`** - Output informational messages to console.info
+- **`console-debug`** - Output debug messages to console.debug
+- **`console-table`** - Display tabular data in the console
+- **`console-time`** - Start a timer for performance measurement
+- **`console-timeend`** - End a timer and display elapsed time
+- **`console-group`** - Create a collapsible group in the console
+- **`console-groupend`** - End a console group
+- **`console-clear`** - Clear the console
+- **`console-trace`** - Output a stack trace
+- **`console-count`** - Count the number of times this node is executed
+- **`console-countreset`** - Reset a counter
+
+#### **Node Configuration**
+Each node type is created with appropriate default inputs and outputs:
+- **Inputs**: Pre-configured based on the node type requirements
+- **Outputs**: Properly typed for downstream connections
+- **Configuration**: Expandable configuration panels for complex nodes
+- **Visual Feedback**: Clear icons and labels for each node type
+
+#### **Connection System**
+When nodes are connected, they automatically reflect the flows library execution model:
+- **Dependencies**: Connections create proper workflow dependencies
+- **Data Flow**: Input/output handles match the flows library data flow
+- **Validation**: Real-time validation of connections and data types
+- **Execution Order**: Visual representation of execution order
 
 ### 🏗️ Architecture
 
@@ -24,17 +104,17 @@ This is a comprehensive React Flow-based editor for the Flows library with the f
 flows-editor/
 ├── src/
 │   ├── components/
-│   │   ├── Editor.tsx          # Main editor component
+│   │   ├── Editor.tsx          # Main editor component with drag & drop
 │   │   ├── nodes/
-│   │   │   └── BaseNode.tsx    # Base node component
+│   │   │   └── BaseNode.tsx    # Base node component with type-specific rendering
 │   │   └── sidebar/
-│   │       └── Sidebar.tsx     # Node palette sidebar
+│   │       └── Sidebar.tsx     # Node palette sidebar with draggable items
 │   ├── store/
 │   │   └── index.ts            # Zustand store with immer
 │   ├── types/
-│   │   └── index.ts            # TypeScript types
+│   │   └── index.ts            # TypeScript types with all node definitions
 │   ├── utils/
-│   │   ├── workflow-converter.ts # Conversion utilities
+│   │   ├── workflow-converter.ts # Conversion utilities with node creation
 │   │   ├── plugin-registry.ts  # Plugin system
 │   │   └── flows-integration.ts # Flows library integration
 │   ├── demo/

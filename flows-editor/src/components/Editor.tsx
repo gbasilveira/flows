@@ -38,7 +38,7 @@ import { Sidebar } from './sidebar/Sidebar'
 import { BaseNode } from './nodes/BaseNode'
 import { useEditorStore } from '../store'
 import { convertToWorkflow, convertFromWorkflow, createNewNode } from '../utils/workflow-converter'
-import type { EdgeData, EditorConfig } from '../types'
+import type { EdgeData, EditorConfig, NodeTypeDefinition } from '../types'
 
 const useStyles = makeStyles({
   root: {
@@ -100,8 +100,50 @@ const useStyles = makeStyles({
   },
 })
 
+// Register all node types with ReactFlow
 const nodeTypes = {
   default: BaseNode,
+  // Add specific node types for different categories
+  data: BaseNode,
+  delay: BaseNode,
+  subflow: BaseNode,
+  'logic-and': BaseNode,
+  'logic-or': BaseNode,
+  'logic-not': BaseNode,
+  'logic-xor': BaseNode,
+  'math-add': BaseNode,
+  'math-subtract': BaseNode,
+  'math-multiply': BaseNode,
+  'math-divide': BaseNode,
+  'math-power': BaseNode,
+  'math-modulo': BaseNode,
+  'string-concat': BaseNode,
+  'string-substring': BaseNode,
+  'string-replace': BaseNode,
+  'string-match': BaseNode,
+  'string-split': BaseNode,
+  'string-compare': BaseNode,
+  'string-length': BaseNode,
+  'string-case': BaseNode,
+  condition: BaseNode,
+  'merge-all': BaseNode,
+  'merge-any': BaseNode,
+  'merge-majority': BaseNode,
+  'merge-count': BaseNode,
+  'console-log': BaseNode,
+  'console-error': BaseNode,
+  'console-warn': BaseNode,
+  'console-info': BaseNode,
+  'console-debug': BaseNode,
+  'console-table': BaseNode,
+  'console-time': BaseNode,
+  'console-timeend': BaseNode,
+  'console-group': BaseNode,
+  'console-groupend': BaseNode,
+  'console-clear': BaseNode,
+  'console-trace': BaseNode,
+  'console-count': BaseNode,
+  'console-countreset': BaseNode,
 }
 
 export interface EditorProps {
@@ -144,7 +186,7 @@ export const Editor: React.FC<EditorProps> = ({
     const defaultConfig: EditorConfig = {
       theme: 'light',
       layout: 'vertical',
-      enabledCategories: ['core', 'logic', 'math', 'string', 'flow'],
+      enabledCategories: ['core', 'logic', 'math', 'string', 'flow', 'console'],
       ui: {
         sidebarWidth: 280,
         minimapEnabled: true,
@@ -232,30 +274,36 @@ export const Editor: React.FC<EditorProps> = ({
       event.preventDefault()
 
       const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect()
-      if (!reactFlowBounds) return
+      if (!reactFlowBounds || !reactFlowInstance) return
 
-      const data = JSON.parse(event.dataTransfer.getData('application/reactflow'))
-      
-      // Handle nodeType data from sidebar
-      if (data.id && data.type) {
-        const position = reactFlowInstance.project({
-          x: event.clientX - reactFlowBounds.left,
-          y: event.clientY - reactFlowBounds.top,
-        })
+      try {
+        const data = JSON.parse(event.dataTransfer.getData('application/reactflow'))
+        
+        // Handle nodeType data from sidebar
+        if (data.id && data.category) {
+          const position = reactFlowInstance.project({
+            x: event.clientX - reactFlowBounds.left,
+            y: event.clientY - reactFlowBounds.top,
+          })
 
-        const newNode = createNewNode(data.id, data.category, position)
-        addNode(newNode)
+          const newNode = createNewNode(data.id, data.category, position)
+          addNode(newNode)
+        }
+      } catch (error) {
+        console.warn('Failed to parse drag data:', error)
       }
     },
     [reactFlowInstance, addNode]
   )
 
-  const handleNodeDragStart = useCallback(() => {
+  const handleNodeDragStart = useCallback((nodeType: NodeTypeDefinition, event: React.DragEvent) => {
     // Node drag started from sidebar
+    console.log('Node drag started:', nodeType)
   }, [])
 
-  const handleNodeDragEnd = useCallback(() => {
+  const handleNodeDragEnd = useCallback((event: React.DragEvent) => {
     // Node drag ended
+    console.log('Node drag ended')
   }, [])
 
   const handleExecute = useCallback(() => {
