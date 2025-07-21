@@ -268,7 +268,7 @@ export class ConsoleHandler {
   /**
    * Perform console.groupEnd operation
    */
-  private performGroupEnd(options?: Record<string, unknown>): unknown {
+  private performGroupEnd(_options?: Record<string, unknown>): unknown {
     console.groupEnd();
     return { groupEnded: true };
   }

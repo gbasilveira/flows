@@ -8,7 +8,6 @@ import {
   StorageType,
   DefaultNodeExecutor,
   type FlowsConfig,
-  type WorkflowNode,
 } from '../index.js';
 import { PluginRegistry, type HandlerPlugin } from '../core/plugin-registry.js';
 
@@ -23,7 +22,7 @@ const httpPlugin: HandlerPlugin = {
   nodeType: 'http-request',
   handler: {
     async execute(node, _context, inputs) {
-      const { method = 'GET', url, headers = {} } = { ...node.inputs, ...inputs };
+      const { method = 'GET', url } = { ...node.inputs, ...inputs };
       
       if (!url || typeof url !== 'string') {
         throw new Error('URL is required and must be a string');
@@ -115,7 +114,7 @@ const databasePlugin: HandlerPlugin = {
 const notificationPlugin = PluginRegistry.createPlugin(
   'notification',
   async (node, _context, inputs) => {
-    const { type, recipient, message, channel = 'email' } = { ...node.inputs, ...inputs };
+    const { type, recipient, channel = 'email' } = { ...node.inputs, ...inputs };
     
     console.log(`📧 [Plugin] Sending ${type} notification to ${recipient} via ${channel}`);
     
@@ -256,7 +255,7 @@ export async function runPluginSystemExample() {
   // executor.registerPlugin(additionalPlugin);
 
   console.log('📋 Available node types:', executor.getAvailableNodeTypes());
-  console.log('🔌 Registered plugins:', executor.getRegisteredPlugins().map(p => ({
+  console.log('🔌 Registered plugins:', executor.getRegisteredPlugins().map((p: HandlerPlugin) => ({
     nodeType: p.nodeType,
     name: p.metadata?.name,
     version: p.metadata?.version,

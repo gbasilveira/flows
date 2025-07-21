@@ -4,14 +4,15 @@ import {
   MathHandler, 
   StringHandler, 
   ConditionHandler, 
-  MergeHandler 
+  MergeHandler,
+  DataPrimitiveHandler
 } from './handlers/index.js';
 import { allConsolePlugins } from './console-plugins.js';
 
 /**
  * Built-in plugins collection providing comprehensive operation handlers
  * These plugins extend the core functionality with logical, mathematical,
- * string manipulation, conditional, and flow control operations
+ * string manipulation, conditional, flow control, and data primitive operations
  */
 
 // ================================
@@ -145,7 +146,7 @@ export const mathDividePlugin: HandlerPlugin = {
   metadata: {
     name: 'Math Division Plugin',
     version: '1.0.0',
-    description: 'Performs division operation on two numeric values',
+    description: 'Performs division operation on numeric values',
     author: 'Flows Team'
   }
 };
@@ -161,7 +162,7 @@ export const mathPowerPlugin: HandlerPlugin = {
   metadata: {
     name: 'Math Power Plugin',
     version: '1.0.0',
-    description: 'Performs exponentiation operation (base^exponent)',
+    description: 'Performs exponentiation operation on numeric values',
     author: 'Flows Team'
   }
 };
@@ -177,7 +178,7 @@ export const mathModuloPlugin: HandlerPlugin = {
   metadata: {
     name: 'Math Modulo Plugin',
     version: '1.0.0',
-    description: 'Performs modulo operation (remainder after division)',
+    description: 'Performs modulo operation on numeric values',
     author: 'Flows Team'
   }
 };
@@ -197,7 +198,7 @@ export const stringConcatPlugin: HandlerPlugin = {
   metadata: {
     name: 'String Concatenation Plugin',
     version: '1.0.0',
-    description: 'Concatenates multiple string values with optional separator',
+    description: 'Concatenates multiple strings with optional separator',
     author: 'Flows Team'
   }
 };
@@ -213,7 +214,7 @@ export const stringSubstringPlugin: HandlerPlugin = {
   metadata: {
     name: 'String Substring Plugin',
     version: '1.0.0',
-    description: 'Extracts a substring from text using start and end positions',
+    description: 'Extracts substring using start/end positions',
     author: 'Flows Team'
   }
 };
@@ -229,7 +230,7 @@ export const stringReplacePlugin: HandlerPlugin = {
   metadata: {
     name: 'String Replace Plugin',
     version: '1.0.0',
-    description: 'Replaces text in a string with support for regex patterns',
+    description: 'Replaces text with regex support and global options',
     author: 'Flows Team'
   }
 };
@@ -245,7 +246,7 @@ export const stringMatchPlugin: HandlerPlugin = {
   metadata: {
     name: 'String Match Plugin',
     version: '1.0.0',
-    description: 'Matches text against regex patterns and returns matches',
+    description: 'Matches text against regex patterns',
     author: 'Flows Team'
   }
 };
@@ -261,7 +262,7 @@ export const stringSplitPlugin: HandlerPlugin = {
   metadata: {
     name: 'String Split Plugin',
     version: '1.0.0',
-    description: 'Splits a string into an array using a delimiter',
+    description: 'Splits string into array using delimiter',
     author: 'Flows Team'
   }
 };
@@ -277,7 +278,7 @@ export const stringComparePlugin: HandlerPlugin = {
   metadata: {
     name: 'String Compare Plugin',
     version: '1.0.0',
-    description: 'Compares two strings with optional case sensitivity',
+    description: 'Compares strings with case-sensitivity options',
     author: 'Flows Team'
   }
 };
@@ -309,7 +310,7 @@ export const stringCasePlugin: HandlerPlugin = {
   metadata: {
     name: 'String Case Plugin',
     version: '1.0.0',
-    description: 'Transforms string case (upper, lower, title, sentence)',
+    description: 'Transforms string case using different strategies',
     author: 'Flows Team'
   }
 };
@@ -329,7 +330,7 @@ export const conditionPlugin: HandlerPlugin = {
   metadata: {
     name: 'Condition Plugin',
     version: '1.0.0',
-    description: 'Evaluates conditions and provides branching logic for workflows',
+    description: 'Evaluates conditions and provides branching logic',
     author: 'Flows Team'
   }
 };
@@ -339,7 +340,7 @@ export const mergeAllPlugin: HandlerPlugin = {
   handler: {
     async execute(node, context, inputs) {
       const handler = new MergeHandler();
-      return handler.execute({ ...node, inputs: { ...node.inputs, strategy: 'all' }}, context, inputs);
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'all' }}, context, inputs);
     }
   },
   metadata: {
@@ -355,7 +356,7 @@ export const mergeAnyPlugin: HandlerPlugin = {
   handler: {
     async execute(node, context, inputs) {
       const handler = new MergeHandler();
-      return handler.execute({ ...node, inputs: { ...node.inputs, strategy: 'any' }}, context, inputs);
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'any' }}, context, inputs);
     }
   },
   metadata: {
@@ -371,7 +372,7 @@ export const mergeMajorityPlugin: HandlerPlugin = {
   handler: {
     async execute(node, context, inputs) {
       const handler = new MergeHandler();
-      return handler.execute({ ...node, inputs: { ...node.inputs, strategy: 'majority' }}, context, inputs);
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'majority' }}, context, inputs);
     }
   },
   metadata: {
@@ -387,13 +388,777 @@ export const mergeCountPlugin: HandlerPlugin = {
   handler: {
     async execute(node, context, inputs) {
       const handler = new MergeHandler();
-      return handler.execute({ ...node, inputs: { ...node.inputs, strategy: 'count' }}, context, inputs);
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'count' }}, context, inputs);
     }
   },
   metadata: {
     name: 'Merge Count Plugin',
     version: '1.0.0',
-    description: 'Proceeds when a specific number of dependencies succeed',
+    description: 'Proceeds when specific number of dependencies succeed',
+    author: 'Flows Team'
+  }
+};
+
+// ================================
+// Data Primitive Operation Plugins
+// ================================
+
+// Number Operations
+export const numberParsePlugin: HandlerPlugin = {
+  nodeType: 'number-parse',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'number-parse' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Number Parse Plugin',
+    version: '1.0.0',
+    description: 'Converts values to numbers with fallback support',
+    author: 'Flows Team'
+  }
+};
+
+export const numberFormatPlugin: HandlerPlugin = {
+  nodeType: 'number-format',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'number-format' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Number Format Plugin',
+    version: '1.0.0',
+    description: 'Formats numbers using locale and options',
+    author: 'Flows Team'
+  }
+};
+
+export const numberValidatePlugin: HandlerPlugin = {
+  nodeType: 'number-validate',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'number-validate' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Number Validate Plugin',
+    version: '1.0.0',
+    description: 'Validates numbers with range and constraint checks',
+    author: 'Flows Team'
+  }
+};
+
+export const numberRangePlugin: HandlerPlugin = {
+  nodeType: 'number-range',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'number-range' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Number Range Plugin',
+    version: '1.0.0',
+    description: 'Generates number ranges with step support',
+    author: 'Flows Team'
+  }
+};
+
+export const numberRoundPlugin: HandlerPlugin = {
+  nodeType: 'number-round',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'number-round' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Number Round Plugin',
+    version: '1.0.0',
+    description: 'Rounds numbers using various methods and precision',
+    author: 'Flows Team'
+  }
+};
+
+export const numberClampPlugin: HandlerPlugin = {
+  nodeType: 'number-clamp',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'number-clamp' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Number Clamp Plugin',
+    version: '1.0.0',
+    description: 'Clamps numbers to specified min/max ranges',
+    author: 'Flows Team'
+  }
+};
+
+// String Operations
+export const stringParsePlugin: HandlerPlugin = {
+  nodeType: 'string-parse',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'string-parse' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'String Parse Plugin',
+    version: '1.0.0',
+    description: 'Converts values to strings with encoding support',
+    author: 'Flows Team'
+  }
+};
+
+export const stringValidatePlugin: HandlerPlugin = {
+  nodeType: 'string-validate',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'string-validate' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'String Validate Plugin',
+    version: '1.0.0',
+    description: 'Validates strings with length and pattern checks',
+    author: 'Flows Team'
+  }
+};
+
+export const stringEncodePlugin: HandlerPlugin = {
+  nodeType: 'string-encode',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'string-encode' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'String Encode Plugin',
+    version: '1.0.0',
+    description: 'Encodes strings using various encoding methods',
+    author: 'Flows Team'
+  }
+};
+
+export const stringDecodePlugin: HandlerPlugin = {
+  nodeType: 'string-decode',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'string-decode' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'String Decode Plugin',
+    version: '1.0.0',
+    description: 'Decodes strings using various encoding methods',
+    author: 'Flows Team'
+  }
+};
+
+export const stringFormatPlugin: HandlerPlugin = {
+  nodeType: 'string-format',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'string-format' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'String Format Plugin',
+    version: '1.0.0',
+    description: 'Formats strings using template substitution',
+    author: 'Flows Team'
+  }
+};
+
+export const stringSanitizePlugin: HandlerPlugin = {
+  nodeType: 'string-sanitize',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'string-sanitize' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'String Sanitize Plugin',
+    version: '1.0.0',
+    description: 'Sanitizes strings by removing HTML, scripts, and normalizing whitespace',
+    author: 'Flows Team'
+  }
+};
+
+// Array Operations
+export const arrayCreatePlugin: HandlerPlugin = {
+  nodeType: 'array-create',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'array-create' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Array Create Plugin',
+    version: '1.0.0',
+    description: 'Creates arrays with specified length, fill values, or initial values',
+    author: 'Flows Team'
+  }
+};
+
+export const arrayFilterPlugin: HandlerPlugin = {
+  nodeType: 'array-filter',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'array-filter' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Array Filter Plugin',
+    version: '1.0.0',
+    description: 'Filters arrays based on various conditions',
+    author: 'Flows Team'
+  }
+};
+
+export const arrayMapPlugin: HandlerPlugin = {
+  nodeType: 'array-map',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'array-map' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Array Map Plugin',
+    version: '1.0.0',
+    description: 'Transforms array elements using various operations',
+    author: 'Flows Team'
+  }
+};
+
+export const arrayReducePlugin: HandlerPlugin = {
+  nodeType: 'array-reduce',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'array-reduce' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Array Reduce Plugin',
+    version: '1.0.0',
+    description: 'Reduces arrays using various aggregation operations',
+    author: 'Flows Team'
+  }
+};
+
+export const arraySortPlugin: HandlerPlugin = {
+  nodeType: 'array-sort',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'array-sort' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Array Sort Plugin',
+    version: '1.0.0',
+    description: 'Sorts arrays with direction and key-based sorting',
+    author: 'Flows Team'
+  }
+};
+
+export const arrayFlattenPlugin: HandlerPlugin = {
+  nodeType: 'array-flatten',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'array-flatten' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Array Flatten Plugin',
+    version: '1.0.0',
+    description: 'Flattens nested arrays to specified depth',
+    author: 'Flows Team'
+  }
+};
+
+export const arrayUniquePlugin: HandlerPlugin = {
+  nodeType: 'array-unique',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'array-unique' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Array Unique Plugin',
+    version: '1.0.0',
+    description: 'Removes duplicate values from arrays',
+    author: 'Flows Team'
+  }
+};
+
+export const arrayChunkPlugin: HandlerPlugin = {
+  nodeType: 'array-chunk',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'array-chunk' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Array Chunk Plugin',
+    version: '1.0.0',
+    description: 'Splits arrays into chunks of specified size',
+    author: 'Flows Team'
+  }
+};
+
+export const arraySlicePlugin: HandlerPlugin = {
+  nodeType: 'array-slice',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'array-slice' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Array Slice Plugin',
+    version: '1.0.0',
+    description: 'Extracts portions of arrays using start/end indices',
+    author: 'Flows Team'
+  }
+};
+
+export const arrayJoinPlugin: HandlerPlugin = {
+  nodeType: 'array-join',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'array-join' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Array Join Plugin',
+    version: '1.0.0',
+    description: 'Joins array elements into strings with separators',
+    author: 'Flows Team'
+  }
+};
+
+// Object Operations
+export const objectCreatePlugin: HandlerPlugin = {
+  nodeType: 'object-create',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'object-create' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Object Create Plugin',
+    version: '1.0.0',
+    description: 'Creates objects from properties or entries',
+    author: 'Flows Team'
+  }
+};
+
+export const objectGetPlugin: HandlerPlugin = {
+  nodeType: 'object-get',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'object-get' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Object Get Plugin',
+    version: '1.0.0',
+    description: 'Gets object properties using dot notation paths',
+    author: 'Flows Team'
+  }
+};
+
+export const objectSetPlugin: HandlerPlugin = {
+  nodeType: 'object-set',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'object-set' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Object Set Plugin',
+    version: '1.0.0',
+    description: 'Sets object properties using dot notation paths',
+    author: 'Flows Team'
+  }
+};
+
+export const objectMergePlugin: HandlerPlugin = {
+  nodeType: 'object-merge',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'object-merge' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Object Merge Plugin',
+    version: '1.0.0',
+    description: 'Merges multiple objects with shallow or deep merging',
+    author: 'Flows Team'
+  }
+};
+
+export const objectClonePlugin: HandlerPlugin = {
+  nodeType: 'object-clone',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'object-clone' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Object Clone Plugin',
+    version: '1.0.0',
+    description: 'Clones objects with shallow or deep copying',
+    author: 'Flows Team'
+  }
+};
+
+export const objectKeysPlugin: HandlerPlugin = {
+  nodeType: 'object-keys',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'object-keys' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Object Keys Plugin',
+    version: '1.0.0',
+    description: 'Gets array of object keys',
+    author: 'Flows Team'
+  }
+};
+
+export const objectValuesPlugin: HandlerPlugin = {
+  nodeType: 'object-values',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'object-values' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Object Values Plugin',
+    version: '1.0.0',
+    description: 'Gets array of object values',
+    author: 'Flows Team'
+  }
+};
+
+export const objectEntriesPlugin: HandlerPlugin = {
+  nodeType: 'object-entries',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'object-entries' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Object Entries Plugin',
+    version: '1.0.0',
+    description: 'Gets array of object key-value pairs',
+    author: 'Flows Team'
+  }
+};
+
+export const objectPickPlugin: HandlerPlugin = {
+  nodeType: 'object-pick',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'object-pick' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Object Pick Plugin',
+    version: '1.0.0',
+    description: 'Creates new object with selected properties',
+    author: 'Flows Team'
+  }
+};
+
+export const objectOmitPlugin: HandlerPlugin = {
+  nodeType: 'object-omit',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'object-omit' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Object Omit Plugin',
+    version: '1.0.0',
+    description: 'Creates new object without specified properties',
+    author: 'Flows Team'
+  }
+};
+
+export const objectFreezePlugin: HandlerPlugin = {
+  nodeType: 'object-freeze',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'object-freeze' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Object Freeze Plugin',
+    version: '1.0.0',
+    description: 'Freezes objects to prevent modification',
+    author: 'Flows Team'
+  }
+};
+
+// Boolean Operations
+export const booleanParsePlugin: HandlerPlugin = {
+  nodeType: 'boolean-parse',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'boolean-parse' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Boolean Parse Plugin',
+    version: '1.0.0',
+    description: 'Converts values to booleans with fallback support',
+    author: 'Flows Team'
+  }
+};
+
+export const booleanValidatePlugin: HandlerPlugin = {
+  nodeType: 'boolean-validate',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'boolean-validate' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Boolean Validate Plugin',
+    version: '1.0.0',
+    description: 'Validates boolean values and conversions',
+    author: 'Flows Team'
+  }
+};
+
+// JSON Operations
+export const jsonParsePlugin: HandlerPlugin = {
+  nodeType: 'json-parse',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'json-parse' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'JSON Parse Plugin',
+    version: '1.0.0',
+    description: 'Parses JSON strings with fallback support',
+    author: 'Flows Team'
+  }
+};
+
+export const jsonStringifyPlugin: HandlerPlugin = {
+  nodeType: 'json-stringify',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'json-stringify' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'JSON Stringify Plugin',
+    version: '1.0.0',
+    description: 'Converts values to JSON strings with formatting',
+    author: 'Flows Team'
+  }
+};
+
+export const jsonValidatePlugin: HandlerPlugin = {
+  nodeType: 'json-validate',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'json-validate' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'JSON Validate Plugin',
+    version: '1.0.0',
+    description: 'Validates JSON strings for syntax correctness',
+    author: 'Flows Team'
+  }
+};
+
+export const jsonSchemaValidatePlugin: HandlerPlugin = {
+  nodeType: 'json-schema-validate',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'json-schema-validate' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'JSON Schema Validate Plugin',
+    version: '1.0.0',
+    description: 'Validates JSON against schemas',
+    author: 'Flows Team'
+  }
+};
+
+// Type Checking Operations
+export const typeCheckPlugin: HandlerPlugin = {
+  nodeType: 'type-check',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'type-check' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Type Check Plugin',
+    version: '1.0.0',
+    description: 'Determines the type of values',
+    author: 'Flows Team'
+  }
+};
+
+export const typeConvertPlugin: HandlerPlugin = {
+  nodeType: 'type-convert',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'type-convert' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Type Convert Plugin',
+    version: '1.0.0',
+    description: 'Converts values between different types',
+    author: 'Flows Team'
+  }
+};
+
+export const typeValidatePlugin: HandlerPlugin = {
+  nodeType: 'type-validate',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'type-validate' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Type Validate Plugin',
+    version: '1.0.0',
+    description: 'Validates values against expected types',
+    author: 'Flows Team'
+  }
+};
+
+// Data Validation Operations
+export const dataIsNullPlugin: HandlerPlugin = {
+  nodeType: 'data-is-null',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'data-is-null' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Data Is Null Plugin',
+    version: '1.0.0',
+    description: 'Checks if values are null',
+    author: 'Flows Team'
+  }
+};
+
+export const dataIsUndefinedPlugin: HandlerPlugin = {
+  nodeType: 'data-is-undefined',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'data-is-undefined' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Data Is Undefined Plugin',
+    version: '1.0.0',
+    description: 'Checks if values are undefined',
+    author: 'Flows Team'
+  }
+};
+
+export const dataIsEmptyPlugin: HandlerPlugin = {
+  nodeType: 'data-is-empty',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'data-is-empty' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Data Is Empty Plugin',
+    version: '1.0.0',
+    description: 'Checks if values are empty (null, undefined, empty string, empty array, empty object)',
+    author: 'Flows Team'
+  }
+};
+
+export const dataIsValidPlugin: HandlerPlugin = {
+  nodeType: 'data-is-valid',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'data-is-valid' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Data Is Valid Plugin',
+    version: '1.0.0',
+    description: 'Validates data based on various criteria',
+    author: 'Flows Team'
+  }
+};
+
+export const dataDefaultPlugin: HandlerPlugin = {
+  nodeType: 'data-default',
+  handler: {
+    async execute(node, context, inputs) {
+      const handler = new DataPrimitiveHandler();
+      return handler.execute({ ...node, inputs: { ...node.inputs, operation: 'data-default' }}, context, inputs);
+    }
+  },
+  metadata: {
+    name: 'Data Default Plugin',
+    version: '1.0.0',
+    description: 'Provides default values when data is invalid or missing',
     author: 'Flows Team'
   }
 };
@@ -450,6 +1215,115 @@ export const flowControlPlugins: HandlerPlugin[] = [
 ];
 
 /**
+ * Collection of all number operation plugins
+ */
+export const numberPlugins: HandlerPlugin[] = [
+  numberParsePlugin,
+  numberFormatPlugin,
+  numberValidatePlugin,
+  numberRangePlugin,
+  numberRoundPlugin,
+  numberClampPlugin
+];
+
+/**
+ * Collection of all data primitive string operation plugins
+ */
+export const dataPrimitiveStringPlugins: HandlerPlugin[] = [
+  stringParsePlugin,
+  stringValidatePlugin,
+  stringEncodePlugin,
+  stringDecodePlugin,
+  stringFormatPlugin,
+  stringSanitizePlugin
+];
+
+/**
+ * Collection of all array operation plugins
+ */
+export const arrayPlugins: HandlerPlugin[] = [
+  arrayCreatePlugin,
+  arrayFilterPlugin,
+  arrayMapPlugin,
+  arrayReducePlugin,
+  arraySortPlugin,
+  arrayFlattenPlugin,
+  arrayUniquePlugin,
+  arrayChunkPlugin,
+  arraySlicePlugin,
+  arrayJoinPlugin
+];
+
+/**
+ * Collection of all object operation plugins
+ */
+export const objectPlugins: HandlerPlugin[] = [
+  objectCreatePlugin,
+  objectGetPlugin,
+  objectSetPlugin,
+  objectMergePlugin,
+  objectClonePlugin,
+  objectKeysPlugin,
+  objectValuesPlugin,
+  objectEntriesPlugin,
+  objectPickPlugin,
+  objectOmitPlugin,
+  objectFreezePlugin
+];
+
+/**
+ * Collection of all boolean operation plugins
+ */
+export const booleanPlugins: HandlerPlugin[] = [
+  booleanParsePlugin,
+  booleanValidatePlugin
+];
+
+/**
+ * Collection of all JSON operation plugins
+ */
+export const jsonPlugins: HandlerPlugin[] = [
+  jsonParsePlugin,
+  jsonStringifyPlugin,
+  jsonValidatePlugin,
+  jsonSchemaValidatePlugin
+];
+
+/**
+ * Collection of all type checking operation plugins
+ */
+export const typeCheckingPlugins: HandlerPlugin[] = [
+  typeCheckPlugin,
+  typeConvertPlugin,
+  typeValidatePlugin
+];
+
+/**
+ * Collection of all data validation operation plugins
+ */
+export const dataValidationPlugins: HandlerPlugin[] = [
+  dataIsNullPlugin,
+  dataIsUndefinedPlugin,
+  dataIsEmptyPlugin,
+  dataIsValidPlugin,
+  dataDefaultPlugin
+];
+
+/**
+ * Collection of all data primitive operation plugins
+ */
+export const dataPrimitivePlugins: HandlerPlugin[] = [
+  ...numberPlugins,
+  ...dataPrimitiveStringPlugins,
+  ...arrayPlugins,
+  ...objectPlugins,
+  ...booleanPlugins,
+  ...jsonPlugins,
+  ...typeCheckingPlugins,
+  ...dataValidationPlugins
+];
+
+/**
  * Collection of all built-in plugins
  */
 export const allBuiltInPlugins: HandlerPlugin[] = [
@@ -457,13 +1331,14 @@ export const allBuiltInPlugins: HandlerPlugin[] = [
   ...mathPlugins,
   ...stringPlugins,
   ...flowControlPlugins,
+  ...dataPrimitivePlugins,
   ...allConsolePlugins
 ];
 
 /**
  * Utility function to get plugins by category
  */
-export function getPluginsByCategory(category: 'logical' | 'math' | 'string' | 'flow-control' | 'console' | 'all'): HandlerPlugin[] {
+export function getPluginsByCategory(category: 'logical' | 'math' | 'string' | 'flow-control' | 'data-primitive' | 'number' | 'array' | 'object' | 'boolean' | 'json' | 'type-checking' | 'data-validation' | 'console' | 'all'): HandlerPlugin[] {
   switch (category) {
     case 'logical':
       return logicalPlugins;
@@ -473,6 +1348,22 @@ export function getPluginsByCategory(category: 'logical' | 'math' | 'string' | '
       return stringPlugins;
     case 'flow-control':
       return flowControlPlugins;
+    case 'data-primitive':
+      return dataPrimitivePlugins;
+    case 'number':
+      return numberPlugins;
+    case 'array':
+      return arrayPlugins;
+    case 'object':
+      return objectPlugins;
+    case 'boolean':
+      return booleanPlugins;
+    case 'json':
+      return jsonPlugins;
+    case 'type-checking':
+      return typeCheckingPlugins;
+    case 'data-validation':
+      return dataValidationPlugins;
     case 'console':
       return allConsolePlugins;
     case 'all':

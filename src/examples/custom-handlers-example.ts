@@ -6,7 +6,6 @@ import {
   createFlows,
   createWorkflow,
   StorageType,
-  DefaultNodeExecutor,
   type FlowsConfig,
   type NodeExecutor,
   type WorkflowNode,
@@ -25,7 +24,7 @@ class HttpHandler {
     _context: Record<string, unknown>,
     inputs: Record<string, unknown>
   ): Promise<unknown> {
-    const { method = 'GET', url, headers = {}, body } = { ...node.inputs, ...inputs };
+    const { method = 'GET', url } = { ...node.inputs, ...inputs };
     
     if (!url || typeof url !== 'string') {
       throw new Error('URL is required and must be a string');
@@ -78,7 +77,7 @@ class EmailHandler {
     _context: Record<string, unknown>,
     inputs: Record<string, unknown>
   ): Promise<unknown> {
-    const { to, subject, template, data } = { ...node.inputs, ...inputs };
+    const { to, subject, template } = { ...node.inputs, ...inputs };
     
     console.log(`📧 Sending email to ${to}: ${subject}`);
     

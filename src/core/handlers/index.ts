@@ -6,4 +6,5 @@ export { MathHandler } from './math-handler.js';
 export { StringHandler } from './string-handler.js';
 export { ConditionHandler } from './condition-handler.js';
 export { MergeHandler } from './merge-handler.js';
-export { ConsoleHandler } from './console-handler.js'; 
+export { ConsoleHandler } from './console-handler.js';
+export { DataPrimitiveHandler } from './data-primitive-handler.js'; 

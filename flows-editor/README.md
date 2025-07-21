@@ -84,6 +84,55 @@ All node types from the flows library are now draggable and functional:
 - **`console-count`** - Count the number of times this node is executed
 - **`console-countreset`** - Reset a counter
 
+**Data Primitive Operations**:
+- **`number-parse`** - Convert values to numbers with fallback support
+- **`number-format`** - Format numbers using locale and options
+- **`number-validate`** - Validate numbers with range and constraint checks
+- **`number-range`** - Generate number ranges with step support
+- **`number-round`** - Round numbers using various methods and precision
+- **`number-clamp`** - Clamp numbers to specified min/max ranges
+- **`string-parse`** - Convert values to strings with encoding support
+- **`string-validate`** - Validate strings with length and pattern checks
+- **`string-encode`** - Encode strings using various encoding methods
+- **`string-decode`** - Decode strings using various encoding methods
+- **`string-format`** - Format strings using template substitution
+- **`string-sanitize`** - Sanitize strings by removing HTML, scripts, and normalizing whitespace
+- **`array-create`** - Create arrays with specified length, fill values, or initial values
+- **`array-filter`** - Filter arrays based on various conditions
+- **`array-map`** - Transform array elements using various operations
+- **`array-reduce`** - Reduce arrays using various aggregation operations
+- **`array-sort`** - Sort arrays with direction and key-based sorting
+- **`array-flatten`** - Flatten nested arrays to specified depth
+- **`array-unique`** - Remove duplicate values from arrays
+- **`array-chunk`** - Split arrays into chunks of specified size
+- **`array-slice`** - Extract portions of arrays using start/end indices
+- **`array-join`** - Join array elements into strings with separators
+- **`object-create`** - Create objects from properties or entries
+- **`object-get`** - Get object properties using dot notation paths
+- **`object-set`** - Set object properties using dot notation paths
+- **`object-merge`** - Merge multiple objects with shallow or deep merging
+- **`object-clone`** - Clone objects with shallow or deep copying
+- **`object-keys`** - Get array of object keys
+- **`object-values`** - Get array of object values
+- **`object-entries`** - Get array of object key-value pairs
+- **`object-pick`** - Create new object with selected properties
+- **`object-omit`** - Create new object without specified properties
+- **`object-freeze`** - Freeze objects to prevent modification
+- **`boolean-parse`** - Convert values to booleans with fallback support
+- **`boolean-validate`** - Validate boolean values and conversions
+- **`json-parse`** - Parse JSON strings with fallback support
+- **`json-stringify`** - Convert values to JSON strings with formatting
+- **`json-validate`** - Validate JSON strings for syntax correctness
+- **`json-schema-validate`** - Validate JSON against schemas
+- **`type-check`** - Determine the type of values
+- **`type-convert`** - Convert values between different types
+- **`type-validate`** - Validate values against expected types
+- **`data-is-null`** - Check if values are null
+- **`data-is-undefined`** - Check if values are undefined
+- **`data-is-empty`** - Check if values are empty (null, undefined, empty string, empty array, empty object)
+- **`data-is-valid`** - Validate data based on various criteria
+- **`data-default`** - Provide default values when data is invalid or missing
+
 #### **Node Configuration**
 Each node type is created with appropriate default inputs and outputs:
 - **Inputs**: Pre-configured based on the node type requirements

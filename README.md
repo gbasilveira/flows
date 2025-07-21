@@ -115,6 +115,9 @@ npx tsx src/examples/failure-examples.ts
 
 # Run the comprehensive handlers example (NEW!)
 npx tsx src/examples/comprehensive-handlers-example.ts
+
+# Run the data primitive handlers example (NEW!)
+npx tsx src/examples/data-primitive-example.ts
 ```
 
 ### Method 2: Using TypeScript Compiler
@@ -140,6 +143,7 @@ rm -rf dist-temp
 - **`custom-handlers-example.ts`**: Creating custom node handlers for new node types
 - **`plugin-system-example.ts`**: Using the plugin system for extensible node handlers
 - **`comprehensive-handlers-example.ts`**: ✨ **NEW!** Demonstrates all built-in handlers (logical, math, string, conditional, merge operations)
+- **`data-primitive-example.ts`**: ✨ **NEW!** Demonstrates all data primitive handlers (number, string, array, object, boolean, JSON, type checking, data validation operations)
 
 Each example includes detailed comments explaining the concepts and can be run independently.
 
@@ -253,6 +257,55 @@ const flows = createFlows(config, executor);
 - **`console-trace`** - Output a stack trace using console.trace
 - **`console-count`** - Count the number of times this node is executed using console.count
 - **`console-countreset`** - Reset a counter using console.countReset
+
+**Data Primitive Operations**:
+- **`number-parse`** - Convert values to numbers with fallback support
+- **`number-format`** - Format numbers using locale and options
+- **`number-validate`** - Validate numbers with range and constraint checks
+- **`number-range`** - Generate number ranges with step support
+- **`number-round`** - Round numbers using various methods and precision
+- **`number-clamp`** - Clamp numbers to specified min/max ranges
+- **`string-parse`** - Convert values to strings with encoding support
+- **`string-validate`** - Validate strings with length and pattern checks
+- **`string-encode`** - Encode strings using various encoding methods
+- **`string-decode`** - Decode strings using various encoding methods
+- **`string-format`** - Format strings using template substitution
+- **`string-sanitize`** - Sanitize strings by removing HTML, scripts, and normalizing whitespace
+- **`array-create`** - Create arrays with specified length, fill values, or initial values
+- **`array-filter`** - Filter arrays based on various conditions
+- **`array-map`** - Transform array elements using various operations
+- **`array-reduce`** - Reduce arrays using various aggregation operations
+- **`array-sort`** - Sort arrays with direction and key-based sorting
+- **`array-flatten`** - Flatten nested arrays to specified depth
+- **`array-unique`** - Remove duplicate values from arrays
+- **`array-chunk`** - Split arrays into chunks of specified size
+- **`array-slice`** - Extract portions of arrays using start/end indices
+- **`array-join`** - Join array elements into strings with separators
+- **`object-create`** - Create objects from properties or entries
+- **`object-get`** - Get object properties using dot notation paths
+- **`object-set`** - Set object properties using dot notation paths
+- **`object-merge`** - Merge multiple objects with shallow or deep merging
+- **`object-clone`** - Clone objects with shallow or deep copying
+- **`object-keys`** - Get array of object keys
+- **`object-values`** - Get array of object values
+- **`object-entries`** - Get array of object key-value pairs
+- **`object-pick`** - Create new object with selected properties
+- **`object-omit`** - Create new object without specified properties
+- **`object-freeze`** - Freeze objects to prevent modification
+- **`boolean-parse`** - Convert values to booleans with fallback support
+- **`boolean-validate`** - Validate boolean values and conversions
+- **`json-parse`** - Parse JSON strings with fallback support
+- **`json-stringify`** - Convert values to JSON strings with formatting
+- **`json-validate`** - Validate JSON strings for syntax correctness
+- **`json-schema-validate`** - Validate JSON against schemas
+- **`type-check`** - Determine the type of values
+- **`type-convert`** - Convert values between different types
+- **`type-validate`** - Validate values against expected types
+- **`data-is-null`** - Check if values are null
+- **`data-is-undefined`** - Check if values are undefined
+- **`data-is-empty`** - Check if values are empty (null, undefined, empty string, empty array, empty object)
+- **`data-is-valid`** - Validate data based on various criteria
+- **`data-default`** - Provide default values when data is invalid or missing
 
 **Using Built-in Operations**:
 ```typescript

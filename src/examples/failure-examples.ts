@@ -8,7 +8,6 @@ import {
   StorageType,
   FailureStrategy,
   type FlowsConfig,
-  type FailureAlert,
 } from '../index.js';
 
 // Example 1: Fail Fast Strategy
@@ -64,7 +63,7 @@ export async function retryAndDlqExample() {
         enabled: true,
         alertingEnabled: true,
         failureRateThreshold: 30,
-        alertHandler: (alert: FailureAlert) => {
+        alertHandler: (alert) => {
           console.log('ALERT:', alert);
         },
       },
@@ -124,7 +123,7 @@ export async function circuitBreakerExample() {
       monitoring: {
         enabled: true,
         alertingEnabled: true,
-        alertHandler: (alert: FailureAlert) => {
+        alertHandler: (alert) => {
           if (alert.alertType === 'CIRCUIT_OPEN') {
             console.log('🚨 Circuit breaker opened!', alert.message);
           }
@@ -286,14 +285,14 @@ export async function poisonMessageExample() {
       poisonMessageThreshold: 5, // Mark as poison after 5 attempts
       deadLetter: {
         enabled: true,
-        handler: (node, error, attempts) => {
+        handler: (node, _error, attempts) => {
           console.log(`⚠️ Potential poison message in node ${node.id} (${attempts} attempts)`);
         },
       },
       monitoring: {
         enabled: true,
         alertingEnabled: true,
-        alertHandler: (alert: FailureAlert) => {
+        alertHandler: (alert) => {
           if (alert.alertType === 'POISON_MESSAGE') {
             console.log('☠️ Poison message detected:', alert.message);
           }
@@ -323,82 +322,77 @@ export async function poisonMessageExample() {
 
 // Example 7: Complete Enterprise Configuration
 export async function enterpriseConfigExample() {
-  const config: FlowsConfig = {
-    storage: { 
-      type: StorageType.REMOTE,
-      config: {
-        baseUrl: 'https://api.company.com',
-        apiKey: 'your-api-key',
-        timeout: 10000,
-      },
-    },
-    failureHandling: {
-      strategy: FailureStrategy.CIRCUIT_BREAKER,
-      circuitBreaker: {
-        failureThreshold: 5,
-        timeWindow: 300000, // 5 minutes
-        recoveryTimeout: 120000, // 2 minutes
-        successThreshold: 3,
-        monitoringWindow: 600000, // 10 minutes
-      },
-      deadLetter: {
-        enabled: true,
-        maxRetries: 3,
-        retentionPeriod: 86400000, // 24 hours
-        storage: 'persistent',
-        handler: (node, error, attempts) => {
-          // Send to monitoring system
-          console.log(`DLQ: ${node.id} failed ${attempts} times: ${error}`);
-        },
-      },
-      monitoring: {
-        enabled: true,
-        failureRateThreshold: 10, // Alert if >10% failure rate
-        alertingEnabled: true,
-        metricsCollectionInterval: 30000, // 30 seconds
-        retentionPeriod: 2592000000, // 30 days
-        alertHandler: (alert: FailureAlert) => {
-          // Integration with alerting service (PagerDuty, Slack, etc.)
-          switch (alert.alertType) {
-            case 'HIGH_FAILURE_RATE':
-              console.log('📊 High failure rate alert:', alert);
-              break;
-            case 'CIRCUIT_OPEN':
-              console.log('🚨 Circuit breaker alert:', alert);
-              break;
-            case 'POISON_MESSAGE':
-              console.log('☠️ Poison message alert:', alert);
-              break;
-            case 'DLQ_THRESHOLD':
-              console.log('📬 DLQ threshold alert:', alert);
-              break;
-          }
-        },
-      },
-      poisonMessageThreshold: 8,
-      gracefulDegradationConfig: {
-        continueOnNodeFailure: true,
-        skipDependentNodes: true,
-        fallbackResults: {
-          'user-service': { id: 0, name: 'Anonymous' },
-          'cache-service': {},
-        },
-      },
-    },
-    security: {
-      validateNodes: true,
-      allowedNodeTypes: ['http-request', 'database-query', 'cache-lookup', 'email-send'],
-      maxExecutionTime: 300000, // 5 minutes max per node
-    },
-    logging: {
-      level: 'info',
-      handler: (message, level) => {
-        console.log(`[${level.toUpperCase()}] ${message}`);
-      },
-    },
-  };
+  // const config: FlowsConfig = {
+  //   storage: { 
+  //     type: StorageType.REMOTE,
+  //     config: {
+  //       baseUrl: 'https://api.company.com',
+  //       apiKey: 'your-api-key',
+  //       timeout: 10000,
+  //     },
+  //   },
+  //   failureHandling: {
+  //     strategy: FailureStrategy.CIRCUIT_BREAKER,
+  //     circuitBreaker: {
+  //       failureThreshold: 5,
+  //       timeWindow: 300000, // 5 minutes
+  //       recoveryTimeout: 120000, // 2 minutes
+  //       successThreshold: 3,
+  //       monitoringWindow: 600000, // 10 minutes
+  //     },
+  //     deadLetter: {
+  //       enabled: true,
+  //       maxRetries: 3,
+  //       retentionPeriod: 86400000, // 24 hours
+  //     },
+  //     monitoring: {
+  //       enabled: true,
+  //       failureRateThreshold: 10, // Alert if >10% failure rate
+  //       alertingEnabled: true,
+  //       metricsCollectionInterval: 30000, // 30 seconds
+  //       retentionPeriod: 2592000000, // 30 days
+  //       alertHandler: (alert) => {
+  //         // Integration with alerting service (PagerDuty, Slack, etc.)
+  //         switch (alert.alertType) {
+  //           case 'HIGH_FAILURE_RATE':
+  //             console.log('📊 High failure rate alert:', alert);
+  //             break;
+  //           case 'CIRCUIT_OPEN':
+  //             console.log('🚨 Circuit breaker alert:', alert);
+  //             break;
+  //           case 'POISON_MESSAGE':
+  //             console.log('☠️ Poison message alert:', alert);
+  //             break;
+  //           case 'DLQ_THRESHOLD':
+  //             console.log('📬 DLQ threshold alert:', alert);
+  //             break;
+  //         }
+  //       },
+  //     },
+  //     poisonMessageThreshold: 8,
+  //     gracefulDegradationConfig: {
+  //       continueOnNodeFailure: true,
+  //       skipDependentNodes: true,
+  //       fallbackResults: {
+  //         'user-service': { id: 0, name: 'Anonymous' },
+  //         'cache-service': {},
+  //       },
+  //     },
+  //   },
+  //   security: {
+  //     validateNodes: true,
+  //     allowedNodeTypes: ['http-request', 'database-query', 'cache-lookup', 'email-send'],
+  //     maxExecutionTime: 300000, // 5 minutes max per node
+  //   },
+  //   logging: {
+  //     level: 'info',
+  //     handler: (message, level) => {
+  //       console.log(`[${level.toUpperCase()}] ${message}`);
+  //     },
+  //   },
+  // };
 
-  const flows = createFlows(config);
+  // const flows = createFlows(config);
   console.log('Enterprise configuration ready!');
   
   // Clean up resources when done

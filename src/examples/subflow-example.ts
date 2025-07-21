@@ -3,7 +3,6 @@
  * Shows how workflows can call other workflows as modular components
  */
 import {
-  createFlows,
   createWorkflow,
   StorageType,
   type FlowsConfig,
