@@ -21,6 +21,9 @@ import {
   makeStyles,
   tokens,
   Text,
+  Badge,
+  Tooltip,
+  Card,
 } from '@fluentui/react-components'
 import {
   PlayRegular,
@@ -28,6 +31,10 @@ import {
   FolderOpenRegular,
   SettingsRegular,
   DismissRegular,
+  // Status icons
+  CheckmarkCircleRegular,
+  ErrorCircleRegular,
+  ClockRegular,
 } from '@fluentui/react-icons'
 
 import { BaseNode } from './nodes/BaseNode'
@@ -49,11 +56,12 @@ const useStyles = makeStyles({
   toolbar: {
     padding: '12px 16px',
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
-    backgroundColor: tokens.colorNeutralBackground2,
+    backgroundColor: tokens.colorNeutralBackground1,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     flexShrink: 0,
+    boxShadow: tokens.shadow2,
   },
   toolbarLeft: {
     display: 'flex',
@@ -63,26 +71,77 @@ const useStyles = makeStyles({
   toolbarRight: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: '12px',
   },
   title: {
     fontSize: tokens.fontSizeBase600,
     fontWeight: tokens.fontWeightSemibold,
-    color: tokens.colorNeutralForeground1,
+    color: tokens.colorBrandForeground1,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  titleIcon: {
+    fontSize: '24px',
+    color: tokens.colorBrandForeground1,
+  },
+  statusSection: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  statusBadge: {
+    fontSize: tokens.fontSizeBase200,
   },
   mainContent: {
     flex: 1,
     display: 'flex',
     overflow: 'hidden',
+    backgroundColor: tokens.colorNeutralBackground2,
   },
   canvasContainer: {
     flex: 1,
     position: 'relative',
     display: 'flex',
+    backgroundColor: tokens.colorNeutralBackground1,
   },
   reactFlowWrapper: {
     flex: 1,
     height: '100%',
+    borderRadius: tokens.borderRadiusMedium,
+    overflow: 'hidden',
+    margin: '8px',
+    boxShadow: tokens.shadow4,
+  },
+  // Custom ReactFlow styles
+  reactFlowNode: {
+    '& .react-flow__node': {
+      borderRadius: tokens.borderRadiusMedium,
+    },
+  },
+  controls: {
+    '& .react-flow__controls': {
+      backgroundColor: tokens.colorNeutralBackground1,
+      border: `1px solid ${tokens.colorNeutralStroke2}`,
+      borderRadius: tokens.borderRadiusMedium,
+      boxShadow: tokens.shadow4,
+    },
+    '& .react-flow__controls-button': {
+      backgroundColor: 'transparent',
+      border: 'none',
+      color: tokens.colorNeutralForeground1,
+      '&:hover': {
+        backgroundColor: tokens.colorNeutralBackground2,
+      },
+    },
+  },
+  minimap: {
+    '& .react-flow__minimap': {
+      backgroundColor: tokens.colorNeutralBackground1,
+      border: `1px solid ${tokens.colorNeutralStroke2}`,
+      borderRadius: tokens.borderRadiusMedium,
+      boxShadow: tokens.shadow4,
+    },
   },
 })
 
@@ -202,6 +261,8 @@ const EditorContent: React.FC<EditorContentProps> = ({
     nodes, 
     edges, 
     isManipulationPanelOpen,
+    isDirty,
+    isExecuting,
     addNode, 
     addEdge: storeAddEdge, 
     setSelectedNodes, 
@@ -322,39 +383,88 @@ const EditorContent: React.FC<EditorContentProps> = ({
     }
   }, [onWorkflowLoad])
 
+  // Get workflow status
+  const getWorkflowStatus = () => {
+    if (isExecuting) return { icon: <ClockRegular />, text: 'Running', color: 'warning' as const }
+    if (isDirty) return { icon: <ErrorCircleRegular />, text: 'Unsaved', color: 'danger' as const }
+    return { icon: <CheckmarkCircleRegular />, text: 'Saved', color: 'success' as const }
+  }
+
+  const workflowStatus = getWorkflowStatus()
+
   return (
     <div className={styles.root}>
       {/* Toolbar */}
-      <div className={styles.toolbar}>
+      <Card className={styles.toolbar}>
         <div className={styles.toolbarLeft}>
-          <Text className={styles.title}>Flows Editor</Text>
+          <Text className={styles.title}>
+            <span className={styles.titleIcon}>⚡</span>
+            Flows Editor
+          </Text>
           <Toolbar>
-            <ToolbarButton 
-              appearance="primary" 
-              icon={<PlayRegular />}
-              onClick={handleExecute}
-            >
-              Execute
-            </ToolbarButton>
+            <Tooltip content="Execute workflow" relationship="label">
+              <ToolbarButton 
+                appearance="primary" 
+                icon={<PlayRegular />}
+                onClick={handleExecute}
+                disabled={isExecuting || nodes.length === 0}
+              >
+                Execute
+              </ToolbarButton>
+            </Tooltip>
             <ToolbarDivider />
-            <ToolbarButton icon={<SaveRegular />} onClick={handleSave}>
-              Save
-            </ToolbarButton>
-            <ToolbarButton icon={<FolderOpenRegular />} onClick={handleLoad}>
-              Load
-            </ToolbarButton>
+            <Tooltip content="Save workflow" relationship="label">
+              <ToolbarButton 
+                icon={<SaveRegular />} 
+                onClick={handleSave}
+                disabled={!isDirty}
+              >
+                Save
+              </ToolbarButton>
+            </Tooltip>
+            <Tooltip content="Load workflow" relationship="label">
+              <ToolbarButton icon={<FolderOpenRegular />} onClick={handleLoad}>
+                Load
+              </ToolbarButton>
+            </Tooltip>
           </Toolbar>
         </div>
         <div className={styles.toolbarRight}>
-          <ToolbarButton 
-            icon={isManipulationPanelOpen ? <DismissRegular /> : <SettingsRegular />}
-            onClick={() => setManipulationPanelOpen(!isManipulationPanelOpen)}
-            appearance={isManipulationPanelOpen ? "primary" : "subtle"}
-          >
-            {isManipulationPanelOpen ? 'Close Settings' : 'Node Settings'}
-          </ToolbarButton>
+          <div className={styles.statusSection}>
+            <Badge 
+              appearance="filled" 
+              color="brand"
+              className={styles.statusBadge}
+            >
+              {nodes.length} nodes
+            </Badge>
+            <Badge 
+              appearance="filled" 
+              color="informative"
+              className={styles.statusBadge}
+            >
+              {edges.length} connections
+            </Badge>
+            <Badge 
+              appearance="filled" 
+              color={workflowStatus.color}
+              icon={workflowStatus.icon}
+              className={styles.statusBadge}
+            >
+              {workflowStatus.text}
+            </Badge>
+          </div>
+          <Tooltip content={isManipulationPanelOpen ? "Close settings panel" : "Open settings panel"} relationship="label">
+            <ToolbarButton 
+              icon={isManipulationPanelOpen ? <DismissRegular /> : <SettingsRegular />}
+              onClick={() => setManipulationPanelOpen(!isManipulationPanelOpen)}
+              appearance={isManipulationPanelOpen ? "primary" : "subtle"}
+            >
+              {isManipulationPanelOpen ? 'Close Settings' : 'Node Settings'}
+            </ToolbarButton>
+          </Tooltip>
         </div>
-      </div>
+      </Card>
 
       {/* Main Content */}
       <div className={styles.mainContent}>
@@ -389,12 +499,13 @@ const EditorContent: React.FC<EditorContentProps> = ({
               fitViewOptions={{
                 padding: 0.1,
               }}
+              className={styles.reactFlowNode}
             >
-              <Controls />
-              {config?.ui?.minimapEnabled && <MiniMap />}
+              <Controls className={styles.controls} />
+              {config?.ui?.minimapEnabled && <MiniMap className={styles.minimap} />}
               <Background 
                 variant={BackgroundVariant.Dots} 
-                gap={12} 
+                gap={20} 
                 size={1}
                 color={tokens.colorNeutralStroke3}
               />
