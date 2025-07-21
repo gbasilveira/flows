@@ -62,8 +62,10 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorNeutralBackground1,
   },
   tabList: {
-    overflow: 'hidden',
+    overflow: 'auto',
+    overflowY: 'hidden',
     scrollBehavior: 'smooth',
+    whiteSpace: 'nowrap',
     '&::-webkit-scrollbar': {
       display: 'none',
     },
@@ -184,72 +186,93 @@ export const Sidebar: React.FC<SidebarProps> = ({
   // Auto-center selected tab when it changes
   useEffect(() => {
     if (tabListRef.current && selectedTab) {
-      const tabElement = tabListRef.current.querySelector(`[data-value="${selectedTab}"]`) as HTMLElement
-      if (tabElement) {
-        const container = tabListRef.current
-        const containerRect = container.getBoundingClientRect()
-        const tabRect = tabElement.getBoundingClientRect()
+      // Use a small delay to ensure DOM is updated after tab selection
+      const timeoutId = setTimeout(() => {
+        if (!tabListRef.current) return
         
-        // Calculate optimal center position
-        const containerCenter = containerRect.width / 2
-        const tabCenter = tabRect.left - containerRect.left + tabRect.width / 2
-        const optimalOffset = tabCenter - containerCenter
+        // Find the selected tab element using FluentUI's structure
+        const allTabs = tabListRef.current.querySelectorAll('[role="tab"]')
+        const allTabValues = ['all', ...categories.map(cat => cat.id)]
+        const selectedIndex = allTabValues.indexOf(selectedTab as string)
         
-        // Calculate scroll boundaries to prevent over-scrolling
-        const maxScrollLeft = container.scrollWidth - container.clientWidth
-        const currentScroll = container.scrollLeft
-        const targetScroll = currentScroll + optimalOffset
-        
-        // Clamp the target scroll to valid bounds
-        const clampedScroll = Math.max(0, Math.min(targetScroll, maxScrollLeft))
-        
-        // Only scroll if there's a meaningful difference (elastic threshold)
-        const scrollDifference = Math.abs(clampedScroll - currentScroll)
-        if (scrollDifference > 2) {
-          container.scrollTo({
-            left: clampedScroll,
-            behavior: 'smooth'
-          })
+        if (selectedIndex >= 0 && selectedIndex < allTabs.length) {
+          const selectedTabElement = allTabs[selectedIndex] as HTMLElement
+          const container = tabListRef.current
+          
+          // Get container and tab dimensions
+          const containerRect = container.getBoundingClientRect()
+          const tabRect = selectedTabElement.getBoundingClientRect()
+          
+          // Calculate optimal scroll position to center the tab
+          const containerCenter = containerRect.width / 2
+          const tabCenter = tabRect.left - containerRect.left + tabRect.width / 2
+          const currentScroll = container.scrollLeft
+          
+          // Calculate the target scroll position
+          const targetScroll = currentScroll + (tabCenter - containerCenter)
+          
+          // Apply scroll boundaries
+          const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth)
+          const clampedScroll = Math.max(0, Math.min(targetScroll, maxScroll))
+          
+          // Only scroll if there's a meaningful difference
+          if (Math.abs(clampedScroll - currentScroll) > 5) {
+            console.debug('Auto-centering tab:', selectedTab, 'from', currentScroll, 'to', clampedScroll)
+            container.scrollTo({
+              left: clampedScroll,
+              behavior: 'smooth'
+            })
+          }
         }
-      }
+      }, 50) // Small delay to ensure DOM updates
+      
+      return () => clearTimeout(timeoutId)
     }
-  }, [selectedTab])
+  }, [selectedTab, categories])
 
   // Also re-center when window resizes to maintain optimal positioning
   useEffect(() => {
     const handleResize = () => {
       if (tabListRef.current && selectedTab) {
-        // Use a small delay to allow layout to settle
-        setTimeout(() => {
-          const tabElement = tabListRef.current?.querySelector(`[data-value="${selectedTab}"]`) as HTMLElement
-          if (tabElement && tabListRef.current) {
+        // Use a longer delay for resize to allow layout to settle
+        const timeoutId = setTimeout(() => {
+          if (!tabListRef.current) return
+          
+          const allTabs = tabListRef.current.querySelectorAll('[role="tab"]')
+          const allTabValues = ['all', ...categories.map(cat => cat.id)]
+          const selectedIndex = allTabValues.indexOf(selectedTab as string)
+          
+          if (selectedIndex >= 0 && selectedIndex < allTabs.length) {
+            const selectedTabElement = allTabs[selectedIndex] as HTMLElement
             const container = tabListRef.current
+            
             const containerRect = container.getBoundingClientRect()
-            const tabRect = tabElement.getBoundingClientRect()
+            const tabRect = selectedTabElement.getBoundingClientRect()
             
             const containerCenter = containerRect.width / 2
             const tabCenter = tabRect.left - containerRect.left + tabRect.width / 2
-            const optimalOffset = tabCenter - containerCenter
-            
-            const maxScrollLeft = container.scrollWidth - container.clientWidth
             const currentScroll = container.scrollLeft
-            const targetScroll = currentScroll + optimalOffset
-            const clampedScroll = Math.max(0, Math.min(targetScroll, maxScrollLeft))
             
-            if (Math.abs(clampedScroll - currentScroll) > 2) {
+            const targetScroll = currentScroll + (tabCenter - containerCenter)
+            const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth)
+            const clampedScroll = Math.max(0, Math.min(targetScroll, maxScroll))
+            
+            if (Math.abs(clampedScroll - currentScroll) > 5) {
               container.scrollTo({
                 left: clampedScroll,
                 behavior: 'smooth'
               })
             }
           }
-        }, 100)
+        }, 150) // Longer delay for resize
+        
+        return () => clearTimeout(timeoutId)
       }
     }
 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [selectedTab])
+  }, [selectedTab, categories])
 
   // Keyboard navigation
   const handleKeyDown = (event: React.KeyboardEvent) => {
