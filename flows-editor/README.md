@@ -62,9 +62,10 @@ flows-editor/
 The editor features smart auto-centering tabs that provide optimal UX:
 
 #### **Auto-centering Behavior**
-- Automatically centers the selected tab in the visible area
-- Smooth scrolling animation when switching between tabs
-- Only scrolls when necessary (within 10px tolerance)
+- Elastically centers the selected tab at the most optimal position within the visible area
+- Precise positioning with scroll boundary detection to prevent over-scrolling
+- Smooth scrolling animation with elastic threshold (2px sensitivity)
+- Responsive re-centering when window is resized
 - Natural, intuitive behavior that users expect
 
 #### **Multiple Navigation Methods**

@@ -155,11 +155,12 @@ export interface SidebarProps {
  * Sidebar Component with Intelligent Tab Navigation
  * 
  * Features:
- * - Automatic overflow detection for category tabs
- * - Auto-centering of selected tab for optimal UX
+ * - Elastic auto-centering of selected tab for optimal UX
+ * - Precise positioning at the most center possible within visible area
+ * - Smooth scroll boundaries to prevent over-scrolling
  * - Keyboard navigation (arrow keys)
  * - Touch/swipe support for mobile devices
- * - Responsive to window resizing
+ * - Responsive re-centering on window resize
  * - Configurable sidebar width
  * 
  * @param onNodeDragStart - Callback when node drag starts
@@ -189,20 +190,65 @@ export const Sidebar: React.FC<SidebarProps> = ({
         const containerRect = container.getBoundingClientRect()
         const tabRect = tabElement.getBoundingClientRect()
         
-        // Calculate the center position
-        const containerCenter = containerRect.left + containerRect.width / 2
-        const tabCenter = tabRect.left + tabRect.width / 2
-        const offset = tabCenter - containerCenter
+        // Calculate optimal center position
+        const containerCenter = containerRect.width / 2
+        const tabCenter = tabRect.left - containerRect.left + tabRect.width / 2
+        const optimalOffset = tabCenter - containerCenter
         
-        // Only scroll if the tab is not already centered
-        if (Math.abs(offset) > 10) {
-          container.scrollBy({
-            left: offset,
+        // Calculate scroll boundaries to prevent over-scrolling
+        const maxScrollLeft = container.scrollWidth - container.clientWidth
+        const currentScroll = container.scrollLeft
+        const targetScroll = currentScroll + optimalOffset
+        
+        // Clamp the target scroll to valid bounds
+        const clampedScroll = Math.max(0, Math.min(targetScroll, maxScrollLeft))
+        
+        // Only scroll if there's a meaningful difference (elastic threshold)
+        const scrollDifference = Math.abs(clampedScroll - currentScroll)
+        if (scrollDifference > 2) {
+          container.scrollTo({
+            left: clampedScroll,
             behavior: 'smooth'
           })
         }
       }
     }
+  }, [selectedTab])
+
+  // Also re-center when window resizes to maintain optimal positioning
+  useEffect(() => {
+    const handleResize = () => {
+      if (tabListRef.current && selectedTab) {
+        // Use a small delay to allow layout to settle
+        setTimeout(() => {
+          const tabElement = tabListRef.current?.querySelector(`[data-value="${selectedTab}"]`) as HTMLElement
+          if (tabElement && tabListRef.current) {
+            const container = tabListRef.current
+            const containerRect = container.getBoundingClientRect()
+            const tabRect = tabElement.getBoundingClientRect()
+            
+            const containerCenter = containerRect.width / 2
+            const tabCenter = tabRect.left - containerRect.left + tabRect.width / 2
+            const optimalOffset = tabCenter - containerCenter
+            
+            const maxScrollLeft = container.scrollWidth - container.clientWidth
+            const currentScroll = container.scrollLeft
+            const targetScroll = currentScroll + optimalOffset
+            const clampedScroll = Math.max(0, Math.min(targetScroll, maxScrollLeft))
+            
+            if (Math.abs(clampedScroll - currentScroll) > 2) {
+              container.scrollTo({
+                left: clampedScroll,
+                behavior: 'smooth'
+              })
+            }
+          }
+        }, 100)
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [selectedTab])
 
   // Keyboard navigation
