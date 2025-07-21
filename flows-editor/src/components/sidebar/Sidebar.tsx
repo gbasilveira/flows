@@ -33,6 +33,8 @@ const useStyles = makeStyles({
     padding: '16px',
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
     backgroundColor: tokens.colorNeutralBackground2,
+    display: 'flex',
+    flexDirection: 'column',
   },
   title: {
     margin: 0,
